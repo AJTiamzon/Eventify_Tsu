@@ -1,0 +1,198 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    color: red;
+  }
+  .holder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="holder">
+  {% if user.role == "Event Creator" %}
+  <a href="/create-event"><h2>Create Event</h2></a>
+  <a href="/created_event_edit"><h2>View Your Events</h2></a>
+  <a href="/create_event_history"><h2>Finalized Events</h2></a>
+  <a href="/event_attendee_list"><h2>Attendee List</h2></a>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <a href="/join_room"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
+  <a href="/create_event_profile"><h2>View Profile</h2></a>
+  {% endif %} {% if user.role == "Client" %}
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+  {% endif %}
+</div>
+
+<h3 align="center">User Profile</h3>
+<button id="edit-button">Edit</button>
+
+<p>You can only edit your profile every 30 days</p>
+
+<!-- Static User Information -->
+<div>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>First Name:</strong> {{ user.first_name }}</p>
+  <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+  <p><strong>Role:</strong> {{ user.role }}</p>
+  <p><strong>Past Experiences:</strong> {{ user.past_experience }}</p>
+</div>
+
+<!-- Check if each image exists before rendering -->
+{% if user.credibility1 %}
+<img
+  src="{{ url_for('static', filename='uploads/' + user.credibility1) }}"
+  alt="Credibility Image 1"
+  width="200"
+/>
+{% endif %} {% if user.credibility2 %}
+<img
+  src="{{ url_for('static', filename='uploads/' + user.credibility2) }}"
+  alt="Credibility Image 2"
+  width="200"
+/>
+{% endif %} {% if user.credibility3 %}
+<img
+  src="{{ url_for('static', filename='uploads/' + user.credibility3) }}"
+  alt="Credibility Image 3"
+  width="200"
+/>
+{% endif %} {% if user.credibility4 %}
+<img
+  src="{{ url_for('static', filename='uploads/' + user.credibility4) }}"
+  alt="Credibility Image 4"
+  width="200"
+/>
+{% endif %} {% if user.credibility5 %}
+<img
+  src="{{ url_for('static', filename='uploads/' + user.credibility5) }}"
+  alt="Credibility Image 5"
+  width="200"
+/>
+{% endif %}
+
+<!-- Form for Editing (starts hidden) -->
+<form
+  id="edit-form"
+  action="{{ url_for('auth.update_profile') }}"
+  method="POST"
+  enctype="multipart/form-data"
+  style="display: none"
+>
+  <div>
+    <label for="email">Edit Email:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="email"
+      name="email"
+      placeholder="New Data To Replace Old"
+    />
+
+    <label for="fname">Edit First Name:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="fname"
+      name="fname"
+      placeholder="New Data To Replace Old"
+    />
+
+    <label for="lname">Edit Last Name:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="lname"
+      name="lname"
+      placeholder="New Data To Replace Old"
+    />
+
+    <label for="past_experience">Edit Past Experiences:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="past_experience"
+      name="past_experience"
+      placeholder="New Data To Replace Old"
+    />
+  </div>
+
+  <div>
+    <h4>Edit Credibility Images:</h4>
+    <div>
+      <label for="credibility1">Replace Credibility Image 1:</label>
+      <input
+        type="file"
+        class="form-control"
+        id="credibility1"
+        name="credibility1"
+        accept=".jpg, .jpeg, .png"
+      />
+
+      <label for="credibility2">Replace Credibility Image 2:</label>
+      <input
+        type="file"
+        class="form-control"
+        id="credibility2"
+        name="credibility2"
+        accept=".jpg, .jpeg, .png"
+      />
+
+      <label for="credibility3">Replace Credibility Image 3:</label>
+      <input
+        type="file"
+        class="form-control"
+        id="credibility3"
+        name="credibility3"
+        accept=".jpg, .jpeg, .png"
+      />
+
+      <label for="credibility4">Replace Credibility Image 4:</label>
+      <input
+        type="file"
+        class="form-control"
+        id="credibility4"
+        name="credibility4"
+        accept=".jpg, .jpeg, .png"
+      />
+
+      <label for="credibility5">Replace Credibility Image 5:</label>
+      <input
+        type="file"
+        class="form-control"
+        id="credibility5"
+        name="credibility5"
+        accept=".jpg, .jpeg, .png"
+      />
+    </div>
+  </div>
+
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+  // Toggle visibility of input fields when edit button is clicked
+  document.getElementById("edit-button").addEventListener("click", function () {
+    var form = document.getElementById("edit-form");
+    if (form.style.display === "none" || form.style.display === "") {
+      form.style.display = "block"; // Show the input fields
+      this.textContent = "Cancel"; // Change button text to "Cancel"
+    } else {
+      form.style.display = "none"; // Hide the input fields
+      this.textContent = "Edit"; // Change button text back to "Edit"
+    }
+  });
+</script>
+
+{% endblock %}

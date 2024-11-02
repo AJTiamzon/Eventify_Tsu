@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .link_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info {
+    color: red;
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<h1 align="center">Client Create Events</h1>
+<div class="link_container">
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2 align="center">
+    <a href="/create_event_profile_client">View Profile</a>
+  </h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+</div>
+<h5 align="center">
+  Hello <span class="info">{{ name }} </span>, as a Client, you are able to
+  <span class="info">attend public events</span>,
+  <span class="info">use the algorithm to plan events</span> and
+  <span class="info">hire suppliers</span>.
+</h5>
+
+<h2>My RSVPed Events</h2>
+{% if rsvped_events %} {% for event in rsvped_events %}
+<div class="event-card">
+  <h6>
+    I <span class="info">{{ name }}</span> will be attending the event
+    <span class="info">{{ event.event_name }}</span>, that was created by
+    <span class="info">{{ event.creator_name }}</span> that starts at the date
+    of <span class="info">{{ event.start_date }}</span> and ends at
+    <span class="info">{{ event.end_date }}</span>. Description:
+    <span class="info">{{ event.event_desc }}</span>. The Room Code is
+    <span class="info">{{ event.room_code }}</span>.
+    <form action="/view_creator" method="POST" class="view-creator-info-form">
+      <input
+        type="hidden"
+        name="creator_name"
+        value="{{ event.creator_name }}"
+      />
+      <button type="submit" class="btn btn-primary">
+        View Creator Information
+      </button>
+    </form>
+  </h6>
+
+  <!-- <h4>Date RSVPed: {{ event.date_rsvped }}</h4> -->
+</div>
+{% endfor %} {% else %}
+<p>No RSVPed events found.</p>
+{% endif %} {% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}

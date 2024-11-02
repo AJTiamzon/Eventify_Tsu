@@ -1,0 +1,97 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    color: red;
+  }
+  .holder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ratings-container {
+    margin-top: 20px;
+  }
+  .rating-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+</style>
+{% endblock %} {% block title %}Rate Supplier{% endblock %} {% block content %}
+<div class="holder">
+  {% if role == "Event Creator" %}
+  <a href="/create-event"><h2>Create Event</h2></a>
+  <a href="/created_event_edit"><h2>View Your Events</h2></a>
+  <a href="/create_event_history"><h2>Finalized Events</h2></a>
+  <a href="/event_attendee_list"><h2>Attendee List</h2></a>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <a href="/join_room"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
+  <a href="/create_event_profile"><h2>View Profile</h2></a>
+  {% endif %} {% if role == "Client" %}
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2 align="center">
+    <a href="/create_event_profile_client">View Profile</a>
+  </h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+  {% endif %}
+</div>
+
+<h1>Rate Supplier: {{ supplier.name }}</h1>
+
+<div class="supplier-info">
+  <h6>Business Name: {{ supplier.business_name }}</h6>
+  <h6>Contact Number: {{ supplier.contact_number }}</h6>
+  <h6>Email: {{ supplier.email }}</h6>
+  <h6>Rating: {{ supplier.rating }}</h6>
+  <h6>Commission: {{ supplier.price }}</h6>
+</div>
+
+<!-- Ratings Section -->
+<h2>All Ratings for {{ supplier.name }}</h2>
+<div class="ratings-container">
+  {% if ratings %} {% for rating in ratings %}
+  <div class="rating-item">
+    <p>
+      <strong>Reviewer:</strong> {{ rating.reviewer_name }} ({{
+      rating.reviewer_role }})
+    </p>
+    <p><strong>Rating:</strong> {{ rating.rating }} / 5</p>
+    <p><strong>Feedback:</strong> {{ rating.feedback }}</p>
+    <p>
+      <small
+        ><strong>Date Reviewed:</strong> {{
+        rating.date_reviewed.strftime('%Y-%m-%d') }}</small
+      >
+    </p>
+  </div>
+  {% endfor %} {% else %}
+  <p>No ratings available for this supplier yet.</p>
+  {% endif %}
+</div>
+
+<!-- Rating Form -->
+<form action="/submit_supplier_rating" method="post">
+  <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+  <div class="form-group">
+    <label for="rating">Your Rating (1-5):</label>
+    <input type="number" name="rating" min="1" max="5" required />
+  </div>
+  <div class="form-group">
+    <label for="feedback">Your Feedback:</label>
+    <textarea name="feedback" rows="4" required></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit Rating</button>
+</form>
+
+{% endblock %}

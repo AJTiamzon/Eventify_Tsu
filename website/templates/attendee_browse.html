@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .event-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+  }
+</style>
+{% endblock %} {% block title %}Attendee Dashboard{% endblock %} {% block
+content %}
+<div class="events-container">
+  <a href="/attendee_invites"><h2>View Invites</h2></a>
+  <a href="/attendee_events"><h2>View Your Events</h2></a>
+  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
+  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard_attendee" target="_blank"
+    ><h2>Join Video Chat</h2></a
+  >
+</div>
+
+<h1 align="center">
+  Hello <span class="info">{{ name }}</span>, Welcome To Event Browsing.
+</h1>
+<h6>Note:</h6>
+
+<h2>Public Events:</h2>
+{% if public_events %} {% for event in public_events %}
+<div class="event-card">
+  <h4>Event Name: {{ event.event_name }}</h4>
+  <h4>Created By: {{ event.creator_name }}</h4>
+  <form
+      action="/view_creator_info"
+      method="POST"
+      class="view-creator-info-form"
+    >
+      <input
+        type="hidden"
+        name="creator_name"
+        value="{{ event.creator_name }}"
+      />
+      <button type="submit" class="btn btn-primary">
+        View Creator Information
+      </button>
+    </form>
+  <h4>Event Description: {{ event.event_desc }}</h4>
+  <h4>Room Code: {{ event.room_code }}</h4>
+  <h4>Start Date: {{ event.start_date }}</p>
+  <h4>End Date: {{ event.end_date }}</h4>
+
+  <form
+    id="rsvp-form-{{ event.event_name }}"
+    action="/rsvp_spot"
+    method="POST"
+  >
+    <input type="hidden" name="event_name" value="{{ event.event_name }}" />
+    <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
+    <!-- Pass creator's name -->
+    <button type="submit" class="btn btn-success">RSVP Spot</button>
+  </form>
+</div>
+{% endfor %} {% else %}
+<p>No public events found.</p>
+{% endif %} {% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}

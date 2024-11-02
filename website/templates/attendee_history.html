@@ -1,0 +1,79 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .note {
+    text-align: center;
+  }
+</style>
+{% endblock %} {% block title %}Attendee Dashboard{% endblock %} {% block
+content %}
+<div class="events-container">
+  <a href="/attendee_invites"><h2>View Invites</h2></a>
+  <a href="/attendee_browse"><h2>Public Events To Attend</h2></a>
+  <a href="/attendee_events"><h2>View Your Events</h2></a>
+  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard_attendee" target="_blank"
+    ><h2>Join Video Chat</h2></a
+  >
+</div>
+<h1 align="center">
+  Hello <span class="info">{{ name }}</span>, Welcome To Past Attended Events.
+</h1>
+<h6 class="note">Note:</h6>
+
+<div class="past_attended_events">
+  <ul>
+    {% for event in attendee_history %}
+    <li>
+      <h3>{{ event.creator_name }}</h3>
+      <form
+        action="/view_creator_info"
+        method="POST"
+        class="view-creator-info-form"
+      >
+        <input
+          type="hidden"
+          name="creator_name"
+          value="{{ event.creator_name }}"
+        />
+        <button type="submit" class="btn btn-primary">
+          View Creator Information
+        </button>
+      </form>
+      <h3>{{ event.event_name }}</h3>
+      <p>{{ event.event_desc }}</p>
+      <p>Privacy: {{ event.event_privacy }}</p>
+      <p>Start: {{ event.start_date }}</p>
+      <p>End: {{ event.end_date }}</p>
+
+      <!-- Form to rate the event creator -->
+      {% if event.end_date <= now %}
+      <form method="POST" action="/attendee_rate_creator">
+        <input
+          type="hidden"
+          name="creator_name"
+          value="{{ event.creator_name }}"
+        />
+        <button type="submit">Rate Event Creator</button>
+      </form>
+      {% else %}
+      <button disabled>Rate Event Creator (Event is still ongoing)</button>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %} {% block javascript %}
+<script>
+  // JavaScript can be added here if needed for additional functionality
+</script>
+{% endblock %}

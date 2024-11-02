@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% block title %}Event List{% endblock %} {% block
+head %}
+<style>
+  .event-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+  }
+</style>
+{% endblock %} {% block content %}
+<h1 align="center">Public Events</h1>
+<div class="events-container">
+  {% for event in events %}
+  <div class="event-item">
+    <h3>Event Name: {{ event.event_name }}</h3>
+    <h5>Created By: {{ event.creator_name }}</h5>
+    <h5>Description: {{ event.event_desc }}</h5>
+    <h5>Room Code: {{ event.room_code }}</h5>
+    <h5>Start Date: {{ event.start_date }}</h5>
+    <h5>End Date: {{ event.end_date }}</h5>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

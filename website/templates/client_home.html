@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .link_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info {
+    color: red;
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<div class="link_container">
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2 align="center">
+    <a href="/create_event_profile_client">View Profile</a>
+  </h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+</div>
+<h1 align="center">Client Create Events</h1>
+<h5 align="center">
+  Hello <span class="info">{{ name }} </span>, as a Client, you are able to
+  <span class="info">attend public events</span>,
+  <span class="info">use the algorithm to plan events</span> and
+  <span class="info">hire suppliers</span>.
+</h5>
+{% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}

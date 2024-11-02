@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .note {
+    text-align: center;
+    width: 50%;
+  }
+</style>
+{% endblock %} {% block title %}Attendee Dashboard{% endblock %} {% block
+content %}
+<div class="events-container">
+  <a href="/attendee_invites"><h2>View Invites</h2></a>
+  <a href="/attendee_browse"><h2>Public Events To Attend</h2></a>
+  <a href="/attendee_events"><h2>View Your Events</h2></a>
+  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
+  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard_attendee" target="_blank"
+    ><h2>Join Video Chat</h2></a
+  >
+</div>
+<h1 align="center">
+  Hello <span class="info">{{ name }}</span>, Welcome, Lets Find Some Events For
+  You.
+</h1>
+<h6 align="center">
+  Note: As an attendee you are able to be invited to events, attend public
+  events and rate event creators after the event you attended.
+</h6>
+
+{% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}

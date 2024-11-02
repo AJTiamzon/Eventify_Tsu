@@ -1,0 +1,71 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .link_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info {
+    color: red;
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<h1 align="center">Client Create Events</h1>
+<div class="link_container">
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2 align="center">
+    <a href="/create_event_profile_client">View Profile</a>
+  </h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+</div>
+<h5 align="center">
+  Hello <span class="info">{{ name }} </span>, as a Client, you are able to
+  <span class="info">attend public events</span>,
+  <span class="info">use the algorithm to plan events</span> and
+  <span class="info">hire suppliers</span>.
+</h5>
+
+<h2>Public Events:</h2>
+{% if public_events %} {% for event in public_events %}
+<div class="event-card">
+  <h4>Event Name: {{ event.event_name }}</h4>
+  <h4>Created By: {{ event.creator_name }}</h4>
+  <form
+    action="/view_creator"
+    method="POST"
+    class="view-creator-info-form"
+  >
+    <input
+      type="hidden"
+      name="creator_name"
+      value="{{ event.creator_name }}"
+    />
+    <button type="submit" class="btn btn-primary">
+      View Creator Information
+    </button>
+  </form>
+  <h4>Event Description: {{ event.event_desc }}</h4>
+  <h4>Room Code: {{ event.room_code }}</h4>
+  <h4>Start Date: {{ event.start_date }}</p>
+  <h4>End Date: {{ event.end_date }}</h4>
+
+  <form id="rsvp-form-{{ event.event_name }}" action="/client_rsvped_events" method="POST">
+    <input type="hidden" name="event_name" value="{{ event.event_name }}" />
+    <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
+    <button type="submit" class="btn btn-success">RSVP Spot</button>
+</form>
+</div>
+{% endfor %} {% else %}
+<p>No public events found.</p>
+{% endif %}
+{% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}

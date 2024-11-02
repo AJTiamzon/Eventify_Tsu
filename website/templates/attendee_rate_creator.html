@@ -1,0 +1,104 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  .credibility-images {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .credibility-image {
+    margin: 10px;
+  }
+  .credibility-image img {
+    width: 150px;
+    height: auto;
+  }
+</style>
+{% endblock %} {% block title %}Rate Event Creator{% endblock %} {% block
+content %}
+<!-- Display creator's information -->
+<div class="creator-info" align="center">
+  <p><strong>Full Name:</strong> {{ creator.fullname }}</p>
+  <p><strong>Email:</strong> {{ creator.email }}</p>
+  <p><strong>Role:</strong> {{ creator.role }}</p>
+  <p><strong>Past Experience:</strong> {{ creator.past_experience }}</p>
+  <p><strong>Last Profile Update:</strong> {{ creator.last_profile_update }}</p>
+</div>
+
+<h1 align="center">
+  Rate Event Creator: {{ creator.first_name }} {{ creator.last_name }}
+</h1>
+
+<!-- Display credibility images if available -->
+<div class="credibility-images" align="center">
+  {% if creator.credibility1 %}
+  <div class="credibility-image">
+    <img
+      src="{{ url_for('static', filename='uploads/' + creator.credibility1) }}"
+      alt="Credibility Image 1"
+    />
+  </div>
+  {% endif %} {% if creator.credibility2 %}
+  <div class="credibility-image">
+    <img
+      src="{{ url_for('static', filename='uploads/' + creator.credibility2) }}"
+      alt="Credibility Image 2"
+    />
+  </div>
+  {% endif %} {% if creator.credibility3 %}
+  <div class="credibility-image">
+    <img
+      src="{{ url_for('static', filename='uploads/' + creator.credibility3) }}"
+      alt="Credibility Image 3"
+    />
+  </div>
+  {% endif %} {% if creator.credibility4 %}
+  <div class="credibility-image">
+    <img
+      src="{{ url_for('static', filename='uploads/' + creator.credibility4) }}"
+      alt="Credibility Image 4"
+    />
+  </div>
+  {% endif %} {% if creator.credibility5 %}
+  <div class="credibility-image">
+    <img
+      src="{{ url_for('static', filename='uploads/' + creator.credibility5) }}"
+      alt="Credibility Image 5"
+    />
+  </div>
+  {% endif %}
+</div>
+
+<!-- Form to rate the event creator -->
+<div class="form-container">
+  <form method="POST" action="/submit_event_creator_rating">
+    <div class="form-group">
+      <label for="rating">Rating (1 to 5):</label>
+      <input type="number" id="rating" name="rating" min="1" max="5" required />
+    </div>
+    <div class="form-group">
+      <label for="feedback">Feedback:</label>
+      <textarea
+        id="feedback"
+        name="feedback"
+        rows="4"
+        cols="50"
+        required
+      ></textarea>
+    </div>
+    <!-- Pass the creator's full name as a hidden input -->
+    <input type="hidden" name="creator_name" value="{{ creator.fullname }}" />
+    <button type="submit">Submit Rating</button>
+  </form>
+</div>
+
+{% endblock %}

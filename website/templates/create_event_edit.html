@@ -1,0 +1,623 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+    .info {
+    color: red;
+  }
+.holder{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+</style>
+{% endblock %}
+{% block title %}Client Events{% endblock %}
+{% block content %}
+<div class="holder">
+<a href="/create-event"><h2>Create Events</h2></a>
+<a href="/event_attendee_list"><h2 id="attendee_list">Attendee List</h2></a>
+<a href="/create_event_history"><h2>Finalized Events</h2></a>
+<a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+<a href="/join_room"><h2>Chat Room</h2></a>
+<a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
+<a href="/create_event_profile"><h2>View Profile</h2></a>
+</div>
+<h1 align="center">Your Events</h1>
+<h5>Note: You may add and delete suppliers for your event all you wish, but the moment you click <span class="info">Finalize</span>,
+   the current state of the event will be saved in the Finalized Events,
+   where you may view its state and view the selected suppliers' information.</h3>
+
+{% for event in events %}
+<div class="event" id="event-{{ event.id }}">
+    <h3>{{ event.event_name }}</h3>
+    <h3>{{ event.event_type }}</h3>
+    <h3>{{ event.event_privacy }}</h3>
+    <h3>Chat Room Code:{{ event.room_code }}</h3>
+    <form action="{{ url_for('views_creator.create_record', event_id=event.id) }}" method="POST">
+      <input type="hidden" name="total_price" value="{{ event.total_price }}">
+      <button type="submit" class="btn btn-primary" id="finalize">Finalize</button>
+  </form>
+    <button onclick="toggleEventDetails({{ event.id }})">View Details</button>
+    <button type="button" class="close" onClick="deleteEvent({{ event.id }})">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div id="event_details_holder_{{ event.id }}" style="display: none;">
+      <li class="list-group-item">
+        <h5 id="maximum_attendees">
+          Maximum Attendees: {{ event.max_attendee_num }}
+        </h5>
+        <h5 id="start_date_time">Start Date/Time: {{ event.start_date }}</h5>
+        <h5 id="end_date_time">End Date/Time: {{ event.end_date }}</h5>
+        <h5>
+          Total Cost:
+          <span id="total-weight-{{ event.id }}">{{ event.total_price }}</span>
+        </h5>
+        <label for="event_description"><h5>Event Description:</h5></label>
+        <p id="event_description">{{ event.event_desc }}</p>
+        <!-- Display cake suppliers if available -->
+        {% if event.cake_thing %}
+        <h6>Cakes:</h6>
+        <ul>
+          {% for supplier in event.cake_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Display digital printing suppliers if available -->
+        {% if event.digital_printing_thing %}
+        <h6>Digital Printers:</h6>
+        <ul>
+          {% for supplier in event.digital_printing_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Display event planner suppliers if available -->
+        {% if event.event_planner_thing %}
+        <h6>Event Planner:</h6>
+        <ul>
+          {% for supplier in event.event_planner_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Display grazing table suppliers if available -->
+        {% if event.grazing_table_thing %}
+        <h6>Grazing Table:</h6>
+        <ul>
+          {% for supplier in event.grazing_table_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.makeup_and_hair_thing %}
+        <h6>Makeup and Hair Stylist:</h6>
+        <ul>
+          {% for supplier in event.makeup_and_hair_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if event.photobooth_thing %}
+        <h6>Photobooths:</h6>
+        <ul>
+          {% for supplier in event.photobooth_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.photographer_thing  %}
+        <h6>Photographers:</h6>
+        <ul>
+          {% for supplier in event.photographer_thing  %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.catering_thing %}
+        <h6>Catering:</h6>
+        <ul>
+          {% for supplier in event.catering_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.church_thing %}
+        <h6>Churches:</h6>
+        <ul>
+          {% for supplier in event.church_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.event_stylist_thing %}
+        <h6>Event Stylists:</h6>
+        <ul>
+          {% for supplier in event.event_stylist_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.events_place_thing %}
+        <h6>Event Venues:</h6>
+        <ul>
+          {% for supplier in event.events_place_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if event.lights_and_sounds_thing %}
+        <h6>Lights and Sound System:</h6>
+        <ul>
+          {% for supplier in event.lights_and_sounds_thing %}
+          <li>
+            {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+            <button
+              class="delete"
+              onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+            >
+              Delete
+            </button>
+            <form action="/rate_supplier" method="post">
+              <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+              <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+            </form>
+            
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <h3>Add More Suppliers To Event</h3>
+        <button onclick="toggleSuppliers({{ event.id }})">View Suppliers</button>
+        <div class="cake" id="cake-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Cakes</h6>
+            {% for supplier in cake1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+          {% endfor %}
+        </div>
+        <div class="digital_printing" id="digital_printing-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Digital Printers</h6>
+            {% for supplier in digital_printing1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <form action="/rate_supplier" method="post">
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+          {% endfor %}
+        </div>
+        <div class="event_planner" id="event_planner-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Event Planners</h6>
+            {% for supplier in event_planner1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+          {% endfor %}
+        </div>
+        <div class="grazing_table" id="grazing_table-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Grazing Tables</h6>
+            {% for supplier in grazing_table1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="makeup_and_hair" id="makeup_and_hair-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Makeup and Hair Stylist</h6>
+            {% for supplier in makeup_and_hair1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="photobooth" id="photobooth-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Photobooths</h6>
+            {% for supplier in photobooth1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="photographer" id="photographer-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Photographers</h6>
+            {% for supplier in photographer1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <h3 align="center">Deluxe Suppliers</h3>
+          <div class="catering" id="catering-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Catering</h6>
+            {% for supplier in catering1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="church" id="church-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Churches</h6>
+            {% for supplier in church1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="event_stylist" id="event_stylist-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Event Stylists</h6>
+            {% for supplier in event_stylist1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="events_place" id="events_place-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Event Venues</h6>
+            {% for supplier in events_place1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+          <div class="lights_and_sounds" id="lights_and_sounds-suppliers-{{ event.id }}" style="display: none;">
+            <h6>Lights And Sound System</h6>
+            {% for supplier in lights_and_sounds1 %}
+                <ul>
+                    <li>
+                        {{ supplier.name }} - Rating: {{ supplier.rating }} - Price: ₱{{ supplier.price }}
+                        <button class="add" onClick="addSupplierToEvent('{{ event.id }}', '{{ supplier.name }}')">Add To Event</button>
+                        <form action="/rate_supplier" method="post">
+                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                        <button type="submit" class="rate_the_supplier">View Supplier Ratings</button>
+                        </form>
+                        
+                    </li>
+                </ul>
+            {% endfor %}
+          </div>
+      </li>
+    </div>  
+</div>
+{% endfor %}
+</ul>
+{% endblock %}
+{% block javascript %}
+<script>
+
+  function toggleEventDetails(eventId) {
+      const detailsHolder = document.getElementById(`event_details_holder_${eventId}`);
+      if (detailsHolder.style.display === 'none') {
+          detailsHolder.style.display = 'block'; // Make visible
+      } else {
+          detailsHolder.style.display = 'none'; // Make invisible
+      }
+  }
+  
+  function toggleSuppliers(eventId) {
+      const supplierDivs = [
+          document.getElementById(`cake-suppliers-${eventId}`),
+          document.getElementById(`digital_printing-suppliers-${eventId}`),
+          document.getElementById(`event_planner-suppliers-${eventId}`),
+          document.getElementById(`grazing_table-suppliers-${eventId}`),
+          document.getElementById(`makeup_and_hair-suppliers-${eventId}`),
+          document.getElementById(`photobooth-suppliers-${eventId}`),
+          document.getElementById(`photographer-suppliers-${eventId}`),
+          document.getElementById(`catering-suppliers-${eventId}`),
+          document.getElementById(`church-suppliers-${eventId}`),
+          document.getElementById(`event_stylist-suppliers-${eventId}`),
+          document.getElementById(`events_place-suppliers-${eventId}`),
+          document.getElementById(`lights_and_sounds-suppliers-${eventId}`)
+      ];
+      
+      supplierDivs.forEach(div => {
+          div.style.display = div.style.display === 'none' ? 'block' : 'none';
+      });
+  }
+  
+  function addSupplierToEvent(eventId, supplierName) {
+      fetch(`/add_supplier_to_event/${eventId}/${supplierName}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              alert('Supplier added to event successfully');
+              location.reload();  // Reload the page to reflect the changes
+          } else {
+              alert('Failed to add supplier: ' + data.message);
+          }
+      })
+      .catch((error) => {
+          console.error('Error:', error);
+          alert('Failed to add supplier.');
+      });
+  }
+  
+  function deleteSupplier(eventId, supplierName) {
+      if (confirm(`Are you sure you want to delete the supplier ${supplierName}?`)) {
+          fetch(`/creator_delete_supplier/${eventId}/${supplierName}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  alert('Supplier deleted successfully');
+                  location.reload();  // Reload the page to reflect the changes
+              } else {
+                  alert('Failed to delete supplier: ' + data.message);
+              }
+          })
+          .catch((error) => {
+              console.error('Error:', error);
+              alert('Failed to delete supplier.');
+          });
+      }
+  }
+  
+  function deleteEvent(eventId) {
+      if (confirm("Are you sure you want to delete this event?")) {
+          fetch(`/delete_event_created/${eventId}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          })
+          .then(response => {
+              if (response.ok) {
+                  alert('Event deleted successfully');
+                  location.reload();
+              } else {
+                  alert('Failed to delete event');
+              }
+          });
+      }
+  }
+  </script>
+{% endblock %}

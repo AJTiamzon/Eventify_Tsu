@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    color: red;
+  }
+  .holder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<div class="holder">
+  <a href="/create-event"><h2>Create Event</h2></a>
+  <a href="/created_event_edit"><h2>View Your Events</h2></a>
+  <a href="/create_event_history"><h2>Finalized Events</h2></a>
+  <a href="/event_attendee_list"><h2>Attendee List</h2></a>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <a href="/join_room"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
+  <a href="/create_event_profile"><h2>View Profile</h2></a>
+</div>
+<h1 align="center">
+  Welcome To Event Creation <span class="info"> {{ name }} </span>
+</h1>
+
+<div>
+  <h6>
+    Notes: Welcome to event creation {{ name }}, click the
+    <span class="info">Create Event</span> to start creating your events. To
+    view your events cick the <span class="info">View Your Events</span>. To
+    view events you have finalized, click the
+    <span class="info">Finalized Events</span>. To view the attendees that will
+    be attending your event, click the <span class="info">Attendee List</span>.
+    The chat room and video chat rooms are also here for our use.
+    <span class="info"
+      >We recommend creating a video call and then sharing the code for that
+      video call in the chat room for others to join.</span
+    >
+    You may also view your profile and make changes to it as you wish, but you
+    may only edit it every <span class="info">30 days</span>.
+  </h6>
+</div>
+
+{% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}

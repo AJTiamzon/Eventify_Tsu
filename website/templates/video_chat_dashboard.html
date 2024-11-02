@@ -1,0 +1,35 @@
+{% extends 'video_chat_base.html' %} {% block title %}My Dashboard{% endblock %}
+{% block content %}
+<h1><b>Welcome</b> {{ first_name }} {{ last_name }}</h1>
+<hr />
+<!-- "Create or Join Meeting" button -->
+<div class="create-meeting-button">
+  <div class="button-container">
+    {% if role == "Event Creator" %}
+    <a
+      class="btn btn-primary"
+      href="{{ url_for('views_creator.video_create_meeting') }}"
+      >Create Meeting</a
+    >
+    <a
+      class="btn btn-primary"
+      href="{{ url_for('views_creator.video_join_meeting') }}"
+      >Join Meeting</a
+    >
+    {% endif %} {% if role == "Attendee" %}
+    <a
+      class="btn btn-primary"
+      href="{{ url_for('views_attendee.video_join_meeting_attendee') }}"
+      >Join Meeting</a
+    >
+    {% endif %} {% if role == "Client" %}
+    <a
+      class="btn btn-primary"
+      href="{{ url_for('views_creator.video_join_meeting') }}"
+      >Join Meeting</a
+    >
+    {% endif %}
+  </div>
+
+  {% endblock %}
+</div>

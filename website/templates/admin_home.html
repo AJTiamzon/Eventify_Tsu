@@ -1,0 +1,118 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .note {
+    text-align: center;
+    width: 50%;
+  }
+  .user-table,
+  .event-table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+  }
+  .user-table th,
+  .user-table td,
+  .event-table th,
+  .event-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  .user-table th,
+  .event-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+</style>
+{% endblock %} {% block title %}Admin Dashboard{% endblock %} {% block content
+%}
+<div class="events-container">
+  <a href="/attendee_invites"><h2>View Invites</h2></a>
+</div>
+
+<h1 align="center">
+  Hello <span class="info">{{ name }}</span>, Welcome to the admin page.
+</h1>
+<h6 align="center">
+  Note: As an admin, you are here to keep the system supervised.
+</h6>
+
+<!-- Display all users -->
+<div>
+  <h2 align="center">All Users</h2>
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Past Experience</th>
+        <th>Admin Strikes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in all_users %} {% if user.role != "Admin" %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.past_experience or 'N/A' }}</td>
+        <td>{{ user.admin_strikes or 0 }}</td>
+      </tr>
+      {% endif %} {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Display all events -->
+<div>
+  <h2 align="center">All Events</h2>
+  <table class="event-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Event Name</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Privacy</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Max Attendees</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for event in all_events %}
+      <tr>
+        <td>{{ event.id }}</td>
+        <td>{{ event.event_name }}</td>
+        <td>{{ event.event_desc or 'N/A' }}</td>
+        <td>{{ event.event_type }}</td>
+        <td>{{ event.event_privacy }}</td>
+        <td>
+          {{ event.start_date.strftime('%Y-%m-%d %H:%M') if event.start_date
+          else 'N/A' }}
+        </td>
+        <td>
+          {{ event.end_date.strftime('%Y-%m-%d %H:%M') if event.end_date else
+          'N/A' }}
+        </td>
+        <td>{{ event.max_attendee_num or 'Unlimited' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

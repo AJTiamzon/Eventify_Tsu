@@ -1,0 +1,575 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .sort1,
+  .sort2,
+  .sort3,
+  .sort4,
+  .sort5 {
+    display: none; /* Hide all sort divs by default */
+  }
+
+  .link_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<div class="link_container">
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/create_event_profile_client">View Profile</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_suppliers_hired">View Hired Suppliers</a>
+  </h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2><a href="/create_event_profile_client">View Profile</a></h2>
+  <h2 align="center">
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+</div>
+
+<h1 align="center">Hire A Supplier</h1>
+<h5>
+  Note: Here you are able to <span class="info">Hire a supplier</span> and be able to <span class="info">View their Ratings</span>.
+</h5>
+
+<h3>Sort By:</h3>
+<button type="button" id="sort1">Cakes</button>
+<button type="button" id="sort2">Digital Printers</button>
+<button type="button" id="sort3">Event Planners</button>
+<button type="button" id="sort4">Grazing Table</button>
+<button type="button" id="sort5">Makeup And Hair Stylists</button>
+<button type="button" id="sort6">Photobooths</button>
+<button type="button" id="sort7">Photographers</button>
+<button type="button" id="sort8">Catering Service</button>
+<button type="button" id="sort9">Churches</button>
+<button type="button" id="sort10">Event Stylists</button>
+<button type="button" id="sort11">Event Places</button>
+<button type="button" id="sort12">Lights and Sounds</button>
+<div class="sort1">
+  <h1>Cakes</h1>
+
+  {% for thing in new_things3 %} {% if thing.type == "Cake" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">Hire Supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort2">
+  <h1>Digital Printing</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Digital_Printing" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort3">
+  <h1>Event Planners</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Event_Planner" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort4">
+  <h1>Grazing Table</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Grazing_Table" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort5">
+  <h1>Makeup And Hair Artitst</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Makeup_and_Hair" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort6">
+  <h1>Photobooth</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Photobooth" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort7">
+  <h1>Photographer</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Photographer" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort8">
+  <h1>Catering</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Catering" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort9">
+  <h1>Churches</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Church" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort10">
+  <h1>Event Stylists</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Event_Stylist" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort11">
+  <h1>Event Places</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Events_Place" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+<div class="sort12">
+  <h1>Lights and Sounds</h1>
+  {% for thing in new_things3 %} {% if thing.type == "Lights_and_Sounds" %}
+  <h4>{{ thing.name }}</h4>
+  <form action="/hire_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <input
+      type="hidden"
+      name="supplier_business_name"
+      value="{{ thing.business_name }}"
+    />
+    <input
+      type="hidden"
+      name="supplier_contact_number"
+      value="{{ thing.contact_number }}"
+    />
+    <input type="hidden" name="supplier_email" value="{{ thing.email }}" />
+    <input type="hidden" name="supplier_type" value="{{ thing.type }}" />
+    <input type="hidden" name="supplier_price" value="{{ thing.price }}" />
+    <input type="hidden" name="supplier_rating" value="{{ thing.rating }}" />
+    <button type="submit" class="btn btn-primary">hire supplier</button>
+  </form>
+  <form action="/rate_supplier" method="post">
+    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Business Name: {{ thing.business_name }}</h6>
+  <h6>Contact Number: {{ thing.contact_number }}</h6>
+  <h6>Email: {{ thing.email }}</h6>
+  <h6>Rating: {{ thing.rating }}</h6>
+  <h6>Commission: {{ thing.price }}</h6>
+  {% endif %} {% endfor %}
+</div>
+
+{% endblock %} {% block javascript %}
+
+<script>
+  function showSortDiv(sortClass) {
+    const sortDivs = [
+      "sort1",
+      "sort2",
+      "sort3",
+      "sort4",
+      "sort5",
+      "sort6",
+      "sort7",
+      "sort8",
+      "sort9",
+      "sort10",
+      "sort11",
+      "sort12",
+    ];
+
+    sortDivs.forEach(function (divClass) {
+      const div = document.querySelector(`.${divClass}`);
+      if (divClass === sortClass) {
+        div.style.display = "block"; // Show the selected div
+      } else {
+        div.style.display = "none"; // Hide the other divs
+      }
+    });
+  }
+
+  // Event listeners for the buttons
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("sort1").addEventListener("click", function () {
+      showSortDiv("sort1");
+    });
+
+    document.getElementById("sort2").addEventListener("click", function () {
+      showSortDiv("sort2");
+    });
+
+    document.getElementById("sort3").addEventListener("click", function () {
+      showSortDiv("sort3");
+    });
+
+    document.getElementById("sort4").addEventListener("click", function () {
+      showSortDiv("sort4");
+    });
+
+    document.getElementById("sort5").addEventListener("click", function () {
+      showSortDiv("sort5");
+    });
+
+    document.getElementById("sort6").addEventListener("click", function () {
+      showSortDiv("sort6");
+    });
+
+    document.getElementById("sort7").addEventListener("click", function () {
+      showSortDiv("sort7");
+    });
+
+    document.getElementById("sort8").addEventListener("click", function () {
+      showSortDiv("sort8");
+    });
+
+    document.getElementById("sort9").addEventListener("click", function () {
+      showSortDiv("sort9");
+    });
+
+    document.getElementById("sort10").addEventListener("click", function () {
+      showSortDiv("sort10");
+    });
+
+    document.getElementById("sort11").addEventListener("click", function () {
+      showSortDiv("sort11");
+    });
+
+    document.getElementById("sort12").addEventListener("click", function () {
+      showSortDiv("sort12");
+    });
+
+    // Initialize with the first sort div visible
+    showSortDiv("sort1");
+  });
+</script>
+
+{% endblock %}

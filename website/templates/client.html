@@ -1,0 +1,277 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .buttonDelete,
+  .buttonAdd,
+  .item-options {
+    display: none;
+  }
+  .main_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .birthday,
+  .wedding,
+  .baptismal {
+    width: 25%;
+  }
+  .link_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .info {
+    color: red;
+  }
+  .note1 {
+    text-align: center;
+  }
+  .birthday_creator,
+  .wedding_creator,
+  .baptismal_creator,
+  #event_type {
+    display: none; /* Start hidden */
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<div class="link_container">
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2><a href="/create_event_profile_client">View Profile</a></h2>
+  <h2 align="center">
+    <a href="/client_suppliers_hired">View Hired Suppliers</a>
+  </h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+</div>
+<h1 align="center">Client Create Events</h1>
+<h5 align="center">
+  Hello <span class="info">{{ name }} </span> lets make some events shall we.
+</h5>
+<h6 class="note1">
+  Note: Only use whole numbers for budget and number of attendees, no decimals,
+  the minimum budget is P20000.
+</h6>
+
+<div class="main_container">
+  <div class="birthday">
+    <h1>Birthday</h1>
+    <button
+      class="create_birthday"
+      onclick="toggleVisibility('.birthday_creator')"
+    >
+      Plan Birthday
+    </button>
+    <div class="birthday_creator">
+      <p>
+        Note: Some fields are pre-filled, you may change them to fit your
+        preference.
+      </p>
+      <form method="POST">
+        <label for="event_name">Enter Event Name</label>
+        <input
+          type="text"
+          id="event_name"
+          name="event_name"
+          class="form-control"
+          value="{{ name }}'s Birthday"
+        />
+        <select name="event_type" id="event_type" class="event_type">
+          <option value="Birthday">Birthday</option>
+        </select>
+        <label for="budget">Enter Budget(Minimum:20000)</label>
+        <input type="text" id="budget" name="budget" class="form-control" />
+        <label for="max_attendee_num">Maximum Number Of Attendees</label>
+        <input
+          type="text"
+          id="max_attendee_num"
+          name="max_attendee_num"
+          class="form-control"
+          value="100"
+        />
+        <label for="event_desc">Enter Event Description</label>
+        <textarea
+          id="event_desc"
+          name="event_desc"
+          class="form-control"
+          placeholder="Come To My Birthday :)"
+        ></textarea>
+        <label for="start_date">Start Time/Date</label>
+        <input
+          type="datetime-local"
+          id="start_date"
+          name="start_date"
+          class="form-control"
+        />
+        <label for="end_date">End Time/Date</label>
+        <input
+          type="datetime-local"
+          id="end_date"
+          name="end_date"
+          class="form-control"
+        />
+        <br />
+        <div align="center">
+          <button type="submit" class="btn btn-primary">Create Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="wedding">
+    <h1>Wedding</h1>
+    <button
+      class="create_wedding"
+      onclick="toggleVisibility('.wedding_creator')"
+    >
+      Plan Wedding
+    </button>
+    <div class="wedding_creator">
+      <p>
+        Note: Some fields are pre-filled, you may change them to fit your
+        preference.
+      </p>
+      <form method="POST">
+        <label for="event_name">Enter Event Name</label>
+        <input
+          type="text"
+          id="event_name"
+          name="event_name"
+          class="form-control"
+          value="{{ name }}'s Wedding"
+        />
+        <select name="event_type" id="event_type" class="event_type">
+          <option value="Wedding">Wedding</option>
+        </select>
+        <label for="budget">Enter Budget(Minimum:20000)</label>
+        <input type="text" id="budget" name="budget" class="form-control" />
+        <label for="max_attendee_num">Maximum Number Of Attendees</label>
+        <input
+          type="text"
+          id="max_attendee_num"
+          name="max_attendee_num"
+          class="form-control"
+          value="100"
+        />
+        <label for="event_desc">Enter Event Description</label>
+        <textarea
+          id="event_desc"
+          name="event_desc"
+          class="form-control"
+          placeholder="Come To My Wedding :)"
+        ></textarea>
+        <label for="start_date">Start Time/Date</label>
+        <input
+          type="datetime-local"
+          id="start_date"
+          name="start_date"
+          class="form-control"
+        />
+        <label for="end_date">End Time/Date</label>
+        <input
+          type="datetime-local"
+          id="end_date"
+          name="end_date"
+          class="form-control"
+        />
+        <br />
+        <div align="center">
+          <button type="submit" class="btn btn-primary">Create Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="baptismal">
+    <h1>Baptismal</h1>
+    <button
+      class="create_baptismal"
+      onclick="toggleVisibility('.baptismal_creator')"
+    >
+      Plan Baptismal
+    </button>
+    <div class="baptismal_creator">
+      <p>
+        Note: Some fields are pre-filled, you may change them to fit your
+        preference.
+      </p>
+      <form method="POST">
+        <label for="event_name">Enter Event Name</label>
+        <input
+          type="text"
+          id="event_name"
+          name="event_name"
+          class="form-control"
+          value="{{ name }}'s Baptismal"
+          required
+        />
+        <select name="event_type" id="event_type" class="event_type">
+          <option value="Baptismal">Baptismal</option>
+        </select>
+        <label for="budget">Enter Budget(Minimum:20000)</label>
+        <input
+          type="text"
+          id="budget"
+          name="budget"
+          class="form-control"
+          required
+        />
+        <label for="max_attendee_num">Maximum Number Of Attendees</label>
+        <input
+          type="text"
+          id="max_attendee_num"
+          name="max_attendee_num"
+          class="form-control"
+          value="100"
+          required
+        />
+        <label for="event_desc">Enter Event Description</label>
+        <textarea
+          id="event_desc"
+          name="event_desc"
+          class="form-control"
+          placeholder="Come To My Baptismal :)"
+        ></textarea>
+        <label for="start_date">Start Time/Date</label>
+        <input
+          type="datetime-local"
+          id="start_date"
+          name="start_date"
+          class="form-control"
+          required
+        />
+        <label for="end_date">End Time/Date</label>
+        <input
+          type="datetime-local"
+          id="end_date"
+          name="end_date"
+          class="form-control"
+          required
+        />
+        <br />
+        <div align="center">
+          <button type="submit" class="btn btn-primary">Create Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block javascript %}
+<script>
+  function toggleVisibility(selector) {
+    const element = document.querySelector(selector);
+    if (element.style.display === "none" || element.style.display === "") {
+      element.style.display = "block"; // Show the element
+    } else {
+      element.style.display = "none"; // Hide the element
+    }
+  }
+</script>
+{% endblock %}

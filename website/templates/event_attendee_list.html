@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .holder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Initially hide all divs */
+  .hidden {
+    display: none;
+  }
+
+  .rejected {
+    color: red;
+  }
+
+  .rsvp {
+    color: blue;
+  }
+  .info {
+    color: red;
+  }
+</style>
+{% endblock %} {% block title %}Event Attendee List{% endblock %} {% block
+content %}
+
+<div class="holder">
+  <a href="/create-event"><h2>Create Event</h2></a>
+  <a href="/created_event_edit"><h2>Events List</h2></a>
+  <a href="/create_event_history"><h2>Finalized Events</h2></a>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <a href="/join_room"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
+  <a href="/create_event_profile"><h2>View Profile</h2></a>
+</div>
+
+<h1 align="center">Invited Attendees:</h1>
+<h5>
+  Note: This is where you are able to view the attendees you have
+  <span class="info"> invited </span>, attendees who have
+  <span class="info">RSVPed</span> and attendees who have
+  <span class="info">rejected</span> the invite.
+</h5>
+
+<!-- Loop through each event -->
+{% for event in events %}
+<div class="invited_attendees">
+  <h3>{{ event.event_name }}</h3>
+  <!-- Button to toggle visibility -->
+  <button class="toggle-btn" data-target="attendees-{{ event.id }}">
+    View Invited Attendees
+  </button>
+
+  <!-- Div starts hidden, unique ID per event -->
+  <div id="attendees-{{ event.id }}" class="hidden">
+    {% for attendee in event.invited_attendees %}
+    <ul>
+      <li>Name: {{ attendee.name }} | Email: {{ attendee.email }}</li>
+    </ul>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="invitation_rejected_container">
+  <!-- Button to toggle rejected invitations visibility -->
+  <button class="toggle-btn" data-target="rejected-{{ event.id }}">
+    View Rejected Invitations
+  </button>
+
+  <div id="rejected-{{ event.id }}" class="hidden">
+    <h4 class="rejected">Rejected Invitations:</h4>
+    {% if event.rejected_invites %} {% for rejected in event.rejected_invites %}
+    <div>
+      <p>Name: {{ rejected.attendee_name }} {{ rejected.attendee_lname }}</p>
+      <p>Email: {{ rejected.attendee_email }}</p>
+      <p>Reason: {{ rejected.reject_reason }}</p>
+    </div>
+    <hr />
+    {% endfor %} {% else %}
+    <p>No rejections found.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="rsvp_attendees_container">
+  <!-- Button to toggle RSVP attendees visibility -->
+  <button class="toggle-btn" data-target="rsvp-{{ event.id }}">
+    View RSVPed Attendees
+  </button>
+
+  <div id="rsvp-{{ event.id }}" class="hidden">
+    <h4 class="rsvp">RSVPed Attendees:</h4>
+    {% if event.rsvp_attendees %} {% for attendee in event.rsvp_attendees %}
+    <p>Name: {{ attendee.attendee_name }} {{ attendee.attendee_lname }}</p>
+    <p>Email: {{ attendee.attendee_email }}</p>
+    {% endfor %} {% else %}
+    <p>No RSVPs yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endfor %} {% endblock %} {% block javascript %}
+<script>
+  // Select all buttons with the toggle-btn class
+  document.querySelectorAll(".toggle-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      // Get the target div ID from the button's data-target attribute
+      const targetDivId = this.getAttribute("data-target");
+
+      // Find the div using the ID
+      const targetDiv = document.getElementById(targetDivId);
+
+      // Toggle the visibility of the div
+      if (targetDiv.classList.contains("hidden")) {
+        targetDiv.classList.remove("hidden");
+        this.textContent = this.textContent.replace("View", "Hide"); // Update button text
+      } else {
+        targetDiv.classList.add("hidden");
+        this.textContent = this.textContent.replace("Hide", "View"); // Update button text
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
+content %}
+<form method="POST" enctype="multipart/form-data">
+  <h3 align="center">Sign Up</h3>
+
+  <div class="form-group">
+    <label for="email">Email Address</label>
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      name="email"
+      placeholder="Enter email"
+      value="{{ email or '' }}"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="firstName">First Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="firstName"
+      name="firstName"
+      placeholder="Enter first name"
+      value="{{ first_name or '' }}"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="lastName">Last Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="lastName"
+      name="lastName"
+      placeholder="Enter last name"
+      value="{{ last_name or '' }}"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="role">Role</label>
+    <select
+      class="form-control"
+      id="role"
+      name="role"
+      required
+      onchange="toggleImageUpload()"
+    >
+      <option value="Attendee">Attendee</option>
+      <option value="Event Creator">Event Creator</option>
+      <option value="Client">Client</option>
+      <option value="Admin">Admin</option>
+    </select>
+  </div>
+
+  <!-- Image Upload Div (Initially hidden) -->
+  <div class="form-group" id="image-upload" style="display: none">
+    <div class="form-group">
+      <label for="credibility5">Past Experiences Viable Your Role</label>
+      <input
+        type="text"
+        class="form-control"
+        id="past_experience"
+        name="past_experience"
+        value="{{ past_experience or '' }}"
+      />
+    </div>
+    <label for="credibility1">Upload Credibility Image 1</label>
+    <input
+      type="file"
+      class="form-control"
+      id="credibility1"
+      name="credibility1"
+      accept=".jpg, .jpeg, .png"
+    />
+    <label for="credibility2">Upload Credibility Image 2</label>
+    <input
+      type="file"
+      class="form-control"
+      id="credibility2"
+      name="credibility2"
+      accept=".jpg, .jpeg, .png"
+    />
+    <label for="credibility3">Upload Credibility Image 3</label>
+    <input
+      type="file"
+      class="form-control"
+      id="credibility3"
+      name="credibility3"
+      accept=".jpg, .jpeg, .png"
+    />
+    <label for="credibility4">Upload Credibility Image 4</label>
+    <input
+      type="file"
+      class="form-control"
+      id="credibility4"
+      name="credibility4"
+      accept=".jpg, .jpeg, .png"
+    />
+    <label for="credibility5">Upload Credibility Image 5</label>
+    <input
+      type="file"
+      class="form-control"
+      id="credibility5"
+      name="credibility5"
+      accept=".jpg, .jpeg, .png"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="password1">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password1"
+      name="password1"
+      placeholder="Enter password"
+      value="{{ password1 or '' }}"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="password2">Password (Confirm)</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password2"
+      name="password2"
+      placeholder="Confirm password"
+      value="{{ password2 or '' }}"
+      required
+    />
+  </div>
+
+  <br />
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+  function toggleImageUpload() {
+    const role = document.getElementById("role").value;
+    const imageUploadDiv = document.getElementById("image-upload");
+
+    if (role === "Event Creator") {
+      imageUploadDiv.style.display = "block";
+    } else {
+      imageUploadDiv.style.display = "none";
+    }
+  }
+</script>
+{% endblock %}

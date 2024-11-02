@@ -1,0 +1,105 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .link_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .status-button {
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .not-hired {
+    background-color: red;
+  }
+
+  .hired {
+    background-color: green;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="link_container">
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <h2 align="center">
+    <a href="/client_attend_events">Attend Public Events</a>
+  </h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+</div>
+<div class="container mt-4">
+  <h2>Your Hired Suppliers</h2>
+  {% if hired_suppliers %} {% for supplier in hired_suppliers %}
+  <h4>{{ supplier.supplier_name }}</h4>
+  <form action="/rate_supplier" method="post">
+    <input
+      type="hidden"
+      name="supplier_name"
+      value="{{ supplier.supplier_name }}"
+    />
+    <button type="submit" class="rate_the_supplier">
+      view supplier ratings
+    </button>
+  </form>
+  <h6>Supplier Type: {{ supplier.supplier_type }}</h6>
+  <h6>Business Name: {{ supplier.supplier_business_name }}</h6>
+  <h6>Contact Number: {{ supplier.supplier_contact_number }}</h6>
+  <h6>Email: {{ supplier.supplier_email }}</h6>
+  <h6>Commission: {{ supplier.supplier_price }}</h6>
+  <h6>Rating: {{ supplier.supplier_rating }}</h6>
+  <h6>Date Request Sent: {{ supplier.date_hired.strftime('%Y-%m-%d') }}</h6>
+  <h6>Status:</h6>
+  <button
+    class="status-button {{ 'not-hired' if not supplier.hired_status else 'hired' }}"
+    data-supplier-name="{{ supplier.supplier_name }}"
+    onclick="toggleHiredStatus(this)"
+  >
+    {{ 'Not Hired' if not supplier.hired_status else 'Hired' }}
+  </button>
+  <hr />
+  {% endfor %} {% else %}
+  <p>No suppliers hired yet.</p>
+  {% endif %}
+</div>
+{% endblock %} {% block javascript %}
+<script>
+  function toggleHiredStatus(button) {
+    const supplierName = button.getAttribute("data-supplier-name");
+    const isHired = button.classList.contains("hired");
+
+    fetch(`/toggle_hired_status/${supplierName}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          if (isHired) {
+            button.classList.remove("hired");
+            button.classList.add("not-hired");
+            button.innerText = "Not Hired";
+          } else {
+            button.classList.remove("not-hired");
+            button.classList.add("hired");
+            button.innerText = "Hired";
+          }
+        } else {
+          alert("Failed to update status. Please try again.");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+</script>
+{% endblock %}

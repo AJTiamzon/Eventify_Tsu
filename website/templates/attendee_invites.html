@@ -1,0 +1,164 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .hidden {
+    display: none;
+  }
+  .success-message {
+    color: green;
+    font-weight: bold;
+  }
+</style>
+{% endblock %} {% block title %}Invites{% endblock %} {% block content %}
+<div class="events-container">
+  <a href="/attendee_browse"><h2>Public Events To Attend</h2></a>
+  <a href="/attendee_events"><h2>View Your Events</h2></a>
+  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
+  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard_attendee" target="_blank"
+    ><h2>Join Video Chat</h2></a
+  >
+</div>
+<h1 align="center">
+  Hello <span class="info">{{ name }}</span>, These Are Your Invites.
+</h1>
+
+<h3>Invited Events:</h3>
+{% if invited_events %} {% for event in invited_events %}
+<div id="invite-container-{{ event['event_name'] }}">
+  <h4>Event Name: {{ event['event_name'] }}</h4>
+  <h4>Created by: {{ event['creator_name'] }}</h4>
+  <form
+    action="/view_creator_info"
+    method="POST"
+    class="view-creator-info-form"
+  >
+    <input
+      type="hidden"
+      name="creator_name"
+      value="{{ event['creator_name'] }}"
+    />
+    <button type="submit" class="btn btn-primary">
+      View Creator Information
+    </button>
+  </form>
+  <p>Event Description: {{ event['event_desc'] }}</p>
+  <p>Event Privacy: {{ event['event_privacy'] }}</p>
+  <p>Start Date: {{ event['start_date'] }}</p>
+  <p>End Date: {{ event['end_date'] }}</p>
+
+  <!-- Reject Invite Form -->
+  <form
+    id="reject-form-{{ event['event_name'] }}"
+    action="/reject_invite"
+    method="POST"
+  >
+    <input type="hidden" name="event_name" value="{{ event['event_name'] }}" />
+    <button type="submit" class="btn btn-danger">Reject Invite</button>
+    <label for="reject_reason">Rejection Reason</label>
+    <input
+      type="text"
+      name="reject_reason"
+      id="reject_reason"
+      class="reject_reason"
+      required
+    />
+  </form>
+
+  <!-- Accept Invite Form -->
+  <form
+    id="accept-form-{{ event['event_name'] }}"
+    action="/accept_invite"
+    method="POST"
+  >
+    <input type="hidden" name="event_name" value="{{ event['event_name'] }}" />
+    <input
+      type="hidden"
+      name="creator_name"
+      value="{{ event['creator_name'] }}"
+    />
+    <!-- Pass creator's name -->
+    <button type="submit" class="btn btn-success">Accept Invite</button>
+  </form>
+
+  <!-- Success message, initially hidden -->
+  <p
+    id="success-message-{{ event['event_name'] }}"
+    class="success-message hidden"
+  >
+    Invite Accepted
+  </p>
+</div>
+<hr />
+{% endfor %} {% else %}
+<p>No invites found.</p>
+{% endif %} {% endblock %} {% block javascript %}
+<script>
+  $(document).ready(function () {
+    // Initialize the calendar
+    $("#calendar").fullCalendar({
+      events: "/fetch-events", // Fetch events from this route
+    });
+
+    document
+      .querySelectorAll('form[id^="accept-form-"]')
+      .forEach(function (form) {
+        form.addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form submission
+
+          // Get the event name from the form
+          const eventName = form.querySelector(
+            'input[name="event_name"]'
+          ).value;
+
+          // Send an AJAX request to accept the invite
+          fetch("/accept_invite", {
+            method: "POST",
+            body: new FormData(form),
+          })
+            .then((response) => response.json()) // Expect JSON response
+            .then((result) => {
+              // Hide both forms
+              document
+                .getElementById(`reject-form-${eventName}`)
+                .classList.add("hidden");
+              document
+                .getElementById(`accept-form-${eventName}`)
+                .classList.add("hidden");
+
+              // Show success message
+              document
+                .getElementById(`success-message-${eventName}`)
+                .classList.remove("hidden");
+
+              // Add the event to the calendar
+              if (result.start_date && result.end_date) {
+                $("#calendar").fullCalendar(
+                  "renderEvent",
+                  {
+                    title: result.event_name,
+                    start: result.start_date,
+                    end: result.end_date,
+                    description: result.event_desc, // Add description if needed
+                    allDay: true, // Adjust based on your event
+                  },
+                  true
+                ); // stick to the calendar
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+      });
+  });
+</script>
+{% endblock %}

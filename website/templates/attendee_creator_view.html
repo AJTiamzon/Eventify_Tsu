@@ -1,0 +1,117 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .creator-info {
+    font-size: 1.2em;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rating-section {
+    margin-top: 30px;
+  }
+  .rating {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+</style>
+{% endblock %} {% block title %}Creator Information{% endblock %} {% block
+content %}
+<div class="events-container">
+  {% if user.role == "Attendee" %}
+  <a href="/attendee_invites"><h2>View Invites</h2></a>
+  <a href="/attendee_browse"><h2>Public Events To Attend</h2></a>
+  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
+  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard_attendee" target="_blank"
+    ><h2>Join Video Chat</h2></a
+  >
+
+  {% else %}
+  <h2 align="center"><a href="/client">Plan An Event</a></h2>
+  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
+  <h2 align="center">
+    <a href="/client_events_to_attend">RSVPed Events</a>
+  </h2>
+  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
+  <h2 align="center">
+    <a href="/create_event_profile_client">View Profile</a>
+  </h2>
+  <h2><a href="/join_room">Chat Room</a></h2>
+  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+
+  {% endif %}
+</div>
+<h1 align="center">Creator Information</h1>
+
+<div class="creator-info">
+  <p><strong>First Name:</strong> {{ creator.first_name }}</p>
+  <p><strong>Last Name:</strong> {{ creator.last_name }}</p>
+  <p><strong>Email:</strong> {{ creator.email }}</p>
+  <p><strong>Role:</strong> {{ creator.role }}</p>
+  <p><strong>Past Experience:</strong> {{ creator.past_experience }}</p>
+
+  <!-- Check if each image exists before rendering -->
+  {% if creator.credibility1 %}
+  <img
+    src="{{ url_for('static', filename='uploads/' + creator.credibility1) }}"
+    alt="Credibility Image 1"
+    width="200"
+  />
+  {% endif %} {% if creator.credibility2 %}
+  <img
+    src="{{ url_for('static', filename='uploads/' + creator.credibility2) }}"
+    alt="Credibility Image 2"
+    width="200"
+  />
+  {% endif %} {% if creator.credibility3 %}
+  <img
+    src="{{ url_for('static', filename='uploads/' + creator.credibility3) }}"
+    alt="Credibility Image 3"
+    width="200"
+  />
+  {% endif %} {% if creator.credibility4 %}
+  <img
+    src="{{ url_for('static', filename='uploads/' + creator.credibility4) }}"
+    alt="Credibility Image 4"
+    width="200"
+  />
+  {% endif %} {% if creator.credibility5 %}
+  <img
+    src="{{ url_for('static', filename='uploads/' + creator.credibility5) }}"
+    alt="Credibility Image 5"
+    width="200"
+  />
+  {% endif %}
+</div>
+
+<!-- Ratings Section -->
+<div class="rating-section">
+  <h2>Ratings for {{ creator.first_name }} {{ creator.last_name }}</h2>
+
+  {% if ratings %}
+  <ul>
+    {% for rating in ratings %}
+    <li class="rating">
+      <p>
+        <strong>Reviewer:</strong> {{ rating.reviewer_firstname }} {{
+        rating.reviewer_lastname }} ({{ rating.reviewer_role }})
+      </p>
+      <p><strong>Rating:</strong> {{ rating.rating }} / 5.0</p>
+      <p><strong>Feedback:</strong> {{ rating.feedback }}</p>
+      <p><strong>Date Submitted:</strong> {{ rating.date_submitted }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No ratings available for this creator yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

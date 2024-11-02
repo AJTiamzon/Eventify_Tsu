@@ -1,0 +1,182 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    color: red;
+  }
+  .holder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  /* Hide the suppliers_to_hire div initially */
+  .suppliers_to_hire {
+    display: none;
+  }
+  textarea {
+    resize: none;
+  }
+</style>
+{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
+<div class="holder">
+  <a href="/create-event"><h2>Create Event</h2></a>
+  <a href="/created_event_edit"><h2>View Your Events</h2></a>
+  <a href="/event_attendee_list"><h2>Event Attendee List</h2></a>
+  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
+  <a href="/join_room"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
+  <a href="/create_event_profile"><h2>View Profile</h2></a>
+</div>
+
+<h1 align="center">
+  Welcome To Finalized Events <span class="info">{{ name }}</span>
+</h1>
+
+<h5>
+  Note: This is where you are able to
+  <span class="info">view the information for contacting the suppliers</span>
+  you have selected. When you have sealed the deal or have made an agreement
+  with that supplier, you can click the button
+  <span class="info">Not Hired</span> to show that you have hired that supplier.
+  If complications arise you may click it again.
+  <span class="info"
+    >This serves as a reminder for you, on which suppliers you have been able to
+    hire and those you have not yet</span
+  >
+  .
+</h5>
+
+<div class="past_created_events">
+  <ul>
+    {% for event in event_history %}
+    <li>
+      <h3>{{ event.event_name }}</h3>
+      <p>
+        Event Description: {{ event.event_desc }} || Type: {{ event.event_type
+        }} || Privacy: {{ event.event_privacy }} || Total Cost: {{
+        event.total_cost }}
+      </p>
+      <p>Start: {{ event.start_date }} || End: {{ event.end_date }}</p>
+      <p>Room Code: {{ event.room_code }}</p>
+
+      <!-- View Suppliers To Hire button -->
+      <button class="toggle-suppliers-btn" data-event-id="{{ event.id }}">
+        View Suppliers To Hire
+      </button>
+
+      <!-- Suppliers to Hire div (initially hidden) -->
+      <div id="suppliers_{{ event.id }}" class="suppliers_to_hire">
+        <ul>
+          {% for supplier in event.supplier_names %}
+          <li>
+            <strong>Name:</strong> {{ supplier.name }}<br />
+            <strong>Business Name:</strong> {{ supplier.business_name }}<br />
+            <strong>Contact Number:</strong> {{ supplier.contact_number }}<br />
+            <strong>Email:</strong> {{ supplier.email }}<br />
+            <strong>Rating:</strong> {{ supplier.rating }}<br />
+            <strong>Price:</strong> {{ supplier.price }}<br />
+            <form action="/rate_supplier" method="post">
+              <input
+                type="hidden"
+                name="supplier_name"
+                value="{{ supplier.name }}"
+              />
+              <button type="submit" class="rate_the_supplier">
+                View Supplier Ratings
+              </button>
+            </form>
+
+            <!-- Hire button for each supplier -->
+            <button
+              class="hire-btn"
+              style="background-color: {% if supplier.hired %}green{% else %}red{% endif %};"
+              data-event-id="{{ event.id }}"
+              data-supplier-name="{{ supplier.name }}"
+            >
+              {% if supplier.hired %}Hired{% else %}Not Hired{% endif %}
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <form
+        action="{{ url_for('views_creator.send_email_to_attendees', event_id=event.id) }}"
+        method="POST"
+      >
+        <textarea
+          name="send_email"
+          id="send_email"
+          rows="6"
+          cols="50"
+        ></textarea>
+        <button type="submit" class="delete-btn">Send To All Attendees</button>
+      </form>
+
+      <!-- Add the delete button with a form -->
+      <form
+        action="{{ url_for('views_creator.delete_event_record', event_id=event.id) }}"
+        method="POST"
+      >
+        <button type="submit" class="delete-btn">Delete Event</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %} {% block javascript %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Toggle visibility of suppliers_to_hire div for specific event
+    const toggleSupplierButtons = document.querySelectorAll(
+      ".toggle-suppliers-btn"
+    );
+    toggleSupplierButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const eventId = this.getAttribute("data-event-id");
+        const suppliersDiv = document.getElementById(`suppliers_${eventId}`);
+        if (
+          suppliersDiv.style.display === "none" ||
+          suppliersDiv.style.display === ""
+        ) {
+          suppliersDiv.style.display = "block"; // Show the div
+        } else {
+          suppliersDiv.style.display = "none"; // Hide the div
+        }
+      });
+    });
+
+    // Handle hire button click for each supplier
+    const hireButtons = document.querySelectorAll(".hire-btn");
+
+    hireButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const eventId = this.getAttribute("data-event-id");
+        const supplierName = this.getAttribute("data-supplier-name");
+
+        fetch(`/toggle_hire_status/${eventId}/${supplierName}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status) {
+              // Change button to "Hired" and turn it green
+              this.textContent = "Hired";
+              this.style.backgroundColor = "green";
+            } else {
+              // Change button to "Not Hired" and turn it red
+              this.textContent = "Not Hired";
+              this.style.backgroundColor = "red";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+    });
+  });
+</script>
+{% endblock %}

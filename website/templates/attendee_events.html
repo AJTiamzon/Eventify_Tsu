@@ -1,0 +1,99 @@
+{% extends "base.html" %} {% block head %}
+<style>
+  .info {
+    font-weight: bold;
+    color: red;
+  }
+  .info2 {
+    font-weight: bold;
+    color: blue;
+  }
+  .events-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>
+{% endblock %} {% block title %}Attendee Dashboard{% endblock %} {% block
+content %}
+<div class="events-container">
+  <a href="/attendee_invites"><h2>View Invites</h2></a>
+  <a href="/attendee_browse"><h2>Public Events To Attend</h2></a>
+  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
+  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
+  <a href="/video_chat_dashboard_attendee" target="_blank"
+    ><h2>Join Video Chat</h2></a
+  >
+</div>
+<h1 align="center">
+  Hello <span class="info">{{ name }}</span>, Welcome To Your Attending Events.
+</h1>
+<h6>Note:</h6>
+
+<div class="attending_events">
+  <h3>Attending Events:</h3>
+  {% if attending_events %} {% for event in attending_events %}
+  <div>
+    {% if event['event_privacy'] == "Public" %}
+    <h6>
+      I <span class="info">{{ name }}</span> will be attending the event
+      <span class="info">{{ event['event_name'] }}</span>, created by
+      <span class="info">{{ event['creator_name'] }}</span>, that starts at the
+      date of <span class="info">{{ event['start_date'] }}</span> and ends at
+      <span class="info">{{ event['end_date'] }}</span>. Description:
+      <span class="info">{{ event['event_desc'] }}</span>. The Room Code is
+      <span class="info">{{ event['room_code'] }}</span>.
+    </h6>
+    <form
+      action="/view_creator_info"
+      method="POST"
+      class="view-creator-info-form"
+    >
+      <input
+        type="hidden"
+        name="creator_name"
+        value="{{ event['creator_name'] }}"
+      />
+      <button type="submit" class="btn btn-primary">
+        View Creator Information
+      </button>
+    </form>
+    {% else %}
+    <h6>
+      I <span class="info">{{ name }}</span> have been
+      <span class="info2">invited</span> by
+      <span class="info">{{ event['creator_name'] }}</span> and will be
+      attending the event <span class="info">{{ event['event_name'] }}</span>,
+      that starts at the date of
+      <span class="info">{{ event['start_date'] }}</span> and ends at
+      <span class="info">{{ event['end_date'] }}</span>. Description:
+      <span class="info">{{ event['event_desc'] }}</span>. The Room Code is
+      <span class="info">{{ event['room_code'] }}</span>.
+    </h6>
+    <form
+      action="/view_creator_info"
+      method="POST"
+      class="view-creator-info-form"
+    >
+      <input
+        type="hidden"
+        name="creator_name"
+        value="{{ event['creator_name'] }}"
+      />
+      <button type="submit" class="btn btn-primary">
+        View Creator Information
+      </button>
+    </form>
+    {% endif %}
+
+    <!-- Display the creator's name -->
+  </div>
+  <hr />
+  {% endfor %} {% else %}
+  <p>No attending events found.</p>
+  {% endif %}
+</div>
+
+{% endblock %} {% block javascript %}
+<script></script>
+{% endblock %}
