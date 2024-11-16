@@ -8,10 +8,6 @@ from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 import os
 from flask import current_app
-from flask_socketio import SocketIO
-from gevent import monkey
-
-monkey.patch_all()  # Ensure compatibility with gevent
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -24,13 +20,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')  # Set UPLOAD_FOLDER here
     db.init_app(app)
-    # CORS setup for SocketIO
-    socketio.init_app(
-        app, 
-        cors_allowed_origins="*",  # Allow all origins for WebSocket communication
-        logger=True, 
-        engineio_logger=True
-    )
+    socketio.init_app(app)
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'       # e.g., 'smtp.gmail.com' for Gmail
     app.config['MAIL_PORT'] = 465                         # Port number, usually 587 for TLS

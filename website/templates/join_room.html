@@ -209,26 +209,17 @@ block head %}
             </div>
             <div class="card-body">
               <form method="post" class="buttons">
-                <h1>Join a Chat Room</h1>
-
-                <!-- Display an error if present -->
-                {% if error %}
-                <p style="color: red">{{ error }}</p>
-                {% endif %}
-
-                <!-- Input for Room Code -->
-                <label for="code">Enter Room Code:</label>
-                <input
-                  type="text"
-                  name="code"
-                  id="code"
-                  placeholder="Room Code"
-                  required
-                />
-
-                <button type="submit">Join Room</button>
-
-                <hr />
+                <h3>Enter The Chat Room</h3>
+                <div class="join">
+                  <input
+                    type="text"
+                    placeholder="Room Code"
+                    name="code"
+                    value="{{code}}"
+                    required
+                  />
+                  <button type="submit" name="join">Join a Room</button>
+                </div>
 
                 {% if role == "Attendee" %}
                 <div class="room_codes_attendee">
@@ -236,13 +227,8 @@ block head %}
                   <ul>
                     {% for event in rsvp_events %}
                     <li>
-                      {{ event.event_name }}
-                      <button
-                        type="button"
-                        onclick="document.getElementById('code').value = '{{ event.room_code }}';"
-                      >
-                        Use Code: {{ event.room_code }}
-                      </button>
+                      Room Code: {{ event.room_code }} - Event Name: {{
+                      event.event_name }}
                     </li>
                     {% endfor %}
                   </ul>
@@ -253,13 +239,8 @@ block head %}
                   <ul>
                     {% for event in created_events %}
                     <li>
-                      {{ event.event_name }}
-                      <button
-                        type="button"
-                        onclick="document.getElementById('code').value = '{{ event.room_code }}';"
-                      >
-                        Use Code: {{ event.room_code }}
-                      </button>
+                      Room Code: {{ event.room_code }} - Event Name: {{
+                      event.event_name }}
                     </li>
                     {% endfor %}
                   </ul>
@@ -270,13 +251,8 @@ block head %}
                   <ul>
                     {% for event in client_attend %}
                     <li>
-                      {{ event.event_name }}
-                      <button
-                        type="button"
-                        onclick="document.getElementById('code').value = '{{ event.room_code }}';"
-                      >
-                        Use Code: {{ event.room_code }}
-                      </button>
+                      Room Code: {{ event.room_code }} - Event Name: {{
+                      event.event_name }}
                     </li>
                     {% endfor %}
                   </ul>
@@ -300,9 +276,6 @@ block head %}
   crossorigin="anonymous"
 ></script>
 <script type="text/javascript">
-  var socketio = io({
-    transports: ["websocket", "polling"],
-    upgrade: true, // Allow WebSocket upgrades
-  });
+  var socketio = io();
 </script>
 {% endblock %}

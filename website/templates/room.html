@@ -171,28 +171,25 @@ head%}
             <div class="card-body">
               <div class="message-box">
                 <h2>Chat Room: {{ code }}</h2>
-                <h3>Event: {{ event_name }} - Creator: {{ creator_name }}</h3>
-
-                <!-- Display the event name and creator -->
-                <div id="messages">
-                  {% for msg in messages %}
-                  <div class="text">
-                    <span
-                      ><strong>{{ msg.name }}</strong>: {{ msg.message }}</span
-                    >
-                    <span class="muted">{{ msg.timestamp }}</span>
-                  </div>
-                  {% endfor %}
-                </div>
-
-                <!-- Input for sending a message -->
+                <h3>Event: {{ event_name }} - Creator:{{ creator_name }}</h3>
+                <!-- Display the event name here -->
+                <div class="messages" id="messages"></div>
                 <div class="inputs">
                   <input
                     type="text"
-                    placeholder="Type your message here"
+                    rows="3"
+                    placeholder="Message"
+                    name="message"
                     id="message"
                   />
-                  <button onclick="sendMessage()">Send</button>
+                  <button
+                    type="button"
+                    name="send"
+                    id="send-btn"
+                    onClick="sendMessage()"
+                  >
+                    Send
+                  </button>
                 </div>
               </div>
             </div>
@@ -207,40 +204,37 @@ head%}
   src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
   crossorigin="anonymous"
 ></script>
-<script>
-  // WebSocket connection
-  const socketio = io({ transports: ["websocket", "polling"], secure: true, upgrade: true });
+<script type="text/javascript">
+  var socketio = io();
 
-  // DOM elements
   const messages = document.getElementById("messages");
-  const messageInput = document.getElementById("message");
 
-  // Helper function to create a new message
   const createMessage = (name, msg) => {
     const content = `
-      <div class="text">
-        <span><strong>${name}</strong>: ${msg}</span>
-        <span class="muted">${new Date().toLocaleString()}</span>
-      </div>`;
+    <div class="text">
+        <span>
+            <strong>${name}</strong>: ${msg}
+        </span>
+        <span class="muted">
+            ${new Date().toLocaleString()}
+        </span>
+    </div>
+    `;
     messages.innerHTML += content;
-    messages.scrollTop = messages.scrollHeight;
+    messages.scrollTop = messages.scrollHeight; // Scroll to the bottom
   };
 
-  // Listen for incoming messages
   socketio.on("message", (data) => {
     createMessage(data.name, data.message);
   });
 
-  // Send a message
   const sendMessage = () => {
-    const message = messageInput.value.trim();
-    if (message) {
-      socketio.emit("message", { data: message });
-      messageInput.value = "";
-    }
+    const message = document.getElementById("message");
+    if (message.value === "") return;
+    socketio.emit("message", { data: message.value });
+    message.value = "";
   };
 
-  // Load previous messages dynamically
   {% for msg in messages %}
   createMessage("{{ msg.name }}", "{{ msg.message }}");
   {% endfor %}

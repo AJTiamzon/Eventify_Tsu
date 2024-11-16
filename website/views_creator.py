@@ -10,23 +10,12 @@ from datetime import datetime
 from string import ascii_uppercase
 from .__init__ import mail
 from werkzeug.utils import secure_filename
-import socket
 
 views_creator = Blueprint('views_creator', __name__)
 
 rooms = {}
 
 ########################################################################################################################################################################### Event Creator Video Chat
-
-@views_creator.route('/test_dns')
-def test_dns():
-    try:
-        # Perform DNS resolution
-        result = socket.getaddrinfo('smtp.gmail.com', 587)
-        return jsonify({'success': True, 'result': result}), 200
-    except Exception as e:
-        # Return any errors encountered
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 @views_creator.route("/video_chat_dashboard", methods=["POST", "GET"])
 @login_required
