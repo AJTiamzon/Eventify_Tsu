@@ -23,7 +23,7 @@ def create_app():
     socketio.init_app(app, cors_allowed_origins="*")  # Allow all origins for cross-origin communication
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'       # e.g., 'smtp.gmail.com' for Gmail
-    app.config['MAIL_PORT'] = 465                         # Port number, usually 587 for TLS
+    app.config['MAIL_PORT'] = 587                         # Port number, usually 587 for TLS
     app.config['MAIL_USERNAME'] = 'adrianjennelltiamzon@gmail.com' # Your email address
     app.config['MAIL_PASSWORD'] = 'iuit qpqh xngf rckk'         # Your email password
     app.config['MAIL_DEFAULT_SENDER'] = 'adrianjennelltiamzon@gmail.com' # Default sender
