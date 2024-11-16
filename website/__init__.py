@@ -8,6 +8,10 @@ from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 import os
 from flask import current_app
+from flask_socketio import SocketIO
+from gevent import monkey
+
+monkey.patch_all()  # Ensure compatibility with gevent
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -23,12 +27,12 @@ def create_app():
     socketio.init_app(app, cors_allowed_origins="*")  # Allow all origins for cross-origin communication
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'       # e.g., 'smtp.gmail.com' for Gmail
-    app.config['MAIL_PORT'] = 587                         # Port number, usually 587 for TLS
+    app.config['MAIL_PORT'] = 465                         # Port number, usually 587 for TLS
     app.config['MAIL_USERNAME'] = 'adrianjennelltiamzon@gmail.com' # Your email address
     app.config['MAIL_PASSWORD'] = 'iuit qpqh xngf rckk'         # Your email password
     app.config['MAIL_DEFAULT_SENDER'] = 'adrianjennelltiamzon@gmail.com' # Default sender
-    app.config['MAIL_USE_TLS'] = True                     # Enable TLS
-    app.config['MAIL_USE_SSL'] = False                     # Enable SSL
+    app.config['MAIL_USE_TLS'] = False                     # Enable TLS
+    app.config['MAIL_USE_SSL'] = True                     # Enable SSL
     mail.init_app(app)
 
     # Set up Flask-Admin
