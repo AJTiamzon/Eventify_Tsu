@@ -247,7 +247,7 @@ block head %}
                 </div>
                 {% endif %} {% if role == "Client" %}
                 <div class="room_codes_creator">
-                  <h4>Your Created Event Rooms</h4>
+                  <h4>Your RSVP'd Event Rooms</h4>
                   <ul>
                     {% for event in client_attend %}
                     <li>
@@ -276,6 +276,9 @@ block head %}
   crossorigin="anonymous"
 ></script>
 <script type="text/javascript">
-  var socketio = io();
+  var socketio = io({
+    transports: ["websocket", "polling"],
+    upgrade: true, // Allow WebSocket upgrades
+  });
 </script>
 {% endblock %}
