@@ -27,8 +27,8 @@ def create_app():
     app.config['MAIL_USERNAME'] = 'adrianjennelltiamzon@gmail.com' # Your email address
     app.config['MAIL_PASSWORD'] = 'iuit qpqh xngf rckk'         # Your email password
     app.config['MAIL_DEFAULT_SENDER'] = 'adrianjennelltiamzon@gmail.com' # Default sender
-    app.config['MAIL_USE_TLS'] = False                     # Enable TLS
-    app.config['MAIL_USE_SSL'] = True                     # Enable SSL
+    app.config['MAIL_USE_TLS'] = True                     # Enable TLS
+    app.config['MAIL_USE_SSL'] = False                     # Enable SSL
     mail.init_app(app)
 
     # Set up Flask-Admin
