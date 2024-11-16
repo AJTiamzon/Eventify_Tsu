@@ -1,1 +1,1 @@
-web: gunicorn -k eventlet -w 1 main:app
+web: RESOLVER=8.8.8.8 gunicorn -k eventlet -w 1 main:app
