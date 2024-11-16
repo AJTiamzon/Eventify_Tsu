@@ -1,65 +1,182 @@
-{% extends "base.html" %} {% block head %}
-<style>
-  .link_container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+{% extends "base.html" %}
 
-  .info {
-    color: red;
-  }
-</style>
-{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
-<h1 align="center">Client Create Events</h1>
-<div class="link_container">
-  <h2 align="center"><a href="/client">Plan An Event</a></h2>
-  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
-  <h2 align="center">
-    <a href="/client_attend_events">Attend Public Events</a>
-  </h2>
-  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <h2 align="center">
-    <a href="/create_event_profile_client">View Profile</a>
-  </h2>
-  <h2><a href="/join_room">Chat Room</a></h2>
-  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+{% block title %}Client Events{% endblock %}
+
+{% block head %}
+<link href="css/app.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/client_home">
+      <span class="align-middle">Client Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Plan An Event</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_attend_events">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attend Public Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events_to_attend">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">RSVPed Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_hire_supplier">
+          <i class="align-middle" data-feather="briefcase"></i>
+          <span class="align-middle">Hire Supplier</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_suppliers_hired">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Suppliers Chosen</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_client">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
+
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+            <img src="{{ url_for('static', filename='img/avatars/avatar.png') }}" class="avatar img-fluid rounded me-1"
+              alt="User Avatar" />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"><i class="align-middle me-1" data-feather="user"></i>
+              Profile</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">All Events</h1>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+              <div class="container mt-4">
+                <div class="row">
+                  {% if rsvped_events %}{% for event in rsvped_events %}
+                  <div class="col-md-4 mb-4"> <!-- Full width for RSVPed events -->
+                    <div class="card event-card"> <!-- Bootstrap card for styling -->
+                      <div class="card-body">
+                        <h3
+                        style="
+                          color: white;
+                          background-color: orange;
+                          text-align: center;
+                        "
+                        style="background-color: blue"
+                      >
+                        {{ event['event_name'] }}
+                      </h3>
+                      <h4>
+                        Created By:
+                        <span style="color: rgb(0, 89, 255)"
+                          >{{ event['creator_name'] }}</span
+                        >
+                      </h4>
+                        <h6 class="card-text">
+                          I <strong>{{ name }}</strong>, have reserved a spot on the event <strong>{{ event['event_name'] }}</strong>
+                          with the description of: "<strong> {{event['event_desc'] }}</strong>".
+                          The room code of the group event chat is:<span style="color: red;"><strong> {{ event['room_code'] }}</strong></span>.
+                          The event starts at:<span style="color: red;"><strong>{{ event['start_date'] }}</strong></span>
+                          and ends at:<span style="color: red;"><strong>End Date: {{ event['end_date'] }}</strong></span>.
+                          This serves as proof of my reserved spot and shall function as my ticket if needed.
+                        </h6>
+
+                        <form action="/view_creator" method="POST" class="view-creator-info-form mt-2">
+                          <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
+                          <button type="submit" class="btn btn-primary">View Creator Information</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% else %}
+                <p>No RSVPed events found.</p>
+                {% endif %}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
-<h5 align="center">
-  Hello <span class="info">{{ name }} </span>, as a Client, you are able to
-  <span class="info">attend public events</span>,
-  <span class="info">use the algorithm to plan events</span> and
-  <span class="info">hire suppliers</span>.
-</h5>
-
-<h2>My RSVPed Events</h2>
-{% if rsvped_events %} {% for event in rsvped_events %}
-<div class="event-card">
-  <h6>
-    I <span class="info">{{ name }}</span> will be attending the event
-    <span class="info">{{ event.event_name }}</span>, that was created by
-    <span class="info">{{ event.creator_name }}</span> that starts at the date
-    of <span class="info">{{ event.start_date }}</span> and ends at
-    <span class="info">{{ event.end_date }}</span>. Description:
-    <span class="info">{{ event.event_desc }}</span>. The Room Code is
-    <span class="info">{{ event.room_code }}</span>.
-    <form action="/view_creator" method="POST" class="view-creator-info-form">
-      <input
-        type="hidden"
-        name="creator_name"
-        value="{{ event.creator_name }}"
-      />
-      <button type="submit" class="btn btn-primary">
-        View Creator Information
-      </button>
-    </form>
-  </h6>
-
-  <!-- <h4>Date RSVPed: {{ event.date_rsvped }}</h4> -->
+</main>
 </div>
-{% endfor %} {% else %}
-<p>No RSVPed events found.</p>
-{% endif %} {% endblock %} {% block javascript %}
-<script></script>
 {% endblock %}

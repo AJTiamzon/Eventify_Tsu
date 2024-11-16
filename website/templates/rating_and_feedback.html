@@ -1,337 +1,265 @@
-{% extends "base.html" %} {% block head %}
-<style>
-  .info {
-    color: red;
-  }
-  .holder {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-</style>
-{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
-<div class="holder">
-  {% if role == "Event Creator" %}
-  <a href="/create-event"><h2>Create Event</h2></a>
-  <a href="/created_event_edit"><h2>View Your Events</h2></a>
-  <a href="/create_event_history"><h2>Finalized Events</h2></a>
-  <a href="/event_attendee_list"><h2>Attendee List</h2></a>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <a href="/join_room"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
-  <a href="/create_event_profile"><h2>View Profile</h2></a>
-  {% endif %} {% if role == "Client" %}
-  <h2 align="center"><a href="/client">Plan An Event</a></h2>
-  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
-  <h2 align="center">
-    <a href="/client_attend_events">Attend Public Events</a>
-  </h2>
-  <h2 align="center">
-    <a href="/client_events_to_attend">RSVPed Events</a>
-  </h2>
-  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <h2 align="center">
-    <a href="/create_event_profile_client">View Profile</a>
-  </h2>
-  <h2><a href="/join_room">Chat Room</a></h2>
-  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
-  {% endif %}
-</div>
+{% extends "base.html" %} {% block title %}Client Events{% endblock %} {% block
+head %}
+<link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet" />
+{% endblock %} {% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    {% if user.role == "Client" %}
+    <a class="sidebar-brand" href="/client_home">
+      <span class="align-middle">Client Dashboard</span>
+    </a>
+    {% endif %} {% if user.role == "Event Creator" %}
+    <a class="sidebar-brand" href="/create_event_home">
+      <span class="align-middle">Creator Dashboard</span>
+    </a>
+    {% endif %} {% if user.role == "Attendee" %}
+    <a class="sidebar-brand" href="/attendee">
+      <span class="align-middle">Attendee Dashboard</span>
+    </a>
+    {% endif %}
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Plan An Event</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/create-event">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Create An Event</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_events">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/created_event_edit">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_attend_events">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attend Public Events</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/create_event_history">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Finalized Events</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_events_to_attend">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">RSVPed Events</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/event_attendee_list">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attendee List</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_hire_supplier">
+          <i class="align-middle" data-feather="briefcase"></i>
+          <span class="align-middle">Hire Supplier</span>
+        </a>
+        {% endif %}
+      </li>
+      {% if user.role == "Attendee" %} {% else %}
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+      {% endif %}
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/create_event_profile_client">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/create_event_profile">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+        {% else %}
+        <li class="sidebar-item">
+          <a class="sidebar-link" href="/create_event_profile_client">
+            <i class="align-middle" data-feather="user"></i>
+            <span class="align-middle">View Profile</span>
+          </a>
+        </li>
+        {% endif %}
+      </li>
+      
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-<div>
-  <h1 align="center">
-    Welcome to Rating And Feedback <span class="info">{{ name }}</span>
-  </h1>
-</div>
-<h3>Sort By:</h3>
-<button type="button" id="sort1">Cakes</button>
-<button type="button" id="sort2">Digital Printers</button>
-<button type="button" id="sort3">Event Planners</button>
-<button type="button" id="sort4">Grazing Table</button>
-<button type="button" id="sort5">Makeup And Hair Stylists</button>
-<button type="button" id="sort6">Photobooths</button>
-<button type="button" id="sort7">Photographers</button>
-<button type="button" id="sort8">Catering Service</button>
-<button type="button" id="sort9">Churches</button>
-<button type="button" id="sort10">Event Stylists</button>
-<button type="button" id="sort11">Event Places</button>
-<button type="button" id="sort12">Lights and Sounds</button>
-<div class="sort1">
-  <h1>Cakes</h1>
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
 
-  {% for thing in new_things3 %} {% if thing.type == "Cake" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-<div class="sort2">
-  <h1>Digital Printing</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Digital_Printing" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">
+        Welcome to Rating And Feedback <span class="info">{{ name }}</span>
+      </h1>
 
-<div class="sort3">
-  <h1>Event Planners</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Event_Planner" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+              <h3 class="mb-3">Sort By:</h3>
+              <div
+                class="btn-group mb-4"
+                role="group"
+                aria-label="Sort by category"
+              >
+                {% set categories = [ ("Cakes", "Cake"), ("Digital Printers",
+                "Digital_Printing"), ("Event Planners", "Event_Planner"),
+                ("Grazing Table", "Grazing_Table"), ("Makeup And Hair Stylists",
+                "Makeup_and_Hair"), ("Photobooths", "Photobooth"),
+                ("Photographers", "Photographer"), ("Catering Service",
+                "Catering"), ("Churches", "Church"), ("Event Stylists",
+                "Event_Stylist"), ("Event Places", "Events_Place"), ("Lights and
+                Sounds", "Lights_and_Sounds") ] %} {% for category_name,
+                category_type in categories %}
+                <button
+                  type="button"
+                  class="btn btn-outline-primary sort-button"
+                  data-category="{{ category_type }}"
+                >
+                  {{ category_name }}
+                </button>
+                {% endfor %}
+              </div>
 
-<div class="sort4">
-  <h1>Grazing Table</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Grazing_Table" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
+              {% for category_name, category_type in categories %}
+              <div
+                class="category-div"
+                data-category="{{ category_type }}"
+                style="display: none"
+              >
+                <h1>{{ category_name }}</h1>
+                {% for thing in new_things3 %} {% if thing.type == category_type
+                %}
+                <h4>{{ thing.name }}</h4>
+                <form action="/rate_supplier" method="post">
+                  <input
+                    type="hidden"
+                    name="supplier_name"
+                    value="{{ thing.name }}"
+                  />
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    Rate Supplier
+                  </button>
+                </form>
+                <p><strong>Business Name:</strong> {{ thing.business_name }}</p>
+                <p>
+                  <strong>Contact Number:</strong> {{ thing.contact_number }}
+                </p>
+                <p><strong>Email:</strong> {{ thing.email }}</p>
+                <p><strong>Rating:</strong> {{ thing.rating }}</p>
+                <p><strong>Commission:</strong> {{ thing.price }}</p>
+                <hr />
+                {% endif %} {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-
-<div class="sort5">
-  <h1>Makeup And Hair Artitst</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Makeup_and_Hair" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort6">
-  <h1>Photobooth</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Photobooth" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort7">
-  <h1>Photographer</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Photographer" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort8">
-  <h1>Catering</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Catering" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort9">
-  <h1>Churches</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Church" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort10">
-  <h1>Event Stylists</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Event_Stylist" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort11">
-  <h1>Event Places</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Events_Place" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
-<div class="sort12">
-  <h1>Lights and Sounds</h1>
-  {% for thing in new_things3 %} {% if thing.type == "Lights_and_Sounds" %}
-  <h4>{{ thing.name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input type="hidden" name="supplier_name" value="{{ thing.name }}" />
-    <button type="submit" class="rate_the_supplier">Rate Supplier</button>
-  </form>
-  <h6>Business Name: {{ thing.business_name }}</h6>
-  <h6>Contact Number: {{ thing.contact_number }}</h6>
-  <h6>Email: {{ thing.email }}</h6>
-  <h6>Rating: {{ thing.rating }}</h6>
-  <h6>Commission: {{ thing.price }}</h6>
-  {% endif %} {% endfor %}
-</div>
-
 {% endblock %} {% block javascript %}
-
 <script>
-  function showSortDiv(sortClass) {
-    const sortDivs = [
-      "sort1",
-      "sort2",
-      "sort3",
-      "sort4",
-      "sort5",
-      "sort6",
-      "sort7",
-      "sort8",
-      "sort9",
-      "sort10",
-      "sort11",
-      "sort12",
-    ];
-
-    sortDivs.forEach(function (divClass) {
-      const div = document.querySelector(`.${divClass}`);
-      if (divClass === sortClass) {
-        div.style.display = "block"; // Show the selected div
-      } else {
-        div.style.display = "none"; // Hide the other divs
-      }
-    });
-  }
-
-  // Event listeners for the buttons
   document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("sort1").addEventListener("click", function () {
-      showSortDiv("sort1");
-    });
+    const categoryDivs = document.querySelectorAll(".category-div");
 
-    document.getElementById("sort2").addEventListener("click", function () {
-      showSortDiv("sort2");
-    });
+    // Hide all category divs initially
+    categoryDivs.forEach((div) => (div.style.display = "none"));
 
-    document.getElementById("sort3").addEventListener("click", function () {
-      showSortDiv("sort3");
-    });
+    // Add click event to each sort button
+    document.querySelectorAll(".sort-button").forEach((button) => {
+      button.addEventListener("click", function () {
+        const selectedCategory = button.getAttribute("data-category");
 
-    document.getElementById("sort4").addEventListener("click", function () {
-      showSortDiv("sort4");
+        // Show the matching category div and hide others
+        categoryDivs.forEach((div) => {
+          div.style.display =
+            div.getAttribute("data-category") === selectedCategory
+              ? "block"
+              : "none";
+        });
+      });
     });
-
-    document.getElementById("sort5").addEventListener("click", function () {
-      showSortDiv("sort5");
-    });
-
-    document.getElementById("sort6").addEventListener("click", function () {
-      showSortDiv("sort6");
-    });
-
-    document.getElementById("sort7").addEventListener("click", function () {
-      showSortDiv("sort7");
-    });
-
-    document.getElementById("sort8").addEventListener("click", function () {
-      showSortDiv("sort8");
-    });
-
-    document.getElementById("sort9").addEventListener("click", function () {
-      showSortDiv("sort9");
-    });
-
-    document.getElementById("sort10").addEventListener("click", function () {
-      showSortDiv("sort10");
-    });
-
-    document.getElementById("sort11").addEventListener("click", function () {
-      showSortDiv("sort11");
-    });
-
-    document.getElementById("sort12").addEventListener("click", function () {
-      showSortDiv("sort12");
-    });
-
-    // Initialize with the first sort div visible
-    showSortDiv("sort1");
   });
 </script>
-
 {% endblock %}

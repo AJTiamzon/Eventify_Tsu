@@ -1,75 +1,191 @@
-{% extends "base.html" %} {% block head %}
-<style>
-  .info {
-    font-weight: bold;
-    color: red;
-  }
-  .events-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .event-card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-  }
-</style>
-{% endblock %} {% block title %}Attendee Dashboard{% endblock %} {% block
-content %}
-<div class="events-container">
-  <a href="/attendee_invites"><h2>View Invites</h2></a>
-  <a href="/attendee_events"><h2>View Your Events</h2></a>
-  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
-  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard_attendee" target="_blank"
-    ><h2>Join Video Chat</h2></a
-  >
+{% extends "base.html" %} {% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/attendee">
+      <span class="align-middle">Attendee Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Calendar</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_invites">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View Your Invites</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_browse">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attend Public Events</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_events">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_history">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Past Events Attended</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_attendee">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room_attendee">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">
+        Hello <span class="info">{{ name }}</span>, Welcome To Event Browsing.
+      </h1>
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+              <h2 class="my-4">Public Events:</h2>
+              <div class="row">
+                {% if public_events %} {% for event in public_events %}
+                <div class="col-md-4 mb-4">
+                  <div class="card event-card">
+                    <div class="card-body">
+                      <h3
+                        style="
+                          color: white;
+                          background-color: orange;
+                          text-align: center;
+                        "
+                        style="background-color: blue"
+                      >
+                        {{ event.event_name }}
+                      </h3>
+                      <h4>
+                        Created By:
+                        <span style="color: rgb(0, 89, 255)"
+                          >{{ event.creator_name }}</span
+                        >
+                      </h4>
+                      <form
+                        action="/view_creator_info"
+                        method="POST"
+                        class="view-creator-info-form mb-3"
+                      >
+                        <input
+                          type="hidden"
+                          name="creator_name"
+                          value="{{ event.creator_name }}"
+                        />
+                        <button type="submit" class="btn btn-primary">
+                          View Creator Information
+                        </button>
+                      </form>
+                      <p class="card-text">
+                        <strong>Event Description:</strong> {{ event.event_desc
+                        }}
+                      </p>
+                      <p class="card-text">
+                        <strong>Start Date:</strong> {{ event.start_date }}
+                      </p>
+                      <p class="card-text">
+                        <strong>End Date:</strong> {{ event.end_date }}
+                      </p>
+
+                      <form
+                        id="rsvp-form-{{ event.event_name }}"
+                        action="/rsvp_spot"
+                        method="POST"
+                      >
+                        <input
+                          type="hidden"
+                          name="event_name"
+                          value="{{ event.event_name }}"
+                        />
+                        <input
+                          type="hidden"
+                          name="creator_name"
+                          value="{{ event.creator_name }}"
+                        />
+                        <button type="submit" class="btn btn-success">
+                          RSVP Spot
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %} {% else %}
+                <p>No public events found.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-
-<h1 align="center">
-  Hello <span class="info">{{ name }}</span>, Welcome To Event Browsing.
-</h1>
-<h6>Note:</h6>
-
-<h2>Public Events:</h2>
-{% if public_events %} {% for event in public_events %}
-<div class="event-card">
-  <h4>Event Name: {{ event.event_name }}</h4>
-  <h4>Created By: {{ event.creator_name }}</h4>
-  <form
-      action="/view_creator_info"
-      method="POST"
-      class="view-creator-info-form"
-    >
-      <input
-        type="hidden"
-        name="creator_name"
-        value="{{ event.creator_name }}"
-      />
-      <button type="submit" class="btn btn-primary">
-        View Creator Information
-      </button>
-    </form>
-  <h4>Event Description: {{ event.event_desc }}</h4>
-  <h4>Room Code: {{ event.room_code }}</h4>
-  <h4>Start Date: {{ event.start_date }}</p>
-  <h4>End Date: {{ event.end_date }}</h4>
-
-  <form
-    id="rsvp-form-{{ event.event_name }}"
-    action="/rsvp_spot"
-    method="POST"
-  >
-    <input type="hidden" name="event_name" value="{{ event.event_name }}" />
-    <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
-    <!-- Pass creator's name -->
-    <button type="submit" class="btn btn-success">RSVP Spot</button>
-  </form>
-</div>
-{% endfor %} {% else %}
-<p>No public events found.</p>
-{% endif %} {% endblock %} {% block javascript %}
-<script></script>
 {% endblock %}

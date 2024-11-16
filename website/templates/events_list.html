@@ -1,25 +1,205 @@
-{% extends "base.html" %} {% block title %}Event List{% endblock %} {% block
-head %}
-<style>
-  .event-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-  }
-</style>
-{% endblock %} {% block content %}
-<h1 align="center">Public Events</h1>
-<div class="events-container">
-  {% for event in events %}
-  <div class="event-item">
-    <h3>Event Name: {{ event.event_name }}</h3>
-    <h5>Created By: {{ event.creator_name }}</h5>
-    <h5>Description: {{ event.event_desc }}</h5>
-    <h5>Room Code: {{ event.room_code }}</h5>
-    <h5>Start Date: {{ event.start_date }}</h5>
-    <h5>End Date: {{ event.end_date }}</h5>
-  </div>
-  {% endfor %}
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/fullcalendar.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background-image:url("https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?cs=srgb&dl=pexels-emma-bauso-1183828-2253870.jpg&fm=jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+
+      .container {
+        flex-grow: 1;
+      }
+
+      .main-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 2rem;
+      }
+
+      footer {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        display: flex;
+      }
+    </style>
+
+    <title>Login</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="/">eventify</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="/role">Home</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/event_list">Event List</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('views.calendar') }}"
+              >View Calendar</a
+            >
+          </li>
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/sign-up">Sign Up</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/event_list">Event List</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <main class="container my-4">
+      <div class="row">
+        <!-- Dynamic Event Cards -->
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3
+                style="
+                  color: white;
+                  background-color: orange;
+                  text-align: center;
+                "
+                style="background-color: blue"
+              >
+                {{ event.event_name }}
+              </h3>
+              <h4>
+                Created By:
+                <span style="color: rgb(0, 89, 255)"
+                  >{{ event.creator_name }}</span
+                >
+              </h4>
+              <form
+                action="/view_creator_info"
+                method="POST"
+                class="view-creator-info-form mb-3"
+              >
+                <input
+                  type="hidden"
+                  name="creator_name"
+                  value="{{ event.creator_name }}"
+                />
+                <button type="submit" class="btn btn-primary">
+                  View Creator Information
+                </button>
+              </form>
+              <p class="card-text">
+                <strong>Event Description:</strong> {{ event.event_desc }}
+              </p>
+              <p class="card-text">
+                <strong>Start Date:</strong> {{ event.start_date }}
+              </p>
+              <p class="card-text">
+                <strong>End Date:</strong> {{ event.end_date }}
+              </p>
+
+              <form
+                id="rsvp-form-{{ event.event_name }}"
+                action="/rsvp_spot"
+                method="POST"
+              >
+                <input
+                  type="hidden"
+                  name="event_name"
+                  value="{{ event.event_name }}"
+                />
+                <input
+                  type="hidden"
+                  name="creator_name"
+                  value="{{ event.creator_name }}"
+                />
+                <button type="submit" class="btn btn-success">RSVP Spot</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 Event . All Rights Reserved.</p>
+        <p>Contact us at info@events.com</p>
+      </div>
+      <div class="container">
+        <h6>Quick Links</h6>
+        <a href="/">Home</a><br />
+        <a href="/event_list">Events</a><br />
+        <a href="#services">Services</a><br />
+        <a href="/login">Login</a><br />
+        <a href="/sign-up">Sign Up</a>
+      </div>
+      <div class="container">
+        <h6>Connect</h6>
+        <p>Join our community today.</p>
+        <button onclick="window.location.href='/sign-up'">Sign Up</button>
+      </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
+  </body>
+</html>

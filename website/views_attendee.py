@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
-from .models import Events16, Users9, Attendee_events8, Attendee_records5, Attendee_Rating_Creator2
+from .models import Events17, Users9, Attendee_events8, Attendee_records5, Attendee_Rating_Creator2, Event_records11
 from . import db, socketio
 from .gen_algo_final import *
 import json, csv
@@ -15,20 +15,26 @@ views_attendee = Blueprint('views_attendee', __name__)
 @views_attendee.route('/create_event_profile_attendee')
 @login_required
 def create_event_profile():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     # Get the current user
     user = current_user
 
     # Pass the user data and images to the template
-    return render_template('create_event_profile.html', user=user)
+    return render_template('create_event_profile.html', user=user, name=current_user.fullname, role=current_user.role)
 ###################################################################################################################################################################################
 @views_attendee.route("/video_chat_dashboard_attendee", methods=["POST", "GET"])
 @login_required
 def video_chat_dashboard_attendee():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     return render_template("video_chat_dashboard.html", user=current_user, role=current_user.role, first_name=current_user.first_name, last_name=current_user.last_name)
 
 @views_attendee.route("/video_join_meeting_attendee", methods=["POST", "GET"])
 @login_required
 def video_join_meeting_attendee():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     if request.method == "POST":
         room_id = request.form.get("roomID")
         return redirect(f"/video_create_meeting?roomID={room_id}")
@@ -37,6 +43,8 @@ def video_join_meeting_attendee():
 @views_attendee.route("/join_room_attendee", methods=["POST", "GET"])
 @login_required
 def join_room_view():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     """Page where users enter the room code to join."""
     session.clear()
 
@@ -52,16 +60,20 @@ def join_room_view():
     if request.method == "POST":
         code = request.form.get("code")
         if not code:
-            return render_template("join_room.html", error="Please enter a room code.", user=current_user, role=current_user.role, name=current_user.first_name, rsvp_events=rsvp_events)
+            return render_template("join_room.html", error="Please enter a room code.", user=current_user, role=current_user.role, name=current_user.fullname, rsvp_events=rsvp_events)
 
         if code not in rooms:
-            return render_template("join_room.html", error="Room does not exist.", user=current_user, role=current_user.role, name=current_user.first_name, rsvp_events=rsvp_events)
+            event = Event_records11.query.filter_by(room_code=code).first()
+            if event:
+                rooms[code] = {"messages": [], "members": 0}  # Initialize in memory
+            else:
+                return render_template("join_room.html", error="Room does not exist.", user=current_user, role=current_user.role, name=current_user.fullname, rsvp_events=rsvp_events)
 
         session["room"] = code
-        session["name"] = current_user.first_name  # Use the user's first name
+        session["name"] = current_user.role + " : " + current_user.first_name  # Use the user's first name
         return redirect(url_for('views_attendee.room'))
 
-    return render_template("join_room.html", user=current_user, role=current_user.role, name=current_user.first_name, rsvp_events=rsvp_events)
+    return render_template("join_room.html", user=current_user, role=current_user.role, name=current_user.fullname, rsvp_events=rsvp_events)
 
 @views_attendee.route("/room")
 @login_required
@@ -71,7 +83,7 @@ def room():
     if room_code is None or room_code not in rooms:
         return redirect(url_for("views_attendee.join_room_view"))
 
-    return render_template("room.html", user=current_user, code=room_code, messages=rooms[room_code]["messages"], role=current_user.role, name=current_user.first_name)
+    return render_template("room.html", user=current_user, code=room_code, messages=rooms[room_code]["messages"], role=current_user.role, name=current_user.fullname)
 
 @socketio.on("message")
 def handle_message(data):
@@ -116,11 +128,15 @@ def disconnect():
 ######################################################################################################################################################### Attendee
 @views_attendee.route('/attendee', methods=['GET', 'POST'])
 def attendee():
-    return render_template('attendee.html', user=current_user, name=current_user.first_name)
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
+    return render_template('attendee.html', user=current_user, name=current_user.fullname)
 
 @views_attendee.route('/attendee_invites', methods=['GET', 'POST'])
 @login_required
 def attendee_invites():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
 
     # Get the invites stored in the Attendee_events8 table
     attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
@@ -129,16 +145,18 @@ def attendee_invites():
     if attendee_event and attendee_event.invites:
         invited_events = json.loads(attendee_event.invites)
 
-    return render_template('attendee_invites.html', user=current_user, name=current_user.first_name, invited_events=invited_events)
+    return render_template('attendee_invites.html', user=current_user, name=current_user.fullname, invited_events=invited_events)
 
 @views_attendee.route('/accept_invite', methods=['POST'])
 @login_required
 def accept_invite():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     event_name = request.form.get('event_name')
     creator_name = request.form.get('creator_name')  # Get creator name from the form
     
-    # Find the event in the Events16 table
-    event = Events16.query.filter_by(event_name=event_name).first()
+    # Find the event in the Event_records11 table
+    event = Event_records11.query.filter_by(event_name=event_name).first()
     
     if not event:
         # If event is not found, redirect with an error message
@@ -223,12 +241,12 @@ def accept_invite():
     msg = Message(
         f"RSVP Spot to {event.event_name}",
         sender='noreply@eventify.com',
-        recipients={current_user.email}
+        recipients=[current_user.email]
         )
     msg.body = f"Hello! You have accepted the invite and have succesfully RSVPed a spot to attend the event '{event.event_name}' by {creator_name}.\n\nDescription: {event.event_desc}\nStart Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {event.end_date.strftime('%Y-%m-%d %H:%M')}. For more information, go to the wesbite and view your ticket."
     mail.send(msg)
 
-    # Add the user's details to the event's RSVP attendees in Events16
+    # Add the user's details to the event's RSVP attendees in Event_records11
     rsvp_attendees.append({
         'attendee_name': current_user.first_name,
         'attendee_lname': current_user.last_name,
@@ -249,6 +267,8 @@ def accept_invite():
 @views_attendee.route('/reject_invite', methods=['POST'])
 @login_required
 def reject_invite():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     event_name_to_remove = request.form.get('event_name')
     reject_reason = request.form.get('reject_reason')
 
@@ -283,13 +303,15 @@ def reject_invite():
 
 @views_attendee.route('/attendee_browse', methods=['GET', 'POST'])
 def attendee_browse():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     # Fetch only public events
-    public_events = Events16.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
         # Get event creator's name from Users9 table
-        creator = Users9.query.get(event.user_id)
+        creator = Users9.query.get(event.creator_id)
         creator_name = f"{creator.first_name} {creator.last_name}" if creator else "Unknown"
 
         events_data.append({
@@ -300,16 +322,18 @@ def attendee_browse():
             'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
             'end_date': event.end_date.strftime("%Y-%m-%d %H:%M")
         })
-    return render_template('attendee_browse.html', user=current_user, name=current_user.first_name, public_events=events_data)
+    return render_template('attendee_browse.html', user=current_user, name=current_user.fullname, public_events=events_data)
 
 @views_attendee.route('/rsvp_spot', methods=['POST'])
 @login_required
 def rsvp_spot():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     event_name = request.form.get('event_name')
     creator_name = request.form.get('creator_name')
 
-    # Find the event in the Events16 table
-    event = Events16.query.filter_by(event_name=event_name).first()
+    # Find the event in the Event_records11 table
+    event = Event_records11.query.filter_by(event_name=event_name).first()
 
     if event:
         # Check if the current number of RSVP attendees has reached the max attendee number
@@ -371,12 +395,12 @@ def rsvp_spot():
         msg = Message(
         f"RSVP Spot to {event.event_name}",
         sender='noreply@eventify.com',
-        recipients={current_user.email}
+        recipients=[current_user.email]
         )
-        msg.body = f"Hello! You have RSVPed a spot to attend the event '{event.event_name}' by {creator_name}.\n\nDescription: {event.event_desc}\nStart Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {event.end_date.strftime('%Y-%m-%d %H:%M')}. \n For more information, go to the wesbite and view your ticket."
+        msg.body = f"Hello! You have RSVPed a spot to attend the event '{event.event_name}' by {creator_name}.\n\nDescription: {event.event_desc}\nStart Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {event.end_date.strftime('%Y-%m-%d %H:%M')}. For more information, go to the wesbite and view your ticket."
         mail.send(msg)
 
-        # Add the user's details to the event's RSVP attendees in Events16
+        # Add the user's details to the event's RSVP attendees in Event_records11
         rsvp_attendees.append({
             'attendee_name': current_user.first_name,
             'attendee_lname': current_user.last_name,
@@ -392,28 +416,34 @@ def rsvp_spot():
 @views_attendee.route('/attendee_events', methods=['GET', 'POST'])
 @login_required
 def attendee_events():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
     
     attending_events = []
     if attendee_event and attendee_event.rsvp_events:
         attending_events = json.loads(attendee_event.rsvp_events)
     
-    return render_template('attendee_events.html', user=current_user, name=current_user.first_name, attending_events=attending_events)
+    return render_template('attendee_events.html', user=current_user, name=current_user.fullname, attending_events=attending_events)
 
 @views_attendee.route('/attendee_history')
 @login_required
 def attendee_history():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     # Query all records where the current user is the attendee
     attendee_history = Attendee_records5.query.filter_by(attendee_id=current_user.id).all()
 
     # Pass the current time to the template for comparison
     now = datetime.now()
 
-    return render_template('attendee_history.html', user=current_user, attendee_history=attendee_history, now=now, name=current_user.first_name)
+    return render_template('attendee_history.html', user=current_user, attendee_history=attendee_history, now=now, name=current_user.fullname)
 
 @views_attendee.route('/attendee_rate_creator', methods=['POST'])
 @login_required
 def attendee_rate_creator():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     # Get the event creator's full name from the form
     creator_name = request.form.get('creator_name')
 
@@ -425,11 +455,13 @@ def attendee_rate_creator():
         return redirect(url_for('views_attendee.attendee_history'))
 
     # Render the rating page and pass the creator's details
-    return render_template('attendee_rate_creator.html', user=current_user, creator=creator)
+    return render_template('attendee_rate_creator.html', user=current_user, creator=creator, name=current_user.fullname)
 
 @views_attendee.route('/submit_event_creator_rating', methods=['POST'])
 @login_required
 def submit_event_creator_rating():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     # Get the form data
     rating = request.form.get('rating')
     feedback = request.form.get('feedback')
@@ -477,6 +509,8 @@ def submit_event_creator_rating():
 @views_attendee.route('/view_creator_info', methods=['POST'])
 @login_required
 def view_creator_info():
+    if current_user.role != "Attendee":
+        return redirect(url_for('views.role'))
     # Get the creator's name from the form
     creator_name = request.form.get('creator_name')
     
@@ -493,4 +527,4 @@ def view_creator_info():
     ratings = Attendee_Rating_Creator2.query.filter_by(creator_name=creator_name).all()
 
     # Render the creator details along with the ratings on a new page
-    return render_template('attendee_creator_view.html', creator=creator, ratings=ratings, user=current_user)
+    return render_template('attendee_creator_view.html', creator=creator, ratings=ratings, user=current_user, name=current_user.fullname)

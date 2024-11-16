@@ -1,106 +1,226 @@
-{% extends "base.html" %} {% block head %}
+{% extends "base.html" %} {% block title %}Profile {% endblock %} {% block head
+%}
+<link href="css/app.css" rel="stylesheet" />
 <style>
-  .holder {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  /* Initially hide all divs */
-  .hidden {
-    display: none;
-  }
-
-  .rejected {
-    color: red;
-  }
-
-  .rsvp {
+  .toggle-btn {
     color: blue;
   }
-  .info {
-    color: red;
-  }
 </style>
-{% endblock %} {% block title %}Event Attendee List{% endblock %} {% block
-content %}
+{% endblock %} {% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/create_event_home">
+      <span class="align-middle">Creator Dashboard</span>
+    </a>
 
-<div class="holder">
-  <a href="/create-event"><h2>Create Event</h2></a>
-  <a href="/created_event_edit"><h2>Events List</h2></a>
-  <a href="/create_event_history"><h2>Finalized Events</h2></a>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <a href="/join_room"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
-  <a href="/create_event_profile"><h2>View Profile</h2></a>
-</div>
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
 
-<h1 align="center">Invited Attendees:</h1>
-<h5>
-  Note: This is where you are able to view the attendees you have
-  <span class="info"> invited </span>, attendees who have
-  <span class="info">RSVPed</span> and attendees who have
-  <span class="info">rejected</span> the invite.
-</h5>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create-event">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">Create Event</span>
+        </a>
+      </li>
 
-<!-- Loop through each event -->
-{% for event in events %}
-<div class="invited_attendees">
-  <h3>{{ event.event_name }}</h3>
-  <!-- Button to toggle visibility -->
-  <button class="toggle-btn" data-target="attendees-{{ event.id }}">
-    View Invited Attendees
-  </button>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/created_event_edit">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+      </li>
 
-  <!-- Div starts hidden, unique ID per event -->
-  <div id="attendees-{{ event.id }}" class="hidden">
-    {% for attendee in event.invited_attendees %}
-    <ul>
-      <li>Name: {{ attendee.name }} | Email: {{ attendee.email }}</li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_history">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Finalized Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/event_attendee_list">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Attendee List</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
     </ul>
-    {% endfor %}
   </div>
-</div>
+</nav>
 
-<div class="invitation_rejected_container">
-  <!-- Button to toggle rejected invitations visibility -->
-  <button class="toggle-btn" data-target="rejected-{{ event.id }}">
-    View Rejected Invitations
-  </button>
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
 
-  <div id="rejected-{{ event.id }}" class="hidden">
-    <h4 class="rejected">Rejected Invitations:</h4>
-    {% if event.rejected_invites %} {% for rejected in event.rejected_invites %}
-    <div>
-      <p>Name: {{ rejected.attendee_name }} {{ rejected.attendee_lname }}</p>
-      <p>Email: {{ rejected.attendee_email }}</p>
-      <p>Reason: {{ rejected.reject_reason }}</p>
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
     </div>
-    <hr />
-    {% endfor %} {% else %}
-    <p>No rejections found.</p>
-    {% endif %}
-  </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">Invited Attendees:</h1>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>
+                Note: This is where you are able to view the attendees you have
+                <span class="info"> invited </span>, attendees who have
+                <span class="info">RSVPed</span> and attendees who have
+                <span class="info">rejected</span> the invite.
+              </h5>
+            </div>
+            <div class="card-body">
+              {% for event in events %}
+              <div class="invited_attendees mb-4">
+                <h3 class="text-primary">{{ event.event_name }}</h3>
+
+                <!-- Button to toggle visibility -->
+                <button
+                  class="btn btn-secondary toggle-btn"
+                  data-target="attendees-{{ event.id }}"
+                >
+                  View Invited Attendees
+                </button>
+
+                <!-- Div starts hidden, unique ID per event -->
+                <div id="attendees-{{ event.id }}" class="collapse">
+                  <ul class="list-unstyled mt-2">
+                    {% for attendee in event.invited_attendees %}
+                    <li>
+                      Name: {{ attendee.name }} | Email: {{ attendee.email }}
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="invitation_rejected_container mb-4">
+                <!-- Button to toggle rejected invitations visibility -->
+                <button
+                  class="btn btn-secondary toggle-btn"
+                  data-target="rejected-{{ event.id }}"
+                >
+                  View Rejected Invitations
+                </button>
+
+                <div id="rejected-{{ event.id }}" class="collapse">
+                  <h4 class="rejected mt-2">Rejected Invitations:</h4>
+                  {% if event.rejected_invites %} {% for rejected in
+                  event.rejected_invites %}
+                  <div class="border p-2 mb-2">
+                    <p>
+                      <strong>Name:</strong> {{ rejected.attendee_name }} {{
+                      rejected.attendee_lname }}
+                    </p>
+                    <p><strong>Email:</strong> {{ rejected.attendee_email }}</p>
+                    <p><strong>Reason:</strong> {{ rejected.reject_reason }}</p>
+                  </div>
+                  <hr />
+                  {% endfor %} {% else %}
+                  <p>No rejections found.</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="rsvp_attendees_container mb-4">
+                <!-- Button to toggle RSVP attendees visibility -->
+                <button
+                  class="btn btn-secondary toggle-btn"
+                  data-target="rsvp-{{ event.id }}"
+                >
+                  View RSVPed Attendees
+                </button>
+
+                <div id="rsvp-{{ event.id }}" class="collapse">
+                  <h4 class="rsvp mt-2">RSVPed Attendees:</h4>
+                  {% if event.rsvp_attendees %} {% for attendee in
+                  event.rsvp_attendees %}
+                  <p>
+                    Name: {{ attendee.attendee_name }} {{
+                    attendee.attendee_lname }}
+                  </p>
+                  <p>Email: {{ attendee.attendee_email }}</p>
+                  {% endfor %} {% else %}
+                  <p>No RSVPs yet.</p>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-
-<div class="rsvp_attendees_container">
-  <!-- Button to toggle RSVP attendees visibility -->
-  <button class="toggle-btn" data-target="rsvp-{{ event.id }}">
-    View RSVPed Attendees
-  </button>
-
-  <div id="rsvp-{{ event.id }}" class="hidden">
-    <h4 class="rsvp">RSVPed Attendees:</h4>
-    {% if event.rsvp_attendees %} {% for attendee in event.rsvp_attendees %}
-    <p>Name: {{ attendee.attendee_name }} {{ attendee.attendee_lname }}</p>
-    <p>Email: {{ attendee.attendee_email }}</p>
-    {% endfor %} {% else %}
-    <p>No RSVPs yet.</p>
-    {% endif %}
-  </div>
-</div>
-
-{% endfor %} {% endblock %} {% block javascript %}
+{% endblock %} {% block javascript %}
 <script>
   // Select all buttons with the toggle-btn class
   document.querySelectorAll(".toggle-btn").forEach((button) => {
@@ -112,11 +232,11 @@ content %}
       const targetDiv = document.getElementById(targetDivId);
 
       // Toggle the visibility of the div
-      if (targetDiv.classList.contains("hidden")) {
-        targetDiv.classList.remove("hidden");
+      if (targetDiv.classList.contains("collapse")) {
+        targetDiv.classList.remove("collapse");
         this.textContent = this.textContent.replace("View", "Hide"); // Update button text
       } else {
-        targetDiv.classList.add("hidden");
+        targetDiv.classList.add("collapse");
         this.textContent = this.textContent.replace("Hide", "View"); // Update button text
       }
     });

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Events16, Users9, Attendee_events8
+from .models import Events17, Users9, Attendee_events8, Client_Attend_Events2,Event_records11
 from . import db
 from .gen_algo_final import *
 import json
@@ -12,18 +12,8 @@ views = Blueprint('views', __name__)
 ######################################################################################################################################################### Home
 
 @views.route('/', methods=['GET', 'POST'])
-@login_required
 def home():
-    if current_user.role == "Event Creator":
-        return redirect(url_for('views_creator.create_event_home'))
-    elif current_user.role == "Client":
-        return redirect(url_for('views_creator.client_home'))
-    elif current_user.role == "Attendee":
-        return redirect(url_for('views_attendee.attendee'))
-    elif current_user.role == "Admin":
-        return redirect(url_for('views_creator.admin_home'))
-    else:
-        return redirect(url_for('auth.login'))
+    return render_template('index.html', user = current_user)
 
 ######################################################################################################################################################### Role Redirection And Calendar
 
@@ -39,7 +29,7 @@ def role():
         return redirect(url_for('views_creator.admin_home'))
     else:
         return redirect(url_for('auth.login'))
-    
+
 @views.route('/calendar')
 @login_required
 def calendar():
@@ -48,21 +38,20 @@ def calendar():
 @views.route('/fetch-events')
 @login_required
 def fetch_events():
-    # Fetch finalized events from Event_records8 created by the current user
-    event_records = current_user.event_records
     events = []
 
-    # Add finalized events to the calendar
+    # Fetch finalized events created by the current user from Event_records7
+    event_records = current_user.events  # Assuming a relationship exists in User model
     for event_record in event_records:
         events.append({
             'title': event_record.event_name,
             'start': event_record.start_date.isoformat(),
             'end': event_record.end_date.isoformat(),
-            'description': event_record.event_desc,  # Add description if needed
-            'event_privacy': event_record.event_privacy,  # Include privacy status if needed
+            'description': event_record.event_desc,
+            'event_privacy': event_record.event_privacy,
         })
 
-    # Fetch the user's RSVP events from Attendee_events8
+    # Fetch RSVP events for the user from Attendee_events8
     attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
     if attendee_event and attendee_event.rsvp_events:
         rsvp_events = json.loads(attendee_event.rsvp_events)
@@ -71,9 +60,20 @@ def fetch_events():
                 'title': rsvp_event['event_name'],
                 'start': rsvp_event['start_date'],
                 'end': rsvp_event['end_date'],
-                'description': rsvp_event['event_desc'],  # Add description if needed
-                'event_privacy': rsvp_event['event_privacy'],  # Include privacy status if needed
+                'description': rsvp_event['event_desc'],
+                'event_privacy': rsvp_event['event_privacy'],
             })
+    
+    # Fetch RSVP events for the user from Client_Attend_Events2
+    client_rsvps = Client_Attend_Events2.query.filter_by(client_id=current_user.id).all()
+    for client_rsvp in client_rsvps:
+        events.append({
+            'title': client_rsvp.event_name,
+            'start': client_rsvp.start_date.isoformat(),
+            'end': client_rsvp.end_date.isoformat(),
+            'description': client_rsvp.event_desc,
+            'event_privacy': 'Public',  # Assuming these events are public
+        })
 
     return jsonify(events)
 
@@ -82,12 +82,12 @@ def fetch_events():
 @views.route('/event_list', methods=['GET'])
 def event_list():
     # Fetch only public events
-    public_events = Events16.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
         # Get event creator's name from Users9 table
-        creator = Users9.query.get(event.user_id)
+        creator = Users9.query.get(event.creator_id)
         creator_name = f"{creator.first_name} {creator.last_name}" if creator else "Unknown"
 
         if event.data1:  # Check if data1 is not None

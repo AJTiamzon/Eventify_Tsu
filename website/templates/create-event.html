@@ -1,377 +1,339 @@
-{% extends "base.html" %} {% block head %}
+{% extends "base.html" %} {% block title %}Client Events{% endblock %} {% block
+head %}
+<link href="css/app.css" rel="stylesheet" />
 <style>
-  #event_type {
-    display: none;
-  }
-  .holder {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .birthday_creator,
-  .wedding_creator,
-  .baptismal_creator,
-  #event_type {
-    display: none; /* Start hidden */
-  }
-  .info {
-    color: red;
+  label {
+    font-weight: bold;
   }
 </style>
-{% endblock %} {% block title %}Home{% endblock %} {% block content %}
-<div class="holder">
-  <a href="/created_event_edit"><h2>View Your Events</h2></a>
-  <a href="/event_attendee_list"><h2>Attendee List</h2></a>
-  <a href="/create_event_history"><h2>Finalized Events</h2></a>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <a href="/join_room"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
-  <a href="/create_event_profile"><h2>View Profile</h2></a>
+{% endblock %} {% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/create_event_home">
+      <span class="align-middle">Creator Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create-event">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Create An Event</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/created_event_edit">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View/Edit Your Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_history">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Finalized Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/event_attendee_list">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Attendee List</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
+
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3" align="center">
+        Hello! {{ name }} lets make some events shall we.
+      </h1>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Create Events</h5>
+            </div>
+            <div class="card-body">
+              <form method="POST" enctype="multipart/form-data">
+                <label for="event_name">Enter Event Name</label>
+                <input
+                  type="text"
+                  id="event_name"
+                  name="event_name"
+                  class="form-control"
+                  value=""
+                  required
+                />
+                <label for="event_type">Event Type</label>
+                <br />
+                <select name="event_type" id="event_type" class="event_type">
+                  <option value="Birthday">Birthday</option>
+                  <option value="Wedding">Wedding</option>
+                  <option value="Baptismal">Baptismal</option>
+                </select>
+                <br />
+                <label for="event_privacy">Event Privacy Type</label>
+                <select
+                  class="form-control"
+                  id="event_privacy"
+                  name="event_privacy"
+                  required
+                >
+                  <option value="Private">Private</option>
+                  <option value="Public">Public</option>
+                </select>
+                <label for="event_image">Event Image</label>
+                <input
+                  type="file"
+                  id="event_image"
+                  name="event_image"
+                  class="form-control"
+                  accept="image/*"
+                />
+                <label for="budget">Enter Budget (Minimum: 20000)</label>
+                <input
+                  type="text"
+                  id="budget"
+                  name="budget"
+                  class="form-control"
+                  required
+                />
+                <label for="priority1">Priority for Cake</label>
+                <select
+                  id="priority1"
+                  name="priority1"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority2">Priority for Grazing Table</label>
+                <select
+                  id="priority2"
+                  name="priority2"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority3">Priority for Photobooth</label>
+                <select
+                  id="priority3"
+                  name="priority3"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority4">Priority for Digital Printing</label>
+                <select
+                  id="priority4"
+                  name="priority4"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority5">Priority for Photographer</label>
+                <select
+                  id="priority5"
+                  name="priority5"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority6">Priority for Makeup and Hair</label>
+                <select
+                  id="priority6"
+                  name="priority6"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority7">Priority for Event Planner</label>
+                <select
+                  id="priority7"
+                  name="priority7"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                <label for="max_attendee_num"
+                  >Maximum Number Of Attendees</label
+                >
+                <input
+                  type="text"
+                  id="max_attendee_num"
+                  name="max_attendee_num"
+                  class="form-control"
+                  value="100"
+                  required
+                />
+                <label for="event_desc">Enter Event Description</label>
+                <textarea
+                  id="event_desc"
+                  name="event_desc"
+                  class="form-control"
+                  placeholder="Add relevant information, example being location or payment method is applicable"
+                ></textarea>
+                <label for="start_date">Start Time/Date</label>
+                <input
+                  type="datetime-local"
+                  id="start_date"
+                  name="start_date"
+                  class="form-control"
+                  required
+                />
+                <label for="end_date">End Time/Date</label>
+                <input
+                  type="datetime-local"
+                  id="end_date"
+                  name="end_date"
+                  class="form-control"
+                  required
+                />
+                <label>Select Attendees To Invite:</label><br />
+                {% for attendee in attendees %}
+                <input
+                  type="checkbox"
+                  id="{{ attendee.id }}"
+                  name="attendees"
+                  value="{{ attendee.id }}"
+                />
+                <label for="{{ attendee.id }}"
+                  >{{ attendee.first_name }} ({{ attendee.email }})</label
+                ><br />
+                {% endfor %}
+                <br />
+                <div align="center">
+                  <button type="submit" class="btn btn-primary">
+                    Create Event
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-<h1 align="center">Lets Make Some Events {{ name }}</h1>
-<h5>
-  Note: The minimum budget required to make an event and make the algorithm work
-  will be <span class="info">20000 and no decimals.</span>, to be able to have
-  multiple suppliers selected for you. You are always free to edit the event in
-  the <span class="info">"View Your Events"</span> section.
-</h5>
-<div class="holder">
-  <div class="create_bday">
-    <h1>Brithday</h1>
-    <button
-      class="create_birthday"
-      onclick="toggleVisibility('.birthday_creator')"
-    >
-      Create Birthday
-    </button>
-    <div class="birthday_creator">
-      <form method="POST">
-        <label for="event_name">Enter Event Name</label>
-        <input
-          type="text"
-          id="event_name"
-          name="event_name"
-          class="form-control"
-          required
-        />
-        <select name="event_type" id="event_type" class="event_type">
-          <option value="Birthday">Birthday</option>
-        </select>
-        <label for="event_privacy">Event Privacy Type</label>
-        <select
-          class="form-control"
-          id="event_privacy"
-          name="event_privacy"
-          required
-        >
-          <option value="Private">Private</option>
-          <option value="Public">Public</option>
-        </select>
-        <label for="budget">Enter Budget</label>
-        <input type="text" id="budget" class="form-control" name="budget" />
-
-        <label for="priority1">Priority for Cake</label>
-        <input
-          type="number"
-          id="priority1"
-          name="priority1"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="priority2">Priority for Grazing Table</label>
-        <input
-          type="number"
-          id="priority2"
-          name="priority2"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="priority3">Priority for Photobooth</label>
-        <input
-          type="number"
-          id="priority3"
-          name="priority3"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="priority4">Priority for Digital Printing</label>
-        <input
-          type="number"
-          id="priority4"
-          name="priority4"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="priority5">Priority for Photographer</label>
-        <input
-          type="number"
-          id="priority5"
-          name="priority5"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="priority6">Priority for Makeup and Hair</label>
-        <input
-          type="number"
-          id="priority6"
-          name="priority6"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="priority7">Priority for Event Planner</label>
-        <input
-          type="number"
-          id="priority7"
-          name="priority7"
-          min="1"
-          max="5"
-          class="form-control"
-          required
-        />
-
-        <label for="max_attendee_num">Maximum Number Of Attendees</label>
-        <input
-          type="text"
-          id="max_attendee_num"
-          name="max_attendee_num"
-          class="form-control"
-          required
-        />
-        <label for="event_desc">Enter Event Description</label>
-        <textarea
-          id="event_desc"
-          name="event_desc"
-          class="form-control"
-        ></textarea>
-        <label for="start_date">Start Time/Date</label>
-        <input
-          type="datetime-local"
-          id="start_date"
-          name="start_date"
-          class="form-control"
-          required
-        />
-        <label for="end_date">End Time/Date</label>
-        <input
-          type="datetime-local"
-          id="end_date"
-          name="end_date"
-          class="form-control"
-          required
-        />
-        <label>Select Attendees To Invite:</label><br />
-        {% for attendee in attendees %}
-        <input
-          type="checkbox"
-          id="{{ attendee.id }}"
-          name="attendees"
-          value="{{ attendee.id }}"
-        />
-        <label for="{{ attendee.id }}"
-          >{{ attendee.first_name }} ({{ attendee.email }})</label
-        ><br />
-        {% endfor %}
-        <br />
-        <div align="center">
-          <button type="submit" class="btn btn-primary">Create Event</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="create_wedding">
-    <h1>Wedding</h1>
-    <button
-      class="create_wedding"
-      onclick="toggleVisibility('.wedding_creator')"
-    >
-      Plan Wedding
-    </button>
-    <div class="wedding_creator">
-      <form method="POST">
-        <label for="event_name">Enter Event Name</label>
-        <input
-          type="text"
-          id="event_name"
-          name="event_name"
-          class="form-control"
-          required
-        />
-        <select name="event_type" id="event_type" class="event_type">
-          <option value="Wedding">Wedding</option>
-        </select>
-        <label for="event_privacy">Event Privacy Type</label>
-        <select
-          class="form-control"
-          id="event_privacy"
-          name="event_privacy"
-          required
-        >
-          <option value="Private">Private</option>
-          <option value="Public">Public</option>
-        </select>
-        <label for="budget">Enter Budget</label>
-        <input type="text" id="budget" class="form-control" name="budget" />
-        <label for="max_attendee_num">Maximum Number Of Attendees</label>
-        <input
-          type="text"
-          id="max_attendee_num"
-          name="max_attendee_num"
-          class="form-control"
-          required
-        />
-        <label for="event_desc">Enter Event Description</label>
-        <textarea
-          id="event_desc"
-          name="event_desc"
-          class="form-control"
-        ></textarea>
-        <label for="start_date">Start Time/Date</label>
-        <input
-          type="datetime-local"
-          id="start_date"
-          name="start_date"
-          class="form-control"
-          required
-        />
-        <label for="end_date">End Time/Date</label>
-        <input
-          type="datetime-local"
-          id="end_date"
-          name="end_date"
-          class="form-control"
-          required
-        />
-        <label>Select Attendees To Invite:</label><br />
-        {% for attendee in attendees %}
-        <input
-          type="checkbox"
-          id="{{ attendee.id }}"
-          name="attendees"
-          value="{{ attendee.id }}"
-        />
-        <label for="{{ attendee.id }}"
-          >{{ attendee.first_name }} ({{ attendee.email }})</label
-        ><br />
-        {% endfor %}
-        <br />
-        <div align="center">
-          <button type="submit" class="btn btn-primary">Create Event</button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="create_baptismal">
-    <h1>Baptismal</h1>
-    <button
-      class="create_baptismal"
-      onclick="toggleVisibility('.baptismal_creator')"
-    >
-      Plan Baptismal
-    </button>
-    <div class="baptismal_creator">
-      <form method="POST">
-        <label for="event_name">Enter Event Name</label>
-        <input
-          type="text"
-          id="event_name"
-          name="event_name"
-          class="form-control"
-          required
-        />
-        <select name="event_type" id="event_type" class="event_type">
-          <option value="Baptismal">Baptismal</option>
-        </select>
-        <label for="event_privacy">Event Privacy Type</label>
-        <select
-          class="form-control"
-          id="event_privacy"
-          name="event_privacy"
-          required
-        >
-          <option value="Private">Private</option>
-          <option value="Public">Public</option>
-        </select>
-        <label for="budget">Enter Budget</label>
-        <input type="text" id="budget" class="form-control" name="budget" />
-        <label for="max_attendee_num">Maximum Number Of Attendees</label>
-        <input
-          type="text"
-          id="max_attendee_num"
-          name="max_attendee_num"
-          class="form-control"
-          required
-        />
-        <label for="event_desc">Enter Event Description</label>
-        <textarea
-          id="event_desc"
-          name="event_desc"
-          class="form-control"
-        ></textarea>
-        <label for="start_date">Start Time/Date</label>
-        <input
-          type="datetime-local"
-          id="start_date"
-          name="start_date"
-          class="form-control"
-          required
-        />
-        <label for="end_date">End Time/Date</label>
-        <input
-          type="datetime-local"
-          id="end_date"
-          name="end_date"
-          class="form-control"
-          required
-        />
-        <label>Select Attendees To Invite:</label><br />
-        {% for attendee in attendees %}
-        <input
-          type="checkbox"
-          id="{{ attendee.id }}"
-          name="attendees"
-          value="{{ attendee.id }}"
-        />
-        <label for="{{ attendee.id }}"
-          >{{ attendee.first_name }} ({{ attendee.email }})</label
-        ><br />
-        {% endfor %}
-        <br />
-        <div align="center">
-          <button type="submit" class="btn btn-primary">Create Event</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-{% endblock %} {% block javascript %}
-<script>
-  function toggleVisibility(selector) {
-    const element = document.querySelector(selector);
-    if (element.style.display === "none" || element.style.display === "") {
-      element.style.display = "block"; // Show the element
-    } else {
-      element.style.display = "none"; // Hide the element
-    }
-  }
-</script>
-{% endblock %}
+{% endblock %} {% block javascript %} {% endblock %}

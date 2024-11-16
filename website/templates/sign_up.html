@@ -1,157 +1,365 @@
-{% extends "base.html" %} {% block title %}Sign Up{% endblock %} {% block
-content %}
-<form method="POST" enctype="multipart/form-data">
-  <h3 align="center">Sign Up</h3>
-
-  <div class="form-group">
-    <label for="email">Email Address</label>
-    <input
-      type="email"
-      class="form-control"
-      id="email"
-      name="email"
-      placeholder="Enter email"
-      value="{{ email or '' }}"
-      required
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-  </div>
 
-  <div class="form-group">
-    <label for="firstName">First Name</label>
-    <input
-      type="text"
-      class="form-control"
-      id="firstName"
-      name="firstName"
-      placeholder="Enter first name"
-      value="{{ first_name or '' }}"
-      required
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
     />
-  </div>
-
-  <div class="form-group">
-    <label for="lastName">Last Name</label>
-    <input
-      type="text"
-      class="form-control"
-      id="lastName"
-      name="lastName"
-      placeholder="Enter last name"
-      value="{{ last_name or '' }}"
-      required
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
     />
-  </div>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.8/fullcalendar.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
 
-  <div class="form-group">
-    <label for="role">Role</label>
-    <select
-      class="form-control"
-      id="role"
-      name="role"
-      required
-      onchange="toggleImageUpload()"
-    >
-      <option value="Attendee">Attendee</option>
-      <option value="Event Creator">Event Creator</option>
-      <option value="Client">Client</option>
-      <option value="Admin">Admin</option>
-    </select>
-  </div>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        background-image: url("https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?cs=srgb&dl=pexels-emma-bauso-1183828-2253870.jpg&fm=jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
 
-  <!-- Image Upload Div (Initially hidden) -->
-  <div class="form-group" id="image-upload" style="display: none">
-    <div class="form-group">
-      <label for="credibility5">Past Experiences Viable Your Role</label>
-      <input
-        type="text"
-        class="form-control"
-        id="past_experience"
-        name="past_experience"
-        value="{{ past_experience or '' }}"
-      />
+      .container {
+        flex-grow: 1;
+      }
+
+      .main-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 2rem;
+      }
+
+      footer {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        display: flex;
+      }
+    </style>
+
+    <title>Login</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="/">eventify</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="/role">Home</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/event_list">Event List</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('views.calendar') }}"
+              >View Calendar</a
+            >
+          </li>
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/sign-up">Sign Up</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/event_list">Event List</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
-    <label for="credibility1">Upload Credibility Image 1</label>
-    <input
-      type="file"
-      class="form-control"
-      id="credibility1"
-      name="credibility1"
-      accept=".jpg, .jpeg, .png"
-    />
-    <label for="credibility2">Upload Credibility Image 2</label>
-    <input
-      type="file"
-      class="form-control"
-      id="credibility2"
-      name="credibility2"
-      accept=".jpg, .jpeg, .png"
-    />
-    <label for="credibility3">Upload Credibility Image 3</label>
-    <input
-      type="file"
-      class="form-control"
-      id="credibility3"
-      name="credibility3"
-      accept=".jpg, .jpeg, .png"
-    />
-    <label for="credibility4">Upload Credibility Image 4</label>
-    <input
-      type="file"
-      class="form-control"
-      id="credibility4"
-      name="credibility4"
-      accept=".jpg, .jpeg, .png"
-    />
-    <label for="credibility5">Upload Credibility Image 5</label>
-    <input
-      type="file"
-      class="form-control"
-      id="credibility5"
-      name="credibility5"
-      accept=".jpg, .jpeg, .png"
-    />
-  </div>
+    {% else %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
 
-  <div class="form-group">
-    <label for="password1">Password</label>
-    <input
-      type="password"
-      class="form-control"
-      id="password1"
-      name="password1"
-      placeholder="Enter password"
-      value="{{ password1 or '' }}"
-      required
-    />
-  </div>
+    <main class="container">
+      <div class="main-content">
+        <div class="col-sm-10 col-md-8 col-lg-6 mx-auto">
+          <div class="text-center mt-4">
+            <h1 class="h2">Create an Account</h1>
+            <p class="lead">Sign up to start using EventManager</p>
+          </div>
 
-  <div class="form-group">
-    <label for="password2">Password (Confirm)</label>
-    <input
-      type="password"
-      class="form-control"
-      id="password2"
-      name="password2"
-      placeholder="Confirm password"
-      value="{{ password2 or '' }}"
-      required
-    />
-  </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="m-sm-4">
+                <form method="POST" enctype="multipart/form-data">
+                  <h3 align="center">Register</h3>
+                  {% if not verification_sent %}
+                  <!-- Registration Fields -->
+                  <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      placeholder="Enter email"
+                      value="{{ email or '' }}"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="firstName"
+                      name="firstName"
+                      placeholder="Enter first name"
+                      value="{{ first_name or '' }}"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="lastName"
+                      name="lastName"
+                      placeholder="Enter last name"
+                      value="{{ last_name or '' }}"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="role">Role</label>
+                    <select
+                      class="form-control"
+                      id="role"
+                      name="role"
+                      required
+                      onchange="toggleImageUpload()"
+                    >
+                      <option value="Attendee">Attendee</option>
+                      <option value="Event Creator">Event Creator</option>
+                      <option value="Client">Client</option>
+                    </select>
+                  </div>
+                  <!-- Credibility Images Section -->
+                  <div
+                    class="form-group"
+                    id="image-upload"
+                    style="display: none"
+                  >
+                    <label for="past_experience"
+                      >Past Experiences Relevant to Your Role</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="past_experience"
+                      name="past_experience"
+                      value="{{ past_experience or '' }}"
+                    />
+                    {% for i in range(1, 6) %}
+                    <label for="credibility{{ i }}"
+                      >Upload Credibility Image {{ i }}</label
+                    >
+                    <input
+                      type="file"
+                      class="form-control"
+                      id="credibility{{ i }}"
+                      name="credibility{{ i }}"
+                      accept=".jpg, .jpeg, .png"
+                      value="credibility{{ i }}"
+                    />
+                    {% endfor %}
+                  </div>
+                  <!-- Password Fields -->
+                  <div class="form-group">
+                    <label for="password1">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password1"
+                      name="password1"
+                      placeholder="Enter password"
+                      value="{{ password1 or '' }}"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="password2">Password (Confirm)</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password2"
+                      name="password2"
+                      placeholder="Confirm password"
+                      value="{{ password2 or '' }}"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <input
+                      type="checkbox"
+                      id="show-password"
+                      onclick="togglePasswordVisibility()"
+                    />
+                    <label for="show-password">Show Password</label>
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-lg btn-block"
+                  >
+                    Sign Up
+                  </button>
+                  {% else %}
+                  <!-- Verification Code Field -->
+                  <h3 align="center">Verify Your Email</h3>
+                  <div class="form-group">
+                    <label for="verification_code"
+                      >Enter Verification Code</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="verification_code"
+                      name="verification_code"
+                      placeholder="Enter code"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-lg btn-block"
+                  >
+                    Verify
+                  </button>
+                  {% endif %}
+                  <div class="text-center mt-3">
+                    <p>
+                      Already have an account? Login
+                      <a href="/login"><strong>Here</strong></a>
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
 
-  <br />
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+    <footer>
+      <div class="container">
+        <p>&copy; 2024 Event . All Rights Reserved.</p>
+        <p>Contact us at info@events.com</p>
+      </div>
+      <div class="container">
+        <h6>Quick Links</h6>
+        <a href="/">Home</a><br />
+        <a href="/event_list">Events</a><br />
+        <a href="#services">Services</a><br />
+        <a href="/login">Login</a><br />
+        <a href="/sign-up">Sign Up</a>
+      </div>
+      <div class="container">
+        <h6>Connect</h6>
+        <p>Join our community today.</p>
+        <button onclick="window.location.href='/sign-up'">Sign Up</button>
+      </div>
+    </footer>
 
-<script>
-  function toggleImageUpload() {
-    const role = document.getElementById("role").value;
-    const imageUploadDiv = document.getElementById("image-upload");
+    <script>
+      function toggleImageUpload() {
+        const role = document.getElementById("role").value;
+        const imageUploadDiv = document.getElementById("image-upload");
 
-    if (role === "Event Creator") {
-      imageUploadDiv.style.display = "block";
-    } else {
-      imageUploadDiv.style.display = "none";
-    }
-  }
-</script>
-{% endblock %}
+        if (role === "Event Creator") {
+          imageUploadDiv.style.display = "block";
+        } else {
+          imageUploadDiv.style.display = "none";
+        }
+      }
+      function togglePasswordVisibility() {
+        const password1 = document.getElementById("password1");
+        const password2 = document.getElementById("password2");
+        const type = password1.type === "password" ? "text" : "password";
+        password1.type = type;
+        password2.type = type;
+      }
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

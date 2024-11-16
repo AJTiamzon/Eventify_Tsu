@@ -1,129 +1,277 @@
-{% extends "base.html" %} {% block head %}
-<style>
-  .info {
-    color: red;
-  }
-  .holder {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  /* Hide the suppliers_to_hire div initially */
-  .suppliers_to_hire {
-    display: none;
-  }
-  textarea {
-    resize: none;
-  }
-</style>
-{% endblock %} {% block title %}Client Events{% endblock %} {% block content %}
-<div class="holder">
-  <a href="/create-event"><h2>Create Event</h2></a>
-  <a href="/created_event_edit"><h2>View Your Events</h2></a>
-  <a href="/event_attendee_list"><h2>Event Attendee List</h2></a>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <a href="/join_room"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
-  <a href="/create_event_profile"><h2>View Profile</h2></a>
-</div>
+{% extends "base.html" %} {% block title %}Finalized Events {% endblock %} {%
+block head %}
+<link href="css/app.css" rel="stylesheet" />
+{% endblock %} {% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/create_event_home">
+      <span class="align-middle">Creator Dashboard</span>
+    </a>
 
-<h1 align="center">
-  Welcome To Finalized Events <span class="info">{{ name }}</span>
-</h1>
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
 
-<h5>
-  Note: This is where you are able to
-  <span class="info">view the information for contacting the suppliers</span>
-  you have selected. When you have sealed the deal or have made an agreement
-  with that supplier, you can click the button
-  <span class="info">Not Hired</span> to show that you have hired that supplier.
-  If complications arise you may click it again.
-  <span class="info"
-    >This serves as a reminder for you, on which suppliers you have been able to
-    hire and those you have not yet</span
-  >
-  .
-</h5>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create-event">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">Create Event</span>
+        </a>
+      </li>
 
-<div class="past_created_events">
-  <ul>
-    {% for event in event_history %}
-    <li>
-      <h3>{{ event.event_name }}</h3>
-      <p>
-        Event Description: {{ event.event_desc }} || Type: {{ event.event_type
-        }} || Privacy: {{ event.event_privacy }} || Total Cost: {{
-        event.total_cost }}
-      </p>
-      <p>Start: {{ event.start_date }} || End: {{ event.end_date }}</p>
-      <p>Room Code: {{ event.room_code }}</p>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/created_event_edit">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+      </li>
 
-      <!-- View Suppliers To Hire button -->
-      <button class="toggle-suppliers-btn" data-event-id="{{ event.id }}">
-        View Suppliers To Hire
-      </button>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_history">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Finalized Events</span>
+        </a>
+      </li>
 
-      <!-- Suppliers to Hire div (initially hidden) -->
-      <div id="suppliers_{{ event.id }}" class="suppliers_to_hire">
-        <ul>
-          {% for supplier in event.supplier_names %}
-          <li>
-            <strong>Name:</strong> {{ supplier.name }}<br />
-            <strong>Business Name:</strong> {{ supplier.business_name }}<br />
-            <strong>Contact Number:</strong> {{ supplier.contact_number }}<br />
-            <strong>Email:</strong> {{ supplier.email }}<br />
-            <strong>Rating:</strong> {{ supplier.rating }}<br />
-            <strong>Price:</strong> {{ supplier.price }}<br />
-            <form action="/rate_supplier" method="post">
-              <input
-                type="hidden"
-                name="supplier_name"
-                value="{{ supplier.name }}"
-              />
-              <button type="submit" class="rate_the_supplier">
-                View Supplier Ratings
-              </button>
-            </form>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/event_attendee_list">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Attendee List</span>
+        </a>
+      </li>
 
-            <!-- Hire button for each supplier -->
-            <button
-              class="hire-btn"
-              style="background-color: {% if supplier.hired %}green{% else %}red{% endif %};"
-              data-event-id="{{ event.id }}"
-              data-supplier-name="{{ supplier.name }}"
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
+
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
             >
-              {% if supplier.hired %}Hired{% else %}Not Hired{% endif %}
-            </button>
-          </li>
-          {% endfor %}
-        </ul>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">
+        Welcome To Finalized Events <span class="info">{{ name }}</span>
+      </h1>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>
+                Note: This is where you are able to
+                <span class="info"
+                  >view the information for contacting the suppliers</span
+                >
+                you have selected. When you have sealed the deal or have made an
+                agreement with that supplier, you can click the button
+                <span class="info">Not Hired</span> to show that you have hired
+                that supplier. If complications arise you may click it again.
+                <span class="info"
+                  >This serves as a reminder for you, on which suppliers you
+                  have been able to hire and those you have not yet</span
+                >
+                .
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="container mt-4">
+                <div class="past_created_events">
+                  <ul class="list-unstyled">
+                    {% for event in event_history %}
+                    <li class="mb-4">
+                      <h3 class="text-primary">{{ event.event_name }}</h3>
+                      <p>
+                        <strong>Event Description:</strong> {{ event.event_desc
+                        }} || <strong>Type:</strong> {{ event.event_type }} ||
+                        <strong>Privacy:</strong> {{ event.event_privacy }} ||
+                        <strong>Total Cost:</strong> {{ event.total_cost }}
+                      </p>
+                      <p>
+                        <strong>Start:</strong> {{ event.start_date }} ||
+                        <strong>End:</strong> {{ event.end_date }}
+                      </p>
+                      <p><strong>Room Code:</strong> {{ event.room_code }}</p>
+                      {% if event.image_path %}
+                      <div class="d-flex justify-content-center">
+                        <img
+                          src="{{ url_for('static', filename='uploads/' + event.image_path) }}"
+                          alt="Event Image"
+                          class="img-fluid mb-2"
+                          style="
+                            max-width: 500px;
+                            max-height: 250px;
+                            object-fit: cover;
+                          "
+                        />
+                      </div>
+                      {% endif %}
+
+                      <!-- View Suppliers To Hire button -->
+                      <button
+                        class="btn btn-secondary toggle-suppliers-btn"
+                        data-event-id="{{ event.id }}"
+                      >
+                        View Suppliers To Hire
+                      </button>
+
+                      <!-- Suppliers to Hire div (initially hidden) -->
+                      <div
+                        id="suppliers_{{ event.id }}"
+                        class="suppliers_to_hire"
+                        style="display: none"
+                      >
+                        <ul class="list-unstyled">
+                          {% for supplier in event.supplier_names %}
+                          <li class="border p-2 mb-2">
+                            <strong>Name:</strong> {{ supplier.name }}<br />
+                            <strong>Business Name:</strong> {{
+                            supplier.business_name }}<br />
+                            <strong>Contact Number:</strong> {{
+                            supplier.contact_number }}<br />
+                            <strong>Email:</strong> {{ supplier.email }}<br />
+                            <strong>Rating:</strong> {{ supplier.rating }}<br />
+                            <strong>Price:</strong> {{ supplier.price }}<br />
+                            <form
+                              action="/rate_supplier"
+                              method="post"
+                              class="d-inline"
+                            >
+                              <input
+                                type="hidden"
+                                name="supplier_name"
+                                value="{{ supplier.name }}"
+                              />
+                              <button type="submit" class="btn btn-info btn-sm">
+                                View Supplier Ratings
+                              </button>
+                            </form>
+
+                            <!-- Hire button for each supplier -->
+                            <button
+                              class="btn hire-btn"
+                              style="background-color: {% if supplier.hired %}green{% else %}red{% endif %}; color: white;"
+                              data-event-id="{{ event.id }}"
+                              data-supplier-name="{{ supplier.name }}"
+                            >
+                              {% if supplier.hired %}Hired{% else %}Not Hired{%
+                              endif %}
+                            </button>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+
+                      <form
+                        action="{{ url_for('views_creator.send_email_to_attendees', event_name=event.event_name) }}"
+                        method="POST"
+                      >
+                        <label for="send_email"
+                          >Send An Email Update To Attendees</label
+                        >
+                        <textarea
+                          name="send_email"
+                          id="send_email"
+                          rows="6"
+                          cols="50"
+                          style="resize: none"
+                        ></textarea>
+                        <br />
+                        <button type="submit" class="btn btn-primary">
+                          Send To All Attendees
+                        </button>
+                      </form>
+
+                      <!-- Delete button with a form -->
+                      <form
+                        action="{{ url_for('views_creator.delete_event_record', event_id=event.id) }}"
+                        method="POST"
+                        class="mt-2"
+                      >
+                        <button type="submit" class="btn btn-danger">
+                          Delete Event
+                        </button>
+                      </form>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <form
-        action="{{ url_for('views_creator.send_email_to_attendees', event_id=event.id) }}"
-        method="POST"
-      >
-        <textarea
-          name="send_email"
-          id="send_email"
-          rows="6"
-          cols="50"
-        ></textarea>
-        <button type="submit" class="delete-btn">Send To All Attendees</button>
-      </form>
-
-      <!-- Add the delete button with a form -->
-      <form
-        action="{{ url_for('views_creator.delete_event_record', event_id=event.id) }}"
-        method="POST"
-      >
-        <button type="submit" class="delete-btn">Delete Event</button>
-      </form>
-    </li>
-    {% endfor %}
-  </ul>
+    </div>
+  </main>
 </div>
-
 {% endblock %} {% block javascript %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -135,14 +283,11 @@
       button.addEventListener("click", function () {
         const eventId = this.getAttribute("data-event-id");
         const suppliersDiv = document.getElementById(`suppliers_${eventId}`);
-        if (
+        suppliersDiv.style.display =
           suppliersDiv.style.display === "none" ||
           suppliersDiv.style.display === ""
-        ) {
-          suppliersDiv.style.display = "block"; // Show the div
-        } else {
-          suppliersDiv.style.display = "none"; // Hide the div
-        }
+            ? "block"
+            : "none";
       });
     });
 

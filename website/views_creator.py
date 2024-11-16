@@ -1,14 +1,15 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session, current_app
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
-from .models import Events16, Users9, Attendee_events8, Client_events7, Event_records8, Client_Attend_Events2, Client_Hired_Suppliers5, SupplierRating3
+from .models import Events17, Users9, Attendee_events8, Client_events7, Event_records11, Client_Attend_Events2, Client_Hired_Suppliers5, SupplierRating3
 from . import db, socketio
 from .gen_algo_final import *
-import json, random, csv
+import json, random, csv, os
 from flask_socketio import join_room, leave_room, send, SocketIO, emit
 from datetime import datetime
 from string import ascii_uppercase
 from .__init__ import mail
+from werkzeug.utils import secure_filename
 
 views_creator = Blueprint('views_creator', __name__)
 
@@ -50,22 +51,27 @@ def join_room_view():
     session.clear()
 
     # Fetch events created by the current user
-    created_events = Events16.query.filter_by(user_id=current_user.id).all()
+    created_events = Event_records11.query.filter_by(creator_id=current_user.id).all()
     client_attend = Client_Attend_Events2.query.filter_by(client_id=current_user.id).all()
 
     if request.method == "POST":
         code = request.form.get("code")
         if not code:
-            return render_template("join_room.html", error="Please enter a room code.", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend)
+            return render_template("join_room.html", error="Please enter a room code.", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend, name=current_user.fullname)
 
         if code not in rooms:
-            return render_template("join_room.html", error="Room does not exist.", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend)
+            # Attempt to retrieve the room from Event_records11 if not in memory
+            event = Event_records11.query.filter_by(room_code=code).first()
+            if event:
+                rooms[code] = {"messages": [], "members": 0}  # Initialize in memory
+            else:
+                return render_template("join_room.html", error="Room does not exist.", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend, name=current_user.fullname)
 
         session["room"] = code
         session["name"] = current_user.role + " : " + current_user.first_name  # Use the user's first name
         return redirect(url_for('views_creator.room'))
 
-    return render_template("join_room.html", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend)
+    return render_template("join_room.html", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend, name=current_user.fullname)
 
 @views_creator.route("/room")
 @login_required
@@ -76,7 +82,7 @@ def room():
         return redirect(url_for("views_creator.join_room_view"))
     
     # Retrieve the event associated with this room code
-    event = Events16.query.filter_by(room_code=room_code).first()
+    event = Events17.query.filter_by(room_code=room_code).first()
     if not event:
         flash("No event found for this room.")
         return redirect(url_for("views_creator.join_room_view"))
@@ -85,7 +91,7 @@ def room():
     creator = Users9.query.filter_by(id=event.user_id).first()  # Get event creator's name
     creator_name = f"{creator.first_name} {creator.last_name}"
 
-    return render_template("room.html", user=current_user, code=room_code, event_name=event_name, creator_name=creator_name, messages=rooms[room_code]["messages"], role=current_user.role)
+    return render_template("room.html", user=current_user, code=room_code, event_name=event_name, creator_name=creator_name, messages=rooms[room_code]["messages"], role=current_user.role, name=current_user.fullname)
 
 @socketio.on("message")
 def handle_message(data):
@@ -132,20 +138,34 @@ def disconnect():
 @views_creator.route('/create_event_profile')
 @login_required
 def create_event_profile():
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
+    
     # Get the current user
     user = current_user
 
     # Pass the user data and images to the template
-    return render_template('create_event_profile.html', user=user)
+    return render_template('create_event_profile.html', user=user, role=current_user.role, name=current_user.fullname)
 
 ###########################################################################################################################################################################
 
 @views_creator.route('/create_event_home', methods=['GET', 'POST'])
 @login_required
 def create_event_home():
-    return render_template('create_event_home.html', user=current_user, name=current_user.first_name)
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
+    
+    return render_template('create_event_home.html', user=current_user, name=current_user.fullname)
 
 ###########################################################################################################################################################################
+
+# Define the upload folder
+UPLOAD_FOLDER = 'static/uploads/events'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'pdf', 'doc', 'docx', 'txt', 'svg', 'webp', 'heic'}
+
+# Helper function to check allowed extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views_creator.route('/create-event', methods=['GET', 'POST'])
 @login_required
@@ -176,6 +196,14 @@ def event():
 
         # Save the room to persist chats
         rooms[room_code] = {"members": 0, "messages": []}
+
+        # Handle image upload
+        image_file = request.files.get('event_image')
+        if image_file and allowed_file(image_file.filename):
+            filename = secure_filename(image_file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            image_file.save(filepath)
+            image_path = filename  # Save only the filename, not the full path
 
         try:
             budget = int(budget)
@@ -221,16 +249,6 @@ def event():
                     'email': attendee.email
                 })
 
-        # Send email notification to all selected attendees
-        recipient_emails = [attendee['email'] for attendee in attendee_details]
-        msg = Message(
-            f"Invitation to {event_name}",
-            sender='noreply@eventify.com',
-            recipients=recipient_emails
-        )
-        msg.body = f"Hello! You have been invited to attend the event '{event_name}' by {current_user.first_name} {current_user.last_name}.\n\nDescription: {event_desc}\nStart Date: {start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {end_date.strftime('%Y-%m-%d %H:%M')}. For more information, accept the invite in the wesbite and view your ticket."
-        mail.send(msg)
-
         # Convert selected attendee details to JSON
         invited_attendees_json = json.dumps(attendee_details)
 
@@ -272,7 +290,7 @@ def event():
         answers_json = json.dumps(best_answers)
 
         # Create new event instance and save it to the database
-        new_event = Events16(
+        new_event = Events17(
             event_name=event_name,
             event_desc=event_desc,
             room_code=room_code,
@@ -283,24 +301,28 @@ def event():
             max_attendee_num=max_attendee_num,
             start_date=start_date,
             end_date=end_date,
-            invited_attendees=invited_attendees_json  # Save the selected attendees as JSON
+            invited_attendees=invited_attendees_json,  # Save the selected attendees as JSON
+            image_path=image_path
         )
         db.session.add(new_event)
         db.session.commit()
 
-        flash('Event added and invites sent!', category='success')
+        flash('Event added!', category='success')
         return redirect(url_for('views_creator.created_event_edit'))
 
     # Query all attendees with the role 'Attendee'
     attendees = Users9.query.filter_by(role='Attendee').all()
 
-    return render_template("create-event.html", user=current_user, name=current_user.first_name, attendees=attendees)
+    return render_template("create-event.html", user=current_user, name=current_user.fullname, attendees=attendees)
 
 ###########################################################################################################################################################################
 
 @views_creator.route('/created_event_edit', methods=['GET', 'POST'])
 @login_required
 def created_event_edit():
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
+    
     # Fetch and display the user's existing events
     user_events = current_user.events
     events_data = []
@@ -391,6 +413,7 @@ def created_event_edit():
             'max_attendee_num': event.max_attendee_num,
             'start_date': event.start_date,
             'end_date': event.end_date,
+            'image_path' : event.image_path,
             'cake_thing': cake_thing,
             'digital_printing_thing': digital_printing_thing,
             'event_planner_thing': event_planner_thing,
@@ -405,7 +428,7 @@ def created_event_edit():
             'lights_and_sounds_thing': lights_and_sounds_thing
 
         })
-    return render_template('create_event_edit.html', user=current_user, name=current_user.first_name, events=events_data, cake1=cake1, 
+    return render_template('create_event_edit.html', user=current_user, name=current_user.fullname, events=events_data, cake1=cake1, 
                                                     digital_printing1=digital_printing1, event_planner1=event_planner1, 
                                                     grazing_table1=grazing_table1, makeup_and_hair1=makeup_and_hair1, 
                                                     photobooth1=photobooth1, photographer1=photographer1, catering1=catering1, 
@@ -414,10 +437,74 @@ def created_event_edit():
 
 ###########################################################################################################################################################################
 
+@views_creator.route('/create_event_edit_info/<int:event_id>', methods=['POST', 'GET'])
+@login_required
+def create_event_edit_info(event_id):
+    event = Events17.query.get(event_id)
+    if not event:
+        flash('Event not found.', category='error')
+        return redirect(url_for('views_creator.created_event_edit'))  # Replace with the correct redirect route
+
+    if request.method == 'POST':
+        event_name = request.form.get('event_name')
+        event_desc = request.form.get('event_desc')
+        event_type = request.form.get('event_type')
+        event_privacy = request.form.get('event_privacy')
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        max_attendee_num_str = request.form.get('max_attendee_num')
+
+        # Validate maximum attendees
+        try:
+            max_attendee_num = int(max_attendee_num_str)
+            if max_attendee_num < 1:
+                flash('Maximum Attendees must be at least 1.', category='error')
+                return redirect(request.url)
+        except ValueError:
+            flash('Maximum Attendees must be a valid whole number (no decimals).', category='error')
+            return redirect(request.url)
+
+        # Convert date strings to datetime objects
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M')
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M')
+        except ValueError:
+            flash('Please provide valid start and end dates.', category='error')
+            return redirect(request.url)
+
+        # Ensure the end date is after the start date
+        if end_date < start_date:
+            flash('End date cannot be before start date.', category='error')
+            return redirect(request.url)
+        
+        image_file = request.files.get('event_image')
+        if image_file and allowed_file(image_file.filename):
+            filename = secure_filename(image_file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            image_file.save(filepath)
+            image_path = filename  # Save only the filename, not the full path
+            event.image_path = image_path
+
+        # Update event details
+        event.event_name = event_name
+        event.event_desc = event_desc
+        event.event_type = event_type
+        event.event_privacy = event_privacy
+        event.start_date = start_date
+        event.end_date = end_date
+        event.max_attendee_num = max_attendee_num
+        db.session.commit()
+
+        flash('Event updated successfully.', category='success')
+        return redirect(url_for('views_creator.created_event_edit'))  # Replace with the correct redirect route
+
+    return render_template('create_event_edit_info.html', user=current_user, event=event)
+###########################################################################################################################################################################
+
 @views_creator.route('/add_supplier_to_event/<int:event_id>/<string:supplier_name>', methods=['POST'])
 @login_required
 def add_supplier_to_event(event_id, supplier_name):
-    event = Events16.query.get(event_id)
+    event = Events17.query.get(event_id)
 
     if not event:
         return jsonify({'success': False, 'message': 'Event not found.'})
@@ -495,7 +582,7 @@ def add_supplier_to_event(event_id, supplier_name):
 @login_required
 def creator_delete_supplier(event_id, supplier_name):
     # Fetch the event by ID
-    event = Events16.query.filter_by(id=event_id, user_id=current_user.id).first()
+    event = Events17.query.filter_by(id=event_id, user_id=current_user.id).first()
 
     if not event:
         return jsonify({'success': False, 'message': 'Event not found'}), 404
@@ -521,7 +608,7 @@ def creator_delete_supplier(event_id, supplier_name):
 @login_required
 def delete_event_created(event_id):
     # Find the event by its ID
-    event = Events16.query.get(event_id)
+    event = Events17.query.get(event_id)
 
     if event and event.user_id == current_user.id:
         # If the event exists and belongs to the current user, delete it
@@ -538,6 +625,9 @@ def delete_event_created(event_id):
 @views_creator.route('/event_attendee_list', methods=['GET', 'POST'])
 @login_required
 def event_attendee_list():
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
+    
     user_events = current_user.events
     events_data = []
 
@@ -594,15 +684,18 @@ def event_attendee_list():
             'end_date': event.end_date
         })
 
-    return render_template('event_attendee_list.html', user=current_user, name=current_user.first_name, events=events_data)
+    return render_template('event_attendee_list.html', user=current_user, name=current_user.fullname, events=events_data)
 
 ###########################################################################################################################################################################
 
 @views_creator.route('/create_event_history', methods=['GET', 'POST'])
 @login_required
 def create_event_history():
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
+    
     # Fetch all event records created by the current user
-    event_history = Event_records8.query.filter_by(creator_id=current_user.id).all()
+    event_history = Event_records11.query.filter_by(creator_id=current_user.id).all()
 
     for event in event_history:
         if event.data1:
@@ -631,31 +724,51 @@ def create_event_history():
         else:
             event.supplier_names = []
 
-    return render_template('create_event_history.html', user=current_user, event_history=event_history, name=current_user.first_name)
+    return render_template('create_event_history.html', user=current_user, event_history=event_history, name=current_user.fullname)
 
-@views_creator.route('/send_email_to_attendees/<int:event_id>', methods=['POST'])
+@views_creator.route('/send_email_to_attendees/<string:event_name>', methods=['POST'])
 @login_required
-def send_email_to_attendees(event_id):
+def send_email_to_attendees(event_name):
     # Fetch the event record
-    event = Event_records8.query.get_or_404(event_id)
+    event = Event_records11.query.filter_by(event_name=event_name).first_or_404()
     
     # Ensure that only the creator can send emails to their attendees
     if event.creator_id != current_user.id:
         flash("You do not have permission to send emails for this event.", "danger")
         return redirect(url_for('views_creator.create_event_history'))
 
-    # Get the message from the textarea
+    # Get the custom message from the form
     custom_message = request.form.get('send_email')
     
-    # Fetch the emails of all attendees for this event
-    attendee_details = json.loads(event.attendee_emails)  # Assuming attendee emails are stored in JSON format in a field
-    recipient_emails = [attendee['email'] for attendee in attendee_details]
+    # Find attendees who have RSVP'd to this event
+    attendee_emails = []
+    attendee_events = Attendee_events8.query.all()  # Fetch all attendee records
+    
+    for attendee_event in attendee_events:
+        if attendee_event.rsvp_events:
+            try:
+                rsvp_events = json.loads(attendee_event.rsvp_events)  # Parse rsvp_events as JSON
+                # Check if the event_name is in any of the RSVP events
+                for rsvp_event in rsvp_events:
+                    if rsvp_event.get('event_name') == event_name:
+                        # Get the user's email from the Users9 model
+                        user = Users9.query.get(attendee_event.user_id)
+                        if user and user.email:
+                            attendee_emails.append(user.email)
+                        break  # Stop checking other events for this user if the event is found
+            except (TypeError, json.JSONDecodeError):
+                flash("Failed to parse RSVP events for an attendee.", "error")
+    
+    # Check if we have any attendees to email
+    if not attendee_emails:
+        flash("No attendees have RSVP'd for this event.", "info")
+        return redirect(url_for('views_creator.create_event_history'))
 
     # Compose the email
     msg = Message(
         f"Update Regarding {event.event_name}",
         sender='noreply@eventify.com',
-        recipients=recipient_emails
+        recipients=attendee_emails
     )
     msg.body = (
         f"Hello! Here is an update for the event '{event.event_name}' by "
@@ -679,8 +792,11 @@ def send_email_to_attendees(event_id):
 @views_creator.route('/delete_event_record/<int:event_id>', methods=['POST'])
 @login_required
 def delete_event_record(event_id):
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
+    
     # Find the event by ID
-    event_to_delete = Event_records8.query.filter_by(id=event_id, creator_id=current_user.id).first()
+    event_to_delete = Event_records11.query.filter_by(id=event_id, creator_id=current_user.id).first()
 
     if event_to_delete:
         # Delete the event from the database
@@ -696,7 +812,7 @@ def delete_event_record(event_id):
 @views_creator.route('/toggle_hire_status/<int:event_id>/<string:supplier_name>', methods=['POST'])
 @login_required
 def toggle_hire_status(event_id, supplier_name):
-    event = Event_records8.query.get(event_id)
+    event = Event_records11.query.get(event_id)
 
     if event:
         # Initialize supplier_hired_status if it doesn't exist
@@ -725,21 +841,34 @@ def toggle_hire_status(event_id, supplier_name):
 @views_creator.route('/create_record/<int:event_id>', methods=['POST'])
 @login_required
 def create_record(event_id):
-    # Fetch the specific event by ID
-    event = Events16.query.get(event_id)
+    if current_user.role != "Event Creator":
+        return redirect(url_for('views.role'))
     
+    event = Events17.query.get(event_id)
     if not event:
         flash('Event not found', category='error')
         return redirect(url_for('views_creator.created_event_edit'))
 
-    # Check if the event has already been finalized (exists in Event_records8)
-    existing_record = Event_records8.query.filter_by(creator_id=current_user.id, event_name=event.event_name).first()
-
+    existing_record = Event_records11.query.filter_by(creator_id=current_user.id, event_name=event.event_name).first()
     if existing_record:
         flash('This event has already been finalized and saved to history.', category='warning')
         return redirect(url_for('views_creator.created_event_edit'))
+    
+    # Fetch attendee details from the database based on the stored IDs
+    selected_attendees = [attendee['id'] for attendee in json.loads(event.invited_attendees)]
+    attendee_details = []
+    for attendee_id in selected_attendees:
+        attendee = Users9.query.get(attendee_id)
+        if attendee:
+            attendee_details.append({
+                'id': attendee.id,
+                'name': attendee.first_name,
+                'lname': attendee.last_name,
+                'email': attendee.email
+            })
+    
+    invited_attendees_json = json.dumps(attendee_details)
 
-    # Extract event details
     event_name = event.event_name
     event_desc = event.event_desc
     event_type = event.event_type
@@ -747,33 +876,62 @@ def create_record(event_id):
     start_date = event.start_date
     end_date = event.end_date
     room_code = event.room_code
-    data1 = event.data1  # Assuming this contains a JSON string of supplier names
+    max_attendee_num = event.max_attendee_num
+    image_path = event.image_path
+    data1 = event.data1
     total_price = request.form.get('total_price', type=float)
 
-    # Create a new Event_records8 entry
-    new_event_record = Event_records8(
+    new_event_record = Event_records11(
         event_name=event_name,
         event_desc=event_desc,
         event_type=event_type,
         event_privacy=event_privacy,
         data1=data1,
         room_code=room_code,
+        max_attendee_num=max_attendee_num,
+        invited_attendees=invited_attendees_json,
+        image_path=image_path,
         creator_id=current_user.id,
         start_date=start_date,
         end_date=end_date,
-        total_cost=total_price  # Save the total cost
+        total_cost=total_price
     )
-    
-    try:
-        # Add the new record to the database
-        db.session.add(new_event_record)
-        db.session.commit()
-        flash('Event has been successfully saved to history!', category='success')
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error saving event: {e}", category='error')
 
-    # Redirect to the event history page
+    db.session.add(new_event_record)
+    
+    # Send email notification to all selected attendees
+    if attendee_details:
+        recipient_emails = [attendee['email'] for attendee in attendee_details]
+        msg = Message(
+            f"Invitation to {event_name}",
+            sender='noreply@eventify.com',
+            recipients=recipient_emails
+        )
+        msg.body = f"Hello! You have been invited to attend the event '{event_name}' by {current_user.first_name} {current_user.last_name}.\n\nDescription: {event_desc}\nStart Date: {start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {end_date.strftime('%Y-%m-%d %H:%M')}. For more information, accept the invite on the website and view your ticket."
+        mail.send(msg)
+
+    # Store this event in each selected attendee's Attendee_events8 "invites" field
+    for attendee_id in selected_attendees:
+        attendee = Users9.query.get(attendee_id)
+        if attendee:
+            attendee_event = Attendee_events8.query.filter_by(user_id=attendee.id).first()
+            if not attendee_event:
+                attendee_event = Attendee_events8(user_id=attendee.id, invites='[]')
+                db.session.add(attendee_event)
+            
+            invites = json.loads(attendee_event.invites)
+            invites.append({
+                'event_name': event_name,
+                'event_desc': event_desc,
+                'event_privacy': event_privacy,
+                'start_date': start_date.strftime('%Y-%m-%d %H:%M'),
+                'end_date': end_date.strftime('%Y-%m-%d %H:%M'),
+                'creator_name': current_user.first_name + ' ' + current_user.last_name
+            })
+            attendee_event.invites = json.dumps(invites)
+
+    db.session.commit()
+    flash('Event has been successfully saved to history and invites sent!', category='success')
     return redirect(url_for('views_creator.create_event_history'))
 
 ########################################################################################################################################################################### Client
@@ -782,21 +940,30 @@ def create_record(event_id):
 @views_creator.route('/create_event_profile_client')
 @login_required
 def create_event_profile_client():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     # Get the current user
     user = current_user
 
     # Pass the user data and images to the template
-    return render_template('create_event_profile.html', user=user)
+    return render_template('create_event_profile.html', user=user, role=current_user.role, name=current_user.fullname)
 ########################################################################################################################################################################### 
 
 @views_creator.route('/client_home', methods=['GET', 'POST'])
 @login_required
 def client_home():
-    return render_template('client_home.html', user=current_user, name=current_user.first_name)
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
+    return render_template('client_home.html', user=current_user, name=current_user.fullname)
 
 @views_creator.route('/client', methods=['GET', 'POST'])
 @login_required
 def client():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     if request.method == 'POST':
         # Get form inputs
         event_name = request.form.get('event_name')
@@ -882,12 +1049,15 @@ def client():
 
         flash('Client event added!', category='success')
     
-    return render_template("client.html", user=current_user, name=current_user.first_name)
+    return render_template("client.html", user=current_user, name=current_user.fullname)
 
 ###########################################################################################################################################################################
 
 @views_creator.route('/client_events', methods=['POST', 'GET'])
 def client_events():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     user_events = current_user.client_events
     events_data = []
 
@@ -986,7 +1156,7 @@ def client_events():
 
         })
 
-    return render_template("client_events.html", user=current_user, name=current_user.first_name, client_events=events_data, cake1=cake1, 
+    return render_template("client_events.html", user=current_user, name=current_user.fullname, client_events=events_data, cake1=cake1, 
                                                     digital_printing1=digital_printing1, event_planner1=event_planner1, 
                                                     grazing_table1=grazing_table1, makeup_and_hair1=makeup_and_hair1, 
                                                     photobooth1=photobooth1, photographer1=photographer1, catering1=catering1, 
@@ -998,6 +1168,9 @@ def client_events():
 @views_creator.route('/delete_supplier', methods=['POST'])
 @login_required
 def delete_supplier():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     data = request.get_json()  # Get the JSON data from the request
     event_id = data.get('event_id')
     supplier_name = data.get('supplier_name')
@@ -1028,6 +1201,9 @@ def delete_supplier():
 @views_creator.route('/client_delete_event', methods=['POST'])
 @login_required
 def client_delete_event():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     data = request.get_json()
     event_id = data.get('event_id')
 
@@ -1048,13 +1224,19 @@ def client_delete_event():
 @views_creator.route('/client_hire_supplier', methods=['POST', 'GET'])
 @login_required
 def client_hire_supplier():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     # Rendering the supplier list for GET request
     return render_template(
-        "client_hire_supplier.html", user=current_user, name=current_user.first_name, new_things3=new_things3)
+        "client_hire_supplier.html", user=current_user, name=current_user.fullname, new_things3=new_things3)
 
 @views_creator.route('/hire_supplier', methods=['POST'])
 @login_required
 def hire_supplier():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     supplier_name = request.form.get('supplier_name')
     supplier_business_name = request.form.get('supplier_business_name')
     supplier_contact_number = request.form.get('supplier_contact_number')
@@ -1085,6 +1267,9 @@ def hire_supplier():
 @views_creator.route('/client_suppliers_hired', methods=['GET'])
 @login_required
 def client_suppliers_hired():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     # Query the database to find all suppliers hired by the current user
     hired_suppliers = Client_Hired_Suppliers5.query.filter_by(client_id=current_user.id).all()
     
@@ -1106,13 +1291,16 @@ def toggle_hired_status(supplier_name):
 @views_creator.route('/client_attend_events', methods=['POST', 'GET'])
 @login_required
 def client_attend_events():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     # Fetch only public events
-    public_events = Events16.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
         # Get event creator's name from Users9 table
-        creator = Users9.query.get(event.user_id)
+        creator = Users9.query.get(event.creator_id)
         creator_name = f"{creator.first_name} {creator.last_name}" if creator else "Unknown"
 
         events_data.append({
@@ -1123,16 +1311,19 @@ def client_attend_events():
             'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
             'end_date': event.end_date.strftime("%Y-%m-%d %H:%M")
         })
-    return render_template("client_attend_events.html", user=current_user, name=current_user.first_name, public_events=events_data)
+    return render_template("client_attend_events.html", user=current_user, name=current_user.fullname, public_events=events_data)
 
 @views_creator.route('/client_rsvped_events', methods=['POST'])
 @login_required
 def client_rsvped_events():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     event_name = request.form.get('event_name')
     creator_name = request.form.get('creator_name')
     
     # Fetch the event from the database
-    event = Events16.query.filter_by(event_name=event_name).first()
+    event = Event_records11.query.filter_by(event_name=event_name).first()
     
     # Check if the event exists
     if not event:
@@ -1171,7 +1362,7 @@ def client_rsvped_events():
     msg = Message(
         f"RSVP Spot to {event.event_name}",
         sender='noreply@eventify.com',
-        recipients={current_user.email}
+        recipients=[current_user.email]
     )
     msg.body = f"Hello! You have RSVPed a spot to attend the event '{event.event_name}' by {creator_name}.\n\nDescription: {event.event_desc}\nStart Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {event.end_date.strftime('%Y-%m-%d %H:%M')}. For more information, go to the wesbite and view your ticket."
     mail.send(msg)
@@ -1182,6 +1373,9 @@ def client_rsvped_events():
 @views_creator.route('/client_events_to_attend')
 @login_required
 def client_events_to_attend():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     # Fetch all events the current client has RSVPed to
     rsvped_events = Client_Attend_Events2.query.filter_by(client_id=current_user.id).all()
     
@@ -1197,11 +1391,14 @@ def client_events_to_attend():
             'date_rsvped': event.date_rsvped.strftime("%Y-%m-%d %H:%M")
         })
     
-    return render_template("client_events_to_attend.html", user=current_user, name=current_user.first_name, rsvped_events=events_data)
+    return render_template("client_events_to_attend.html", user=current_user, name=current_user.fullname, rsvped_events=events_data)
 
 @views_creator.route('/view_creator', methods=['POST'])
 @login_required
 def view_creator():
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+    
     # Get the creator's name from the form
     creator_name = request.form.get('creator_name')
     
@@ -1220,11 +1417,14 @@ def view_creator():
 @views_creator.route('/rating_and_feedback', methods=['GET','POST'])
 @login_required
 def rating_and_feedback():
-    return render_template('rating_and_feedback.html', user=current_user, new_things3=new_things3, name=current_user.first_name, role=current_user.role)
+    return render_template('rating_and_feedback.html', user=current_user, new_things3=new_things3, name=current_user.fullname, role=current_user.role)
 
 @views_creator.route('/rate_supplier', methods=['POST'])
 @login_required
 def rate_supplier():
+    if current_user.role == "Attendee":
+        return redirect(url_for('views.role'))
+    
     supplier_name = request.form.get('supplier_name')  # Get the supplier name from the form
     specific_supplier = next((thing for thing in new_things3 if thing.name == supplier_name), None)  # Find the specific supplier
 
@@ -1235,11 +1435,14 @@ def rate_supplier():
     # Query the SupplierRating3 table to get all ratings for the specific supplier
     supplier_ratings = SupplierRating3.query.filter_by(supplier_name=supplier_name).all()
 
-    return render_template('rate_supplier.html', user=current_user, supplier=specific_supplier, ratings=supplier_ratings, role=current_user.role, name=current_user.first_name)
+    return render_template('rate_supplier.html', user=current_user, supplier=specific_supplier, ratings=supplier_ratings, role=current_user.role, name=current_user.fullname)
 
 @views_creator.route('/submit_supplier_rating', methods=['POST'])
 @login_required
 def submit_supplier_rating():
+    if current_user.role == "Attendee":
+        return redirect(url_for('views.role'))
+    
     supplier_name = request.form.get('supplier_name')
     rating = float(request.form.get('rating')) 
     feedback = request.form.get('feedback')
@@ -1349,8 +1552,8 @@ def admin_home():
     if current_user.role != "Admin":
         return redirect(url_for('views.role'))
     all_users = Users9.query.all()
-    all_events = Events16.query.all()
-    return render_template('admin_home.html', user=current_user, role=current_user.role, name=current_user.first_name,all_users=all_users, all_events=all_events)
+    all_events = Events17.query.all()
+    return render_template('admin_home.html', user=current_user, role=current_user.role, name=current_user.fullname,all_users=all_users, all_events=all_events)
 
 @views_creator.route('/creator_send_email', methods=['POST', 'GET'])
 @login_required
@@ -1360,4 +1563,4 @@ def creator_send_email():
         msg.body = "Hey this is the test Email Tinay :)"
         mail.send(msg)
         return "Sent Email"
-    return render_template('creator_send_email.html', user=current_user, role=current_user.role, name=current_user.first_name)
+    return render_template('creator_send_email.html', user=current_user, role=current_user.role, name=current_user.fullname)

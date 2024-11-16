@@ -55,6 +55,7 @@
 
       const zp = ZegoUIKitPrebuilt.create(kitToken);
       zp.joinRoom({
+        maxUsers: 100,
         container: document.querySelector("#root"),
         sharedLinks: [
           {
@@ -80,7 +81,6 @@
         showScreenSharingButton: false,
         showTextChat: true,
         showUserList: true,
-        maxUsers: 2,
         layout: "Auto",
         showLayoutButton: false,
       });

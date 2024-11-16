@@ -1,8 +1,6 @@
 {% extends "base.html" %} {% block head %}
 <style>
-  .info {
-    color: red;
-  }
+
   .holder {
     display: flex;
     align-items: center;
@@ -18,80 +16,233 @@
   }
 </style>
 {% endblock %} {% block title %}Rate Supplier{% endblock %} {% block content %}
-<div class="holder">
-  {% if role == "Event Creator" %}
-  <a href="/create-event"><h2>Create Event</h2></a>
-  <a href="/created_event_edit"><h2>View Your Events</h2></a>
-  <a href="/create_event_history"><h2>Finalized Events</h2></a>
-  <a href="/event_attendee_list"><h2>Attendee List</h2></a>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <a href="/join_room"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard" target="_blank"><h2>Video Chat Room</h2></a>
-  <a href="/create_event_profile"><h2>View Profile</h2></a>
-  {% endif %} {% if role == "Client" %}
-  <h2 align="center"><a href="/client">Plan An Event</a></h2>
-  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
-  <h2 align="center">
-    <a href="/client_attend_events">Attend Public Events</a>
-  </h2>
-  <h2 align="center">
-    <a href="/client_events_to_attend">RSVPed Events</a>
-  </h2>
-  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <h2 align="center">
-    <a href="/create_event_profile_client">View Profile</a>
-  </h2>
-  <h2><a href="/join_room">Chat Room</a></h2>
-  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
-  {% endif %}
-</div>
-
-<h1>Rate Supplier: {{ supplier.name }}</h1>
-
-<div class="supplier-info">
-  <h6>Business Name: {{ supplier.business_name }}</h6>
-  <h6>Contact Number: {{ supplier.contact_number }}</h6>
-  <h6>Email: {{ supplier.email }}</h6>
-  <h6>Rating: {{ supplier.rating }}</h6>
-  <h6>Commission: {{ supplier.price }}</h6>
-</div>
-
-<!-- Ratings Section -->
-<h2>All Ratings for {{ supplier.name }}</h2>
-<div class="ratings-container">
-  {% if ratings %} {% for rating in ratings %}
-  <div class="rating-item">
-    <p>
-      <strong>Reviewer:</strong> {{ rating.reviewer_name }} ({{
-      rating.reviewer_role }})
-    </p>
-    <p><strong>Rating:</strong> {{ rating.rating }} / 5</p>
-    <p><strong>Feedback:</strong> {{ rating.feedback }}</p>
-    <p>
-      <small
-        ><strong>Date Reviewed:</strong> {{
-        rating.date_reviewed.strftime('%Y-%m-%d') }}</small
-      >
-    </p>
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    {% if user.role == "Client" %}
+    <a class="sidebar-brand" href="/client_home">
+      <span class="align-middle">Client Dashboard</span>
+    </a>
+    {% endif %} {% if user.role == "Event Creator" %}
+    <a class="sidebar-brand" href="/create_event_home">
+      <span class="align-middle">Creator Dashboard</span>
+    </a>
+    {% endif %} {% if user.role == "Attendee" %}
+    <a class="sidebar-brand" href="/attendee">
+      <span class="align-middle">Attendee Dashboard</span>
+    </a>
+    {% endif %}
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Plan An Event</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/create-event">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Create An Event</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_events">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/created_event_edit">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_attend_events">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attend Public Events</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/create_event_history">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Finalized Events</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_events_to_attend">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">RSVPed Events</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/event_attendee_list">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attendee List</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/client_hire_supplier">
+          <i class="align-middle" data-feather="briefcase"></i>
+          <span class="align-middle">Hire Supplier</span>
+        </a>
+        {% endif %}
+      </li>
+      {% if user.role == "Attendee" %} {% else %}
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+      {% endif %}
+      <li class="sidebar-item">
+        {% if user.role == "Client" %}
+        <a class="sidebar-link" href="/create_event_profile_client">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+        {% endif %}{% if user.role == "Event Creator" %}
+        <a class="sidebar-link" href="/create_event_profile">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+        {% endif %}
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
   </div>
-  {% endfor %} {% else %}
-  <p>No ratings available for this supplier yet.</p>
-  {% endif %}
-</div>
+</nav>
 
-<!-- Rating Form -->
-<form action="/submit_supplier_rating" method="post">
-  <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-  <div class="form-group">
-    <label for="rating">Your Rating (1-5):</label>
-    <input type="number" name="rating" min="1" max="5" required />
-  </div>
-  <div class="form-group">
-    <label for="feedback">Your Feedback:</label>
-    <textarea name="feedback" rows="4" required></textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit Rating</button>
-</form>
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
 
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">
+        Welcome To Event Creation <span class="info"> {{ name }} </span>
+      </h1>
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header"><h1>Rate Supplier: {{ supplier.name }}</h1></div>
+            <div class="card-body">
+              <h6 class="mb-4">
+                <div class="supplier-info">
+                  <h6>Business Name: {{ supplier.business_name }}</h6>
+                  <h6>Contact Number: {{ supplier.contact_number }}</h6>
+                  <h6>Email: {{ supplier.email }}</h6>
+                  <h6>Rating: {{ supplier.rating }}</h6>
+                  <h6>Commission: {{ supplier.price }}</h6>
+                </div>
+
+                <!-- Ratings Section -->
+                <h2>All Ratings for {{ supplier.name }}</h2>
+                <div class="ratings-container">
+                  {% if ratings %} {% for rating in ratings %}
+                  <div class="rating-item">
+                    <p>
+                      <strong>Reviewer:</strong> {{ rating.reviewer_name }} ({{
+                      rating.reviewer_role }})
+                    </p>
+                    <p><strong>Rating:</strong> {{ rating.rating }} / 5</p>
+                    <p><strong>Feedback:</strong> {{ rating.feedback }}</p>
+                    <p>
+                      <small
+                        ><strong>Date Reviewed:</strong> {{
+                        rating.date_reviewed.strftime('%Y-%m-%d') }}</small
+                      >
+                    </p>
+                  </div>
+                  {% endfor %} {% else %}
+                  <p>No ratings available for this supplier yet.</p>
+                  {% endif %}
+                </div>
+                <!-- Rating Form -->
+                <form action="/submit_supplier_rating" method="post">
+                  <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                  <div class="form-group">
+                    <label for="rating">Your Rating (1-5):</label>
+                    <select
+                      id="rating"
+                      name="rating"
+                      class="form-control"
+                      required
+                    >
+                      <option value="1">1</option>
+                      <option value="1.5">1.5</option>
+                      <option value="2">2</option>
+                      <option value="2.5">2.5</option>
+                      <option value="3">3</option>
+                      <option value="3.5">3.5</option>
+                      <option value="4">4</option>
+                      <option value="4.5">4.5</option>
+                      <option value="5" selected>5</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="feedback">Your Feedback:</label>
+                    <textarea name="feedback" rows="4" required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit Rating</button>
+                </form>
+              </h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 {% endblock %}

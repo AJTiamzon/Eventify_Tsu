@@ -1,117 +1,203 @@
-{% extends "base.html" %} {% block head %}
-<style>
-  .info {
-    font-weight: bold;
-    color: red;
-  }
-  .creator-info {
-    font-size: 1.2em;
-  }
-  .events-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .rating-section {
-    margin-top: 30px;
-  }
-  .rating {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 15px;
-  }
-</style>
-{% endblock %} {% block title %}Creator Information{% endblock %} {% block
-content %}
-<div class="events-container">
-  {% if user.role == "Attendee" %}
-  <a href="/attendee_invites"><h2>View Invites</h2></a>
-  <a href="/attendee_browse"><h2>Public Events To Attend</h2></a>
-  <a href="/attendee_history"><h2>Past Events Attended</h2></a>
-  <a href="/join_room_attendee"><h2>Chat Room</h2></a>
-  <a href="/video_chat_dashboard_attendee" target="_blank"
-    ><h2>Join Video Chat</h2></a
-  >
+{% extends "base.html" %} {% block content %}
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/attendee">
+      <span class="align-middle">Attendee Dashboard</span>
+    </a>
 
-  {% else %}
-  <h2 align="center"><a href="/client">Plan An Event</a></h2>
-  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
-  <h2 align="center">
-    <a href="/client_events_to_attend">RSVPed Events</a>
-  </h2>
-  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
-  <h2 align="center">
-    <a href="/create_event_profile_client">View Profile</a>
-  </h2>
-  <h2><a href="/join_room">Chat Room</a></h2>
-  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">View Calendar</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_invites">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View Your Invites</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_browse">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attend Public Events</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_events">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_history">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Past Events Attended</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_attendee">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room_attendee">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-  {% endif %}
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="User Avatar"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i> Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+              <h1 class="text-center my-4">Creator Information</h1>
+
+              <div class="container">
+                <div class="creator-info mb-4">
+                  <p><strong>First Name:</strong> {{ creator.first_name }}</p>
+                  <p><strong>Last Name:</strong> {{ creator.last_name }}</p>
+                  <p><strong>Email:</strong> {{ creator.email }}</p>
+                  <p><strong>Role:</strong> {{ creator.role }}</p>
+                  <p>
+                    <strong>Past Experience:</strong> {{ creator.past_experience
+                    }}
+                  </p>
+
+                  <!-- Check if each image exists before rendering -->
+                  <div class="row">
+                    {% if creator.credibility1 %}
+                    <div class="col-6 col-md-4 mb-3">
+                      <img
+                        src="{{ url_for('static', filename='uploads/' + creator.credibility1) }}"
+                        alt="Credibility Image 1"
+                        class="img-fluid"
+                      />
+                    </div>
+                    {% endif %} {% if creator.credibility2 %}
+                    <div class="col-6 col-md-4 mb-3">
+                      <img
+                        src="{{ url_for('static', filename='uploads/' + creator.credibility2) }}"
+                        alt="Credibility Image 2"
+                        class="img-fluid"
+                      />
+                    </div>
+                    {% endif %} {% if creator.credibility3 %}
+                    <div class="col-6 col-md-4 mb-3">
+                      <img
+                        src="{{ url_for('static', filename='uploads/' + creator.credibility3) }}"
+                        alt="Credibility Image 3"
+                        class="img-fluid"
+                      />
+                    </div>
+                    {% endif %} {% if creator.credibility4 %}
+                    <div class="col-6 col-md-4 mb-3">
+                      <img
+                        src="{{ url_for('static', filename='uploads/' + creator.credibility4) }}"
+                        alt="Credibility Image 4"
+                        class="img-fluid"
+                      />
+                    </div>
+                    {% endif %} {% if creator.credibility5 %}
+                    <div class="col-6 col-md-4 mb-3">
+                      <img
+                        src="{{ url_for('static', filename='uploads/' + creator.credibility5) }}"
+                        alt="Credibility Image 5"
+                        class="img-fluid"
+                      />
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Ratings Section -->
+                <div class="rating-section">
+                  <h2 class="my-4">
+                    Ratings for {{ creator.first_name }} {{ creator.last_name }}
+                  </h2>
+
+                  {% if ratings %}
+                  <ul class="list-group">
+                    {% for rating in ratings %}
+                    <li class="list-group-item mb-3">
+                      <p>
+                        <strong>Reviewer:</strong> {{ rating.reviewer_firstname
+                        }} {{ rating.reviewer_lastname }} ({{
+                        rating.reviewer_role }})
+                      </p>
+                      <p><strong>Rating:</strong> {{ rating.rating }} / 5.0</p>
+                      <p><strong>Feedback:</strong> {{ rating.feedback }}</p>
+                      <p>
+                        <strong>Date Submitted:</strong> {{
+                        rating.date_submitted }}
+                      </p>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                  {% else %}
+                  <p>No ratings available for this creator yet.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
-<h1 align="center">Creator Information</h1>
-
-<div class="creator-info">
-  <p><strong>First Name:</strong> {{ creator.first_name }}</p>
-  <p><strong>Last Name:</strong> {{ creator.last_name }}</p>
-  <p><strong>Email:</strong> {{ creator.email }}</p>
-  <p><strong>Role:</strong> {{ creator.role }}</p>
-  <p><strong>Past Experience:</strong> {{ creator.past_experience }}</p>
-
-  <!-- Check if each image exists before rendering -->
-  {% if creator.credibility1 %}
-  <img
-    src="{{ url_for('static', filename='uploads/' + creator.credibility1) }}"
-    alt="Credibility Image 1"
-    width="200"
-  />
-  {% endif %} {% if creator.credibility2 %}
-  <img
-    src="{{ url_for('static', filename='uploads/' + creator.credibility2) }}"
-    alt="Credibility Image 2"
-    width="200"
-  />
-  {% endif %} {% if creator.credibility3 %}
-  <img
-    src="{{ url_for('static', filename='uploads/' + creator.credibility3) }}"
-    alt="Credibility Image 3"
-    width="200"
-  />
-  {% endif %} {% if creator.credibility4 %}
-  <img
-    src="{{ url_for('static', filename='uploads/' + creator.credibility4) }}"
-    alt="Credibility Image 4"
-    width="200"
-  />
-  {% endif %} {% if creator.credibility5 %}
-  <img
-    src="{{ url_for('static', filename='uploads/' + creator.credibility5) }}"
-    alt="Credibility Image 5"
-    width="200"
-  />
-  {% endif %}
-</div>
-
-<!-- Ratings Section -->
-<div class="rating-section">
-  <h2>Ratings for {{ creator.first_name }} {{ creator.last_name }}</h2>
-
-  {% if ratings %}
-  <ul>
-    {% for rating in ratings %}
-    <li class="rating">
-      <p>
-        <strong>Reviewer:</strong> {{ rating.reviewer_firstname }} {{
-        rating.reviewer_lastname }} ({{ rating.reviewer_role }})
-      </p>
-      <p><strong>Rating:</strong> {{ rating.rating }} / 5.0</p>
-      <p><strong>Feedback:</strong> {{ rating.feedback }}</p>
-      <p><strong>Date Submitted:</strong> {{ rating.date_submitted }}</p>
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>No ratings available for this creator yet.</p>
-  {% endif %}
-</div>
-
 {% endblock %}

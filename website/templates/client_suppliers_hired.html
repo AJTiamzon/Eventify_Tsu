@@ -23,83 +23,223 @@
   }
 </style>
 {% endblock %} {% block content %}
-<div class="link_container">
-  <h2 align="center"><a href="/client">Plan An Event</a></h2>
-  <h2 align="center"><a href="/client_events">View Your Events</a></h2>
-  <h2 align="center"><a href="/client_hire_supplier">Hire Supplier</a></h2>
-  <h2 align="center">
-    <a href="/client_attend_events">Attend Public Events</a>
-  </h2>
-  <h2 align="center">
-    <a href="/client_events_to_attend">RSVPed Events</a>
-  </h2>
-  <a href="/rating_and_feedback"><h2>Rate Suppliers</h2></a>
-  <h2><a href="/join_room">Chat Room</a></h2>
-  <h2><a href="/video_chat_dashboard" target="_blank">Video Chat Room</a></h2>
-</div>
-<div class="container mt-4">
-  <h2>Your Hired Suppliers</h2>
-  {% if hired_suppliers %} {% for supplier in hired_suppliers %}
-  <h4>{{ supplier.supplier_name }}</h4>
-  <form action="/rate_supplier" method="post">
-    <input
-      type="hidden"
-      name="supplier_name"
-      value="{{ supplier.supplier_name }}"
-    />
-    <button type="submit" class="rate_the_supplier">
-      view supplier ratings
-    </button>
-  </form>
-  <h6>Supplier Type: {{ supplier.supplier_type }}</h6>
-  <h6>Business Name: {{ supplier.supplier_business_name }}</h6>
-  <h6>Contact Number: {{ supplier.supplier_contact_number }}</h6>
-  <h6>Email: {{ supplier.supplier_email }}</h6>
-  <h6>Commission: {{ supplier.supplier_price }}</h6>
-  <h6>Rating: {{ supplier.supplier_rating }}</h6>
-  <h6>Date Request Sent: {{ supplier.date_hired.strftime('%Y-%m-%d') }}</h6>
-  <h6>Status:</h6>
-  <button
-    class="status-button {{ 'not-hired' if not supplier.hired_status else 'hired' }}"
-    data-supplier-name="{{ supplier.supplier_name }}"
-    onclick="toggleHiredStatus(this)"
-  >
-    {{ 'Not Hired' if not supplier.hired_status else 'Hired' }}
-  </button>
-  <hr />
-  {% endfor %} {% else %}
-  <p>No suppliers hired yet.</p>
-  {% endif %}
-</div>
-{% endblock %} {% block javascript %}
-<script>
-  function toggleHiredStatus(button) {
-    const supplierName = button.getAttribute("data-supplier-name");
-    const isHired = button.classList.contains("hired");
+<nav id="sidebar" class="sidebar js-sidebar">
+  <div class="sidebar-content js-simplebar">
+    <a class="sidebar-brand" href="/client_home">
+      <span class="align-middle">Client Dashboard</span>
+    </a>
 
-    fetch(`/toggle_hired_status/${supplierName}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          if (isHired) {
-            button.classList.remove("hired");
-            button.classList.add("not-hired");
-            button.innerText = "Not Hired";
-          } else {
-            button.classList.remove("not-hired");
-            button.classList.add("hired");
-            button.innerText = "Hired";
-          }
-        } else {
-          alert("Failed to update status. Please try again.");
-        }
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">Home</li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client">
+          <i class="align-middle" data-feather="calendar"></i>
+          <span class="align-middle">Plan An Event</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events">
+          <i class="align-middle" data-feather="eye"></i>
+          <span class="align-middle">View Your Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_attend_events">
+          <i class="align-middle" data-feather="users"></i>
+          <span class="align-middle">Attend Public Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events_to_attend">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">RSVPed Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_hire_supplier">
+          <i class="align-middle" data-feather="briefcase"></i>
+          <span class="align-middle">Hire Supplier</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_suppliers_hired">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Suppliers Chosen</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle" data-feather="star"></i>
+          <span class="align-middle">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_client">
+          <i class="align-middle" data-feather="user"></i>
+          <span class="align-middle">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle" data-feather="message-square"></i>
+          <span class="align-middle">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle" data-feather="video"></i>
+          <span class="align-middle">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main">
+  <nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+      <i class="hamburger align-self-center"></i>
+    </a>
+
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav navbar-align">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-icon dropdown-toggle d-inline-block d-sm-none"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <i class="align-middle" data-feather="settings"></i>
+          </a>
+
+          <a
+            class="nav-link dropdown-toggle d-none d-sm-inline-block"
+            href="#"
+            data-bs-toggle="dropdown"
+          >
+            <img
+              src="{{ url_for('static', filename='img/avatars/avatar.png') }}"
+              class="avatar img-fluid rounded me-1"
+              alt="Charles Hall"
+            />
+            <span class="text-dark">{{ name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="#"
+              ><i class="align-middle me-1" data-feather="user"></i>Profile</a
+            >
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="container-fluid p-0">
+      <h1 class="h3 mb-3">
+        Hello <span class="info">{{ name }}</span>, Welcome To Event Browsing.
+      </h1>
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+              <h2 class="my-4">Event Tickets</h2>
+              <div class="row">
+                {% if hired_suppliers %} {% for supplier in hired_suppliers %}
+                <div class="col-md-4 mb-4">
+                  <div class="card event-card">
+                    <div class="card-body">
+                      <h4>{{ supplier.supplier_name }}</h4>
+                      <form action="/rate_supplier" method="post">
+                        <input
+                          type="hidden"
+                          name="supplier_name"
+                          value="{{ supplier.supplier_name }}"
+                        />
+                        <button type="submit" class="rate_the_supplier">
+                          view supplier ratings
+                        </button>
+                      </form>
+                      <h6>Supplier Type: {{ supplier.supplier_type }}</h6>
+                      <h6>
+                        Business Name: {{ supplier.supplier_business_name }}
+                      </h6>
+                      <h6>
+                        Contact Number: {{ supplier.supplier_contact_number }}
+                      </h6>
+                      <h6>Email: {{ supplier.supplier_email }}</h6>
+                      <h6>Commission: {{ supplier.supplier_price }}</h6>
+                      <h6>Rating: {{ supplier.supplier_rating }}</h6>
+                      <h6>
+                        Date Request Sent: {{
+                        supplier.date_hired.strftime('%Y-%m-%d') }}
+                      </h6>
+                      <h6>Status:</h6>
+                      <button
+                        class="status-button {{ 'not-hired' if not supplier.hired_status else 'hired' }}"
+                        data-supplier-name="{{ supplier.supplier_name }}"
+                        onclick="toggleHiredStatus(this)"
+                      >
+                        {{ 'Not Hired' if not supplier.hired_status else 'Hired'
+                        }}
+                      </button>
+                      <hr />
+                    </div>
+                  </div>
+                </div>
+                {% endfor %} {% else %}
+                <p>No Event Tickets Found.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  {% endblock %} {% block javascript %}
+  <script>
+    function toggleHiredStatus(button) {
+      const supplierName = button.getAttribute("data-supplier-name");
+      const isHired = button.classList.contains("hired");
+
+      fetch(`/toggle_hired_status/${supplierName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch((error) => console.error("Error:", error));
-  }
-</script>
-{% endblock %}
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            if (isHired) {
+              button.classList.remove("hired");
+              button.classList.add("not-hired");
+              button.innerText = "Not Hired";
+            } else {
+              button.classList.remove("not-hired");
+              button.classList.add("hired");
+              button.innerText = "Hired";
+            }
+          } else {
+            alert("Failed to update status. Please try again.");
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+  </script>
+  {% endblock %}
+</div>

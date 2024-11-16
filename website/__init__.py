@@ -6,6 +6,8 @@ from flask_login import LoginManager, current_user
 from flask_socketio import SocketIO
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+import os
+from flask import current_app
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -16,6 +18,7 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'I am a hacker!'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')  # Set UPLOAD_FOLDER here
     db.init_app(app)
     socketio.init_app(app)
 
@@ -27,7 +30,7 @@ def create_app():
     app.config['MAIL_USE_TLS'] = False                     # Enable TLS
     app.config['MAIL_USE_SSL'] = True                     # Enable SSL
     mail.init_app(app)
-    
+
     # Set up Flask-Admin
     setup_admin(app)
 
@@ -68,12 +71,12 @@ def setup_admin(app):
     admin = Admin(app, name='Event Management', template_mode='bootstrap3', index_view=CustomAdminIndexView())
     
     # Add your models to Flask-Admin
-    from .models import Users9, Events16, Attendee_events8, Event_records8, Client_Attend_Events2, Client_Hired_Suppliers5, SupplierRating3
+    from .models import Users9, Events17, Attendee_events8, Event_records11, Client_Attend_Events2, Client_Hired_Suppliers5, SupplierRating3
 
     admin.add_view(UserAdminView(Users9, db.session))
-    admin.add_view(RestrictedModelView(Events16, db.session))
+    admin.add_view(RestrictedModelView(Events17, db.session))
     admin.add_view(RestrictedModelView(Attendee_events8, db.session))
-    admin.add_view(RestrictedModelView(Event_records8, db.session))
+    admin.add_view(RestrictedModelView(Event_records11, db.session))
     admin.add_view(RestrictedModelView(Client_Attend_Events2, db.session))
     admin.add_view(RestrictedModelView(Client_Hired_Suppliers5, db.session))
     admin.add_view(RestrictedModelView(SupplierRating3, db.session))
