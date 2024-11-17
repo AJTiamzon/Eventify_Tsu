@@ -276,9 +276,6 @@ block head %}
   crossorigin="anonymous"
 ></script>
 <script type="text/javascript">
-  var socketio = io({
-    transports: ["websocket", "polling"],
-    upgrade: true, // Allow WebSocket upgrades
-  });
+  var socketio = io();
 </script>
 {% endblock %}
