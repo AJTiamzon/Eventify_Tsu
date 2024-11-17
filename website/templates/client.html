@@ -145,48 +145,153 @@ head %}
                   id="event_name"
                   name="event_name"
                   class="form-control"
-                  value=""
                   required
                 />
+
                 <label for="event_type"><h4>Select Event Type</h4></label>
                 <br />
-                <select name="event_type" id="event_type" class="event_type">
+                <select id="event_type" name="event_type" required>
                   <option value="Birthday">Birthday</option>
                   <option value="Wedding">Wedding</option>
                   <option value="Baptismal">Baptismal</option>
                 </select>
                 <br />
-                <label for="budget"
-                  ><h4>Enter Budget (Minimum: 20000)</h4></label
-                >
+                <br />
+                <label for="budget"><h4>Enter Budget</h4></label>
                 <input
-                  type="text"
+                  type="number"
                   id="budget"
                   name="budget"
                   class="form-control"
                   required
                 />
+
                 <label for="max_attendee_num"
-                  ><h4>Maximum Number Of Attendees</h4></label
+                  ><h4>Maximum Number of Attendees</h4></label
                 >
                 <input
-                  type="text"
+                  type="number"
                   id="max_attendee_num"
                   name="max_attendee_num"
                   class="form-control"
-                  value="100"
                   required
                 />
-                <label for="event_desc">
-                  <h4>Enter Event Description</h4></label
+
+                <!-- Priority dropdowns -->
+                <h4>
+                  Set Priorities for Event Categories (1 = Most Important, 5 =
+                  Least Important)
+                </h4>
+
+                <label for="priority1">Priority for Cake</label>
+                <select
+                  id="priority1"
+                  name="priority1"
+                  class="form-control"
+                  required
                 >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority2">Priority for Grazing Table</label>
+                <select
+                  id="priority2"
+                  name="priority2"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority3">Priority for Photobooth</label>
+                <select
+                  id="priority3"
+                  name="priority3"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority4">Priority for Digital Printing</label>
+                <select
+                  id="priority4"
+                  name="priority4"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority5">Priority for Photographer</label>
+                <select
+                  id="priority5"
+                  name="priority5"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority6">Priority for Makeup and Hair</label>
+                <select
+                  id="priority6"
+                  name="priority6"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="priority7">Priority for Event Planner</label>
+                <select
+                  id="priority7"
+                  name="priority7"
+                  class="form-control"
+                  required
+                >
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+
+                <label for="event_desc"><h4>Enter Event Description</h4></label>
                 <textarea
                   id="event_desc"
                   name="event_desc"
                   class="form-control"
-                  placeholder=""
+                  rows="3"
+                  required
+                  style="resize: none"
                 ></textarea>
-                <label for="start_date"><h4>Start Time/Date</h4> </label>
+
+                <label for="start_date"><h4>Select Start Date</h4></label>
                 <input
                   type="datetime-local"
                   id="start_date"
@@ -194,7 +299,8 @@ head %}
                   class="form-control"
                   required
                 />
-                <label for="end_date"><h4>End Time/Date</h4></label>
+
+                <label for="end_date"><h4>Select End Date</h4></label>
                 <input
                   type="datetime-local"
                   id="end_date"
@@ -202,10 +308,10 @@ head %}
                   class="form-control"
                   required
                 />
-                <br />
+
                 <div align="center">
                   <button type="submit" class="btn btn-primary">
-                    Create Event
+                    Create Client Event
                   </button>
                 </div>
               </form>

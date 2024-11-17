@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session, current_app
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
-from .models import Events17, Users9, Attendee_events8, Client_events7, Event_records11, Client_Attend_Events2, Client_Hired_Suppliers5, SupplierRating3
+from .models import Events17, Users9, Attendee_events8, Client_events7, Event_records11, Client_Attend_Events2, Client_Hired_Suppliers6, SupplierRating3
 from . import db, socketio
 from .gen_algo_final import *
 import json, random, csv, os
@@ -968,6 +968,14 @@ def client():
         end_date_str = request.form.get('end_date')
         budget = request.form.get('budget')
         max_attendee_num_str = request.form.get('max_attendee_num')
+        # Retrieve priorities
+        priority1 = int(request.form.get('priority1'))
+        priority2 = int(request.form.get('priority2'))
+        priority3 = int(request.form.get('priority3'))
+        priority4 = int(request.form.get('priority4'))
+        priority5 = int(request.form.get('priority5'))
+        priority6 = int(request.form.get('priority6'))
+        priority7 = int(request.form.get('priority7'))
 
         # Check if any of the required fields are empty
         if not event_name or not event_desc or not start_date_str or not end_date_str or not budget or not max_attendee_num_str or not event_type:
@@ -1006,6 +1014,24 @@ def client():
         if end_date < start_date:
             flash('End date cannot be before the start date.', category='error')
             return redirect(request.url)
+        
+        # Prioritize categories
+        category_priorities = {
+            'cake': priority1,
+            'grazing_table': priority2,
+            'photobooth': priority3,
+            'digital_printing': priority4,
+            'photographer': priority5,
+            'makeup_and_hair': priority6,
+            'event_planner': priority7,
+        }
+        sorted_categories = sorted(
+            [('cake', cake1), ('grazing_table', grazing_table1), ('photobooth', photobooth1),
+             ('digital_printing', digital_printing1), ('photographer', photographer1),
+             ('makeup_and_hair', makeup_and_hair1), ('event_planner', event_planner1)],
+            key=lambda x: category_priorities[x[0]],
+            reverse=True
+        )
 
         # Run Algo Here
         total_price = sum(thing.price for thing in things_list3)
@@ -1232,6 +1258,7 @@ def hire_supplier():
     if current_user.role != "Client":
         return redirect(url_for('views.role'))
     
+    hire_reason = request.form.get('hire_reason')
     supplier_name = request.form.get('supplier_name')
     supplier_business_name = request.form.get('supplier_business_name')
     supplier_contact_number = request.form.get('supplier_contact_number')
@@ -1240,9 +1267,10 @@ def hire_supplier():
     supplier_price = request.form.get('supplier_price')
     supplier_rating = request.form.get('supplier_rating')
 
-    # Create a new Client_Hired_Suppliers5 record
-    new_hired_supplier = Client_Hired_Suppliers5(
+    # Create a new Client_Hired_Suppliers6 record
+    new_hired_supplier = Client_Hired_Suppliers6(
         client_id=current_user.id,
+        hire_reason=hire_reason,
         supplier_name=supplier_name,
         supplier_business_name=supplier_business_name,
         supplier_contact_number=supplier_contact_number,
@@ -1266,16 +1294,36 @@ def client_suppliers_hired():
         return redirect(url_for('views.role'))
     
     # Query the database to find all suppliers hired by the current user
-    hired_suppliers = Client_Hired_Suppliers5.query.filter_by(client_id=current_user.id).all()
+    hired_suppliers = Client_Hired_Suppliers6.query.filter_by(client_id=current_user.id).all()
     
     # Render the HTML template and pass the hired suppliers data
-    return render_template('client_suppliers_hired.html', user=current_user, hired_suppliers=hired_suppliers)
+    return render_template('client_suppliers_hired.html', user=current_user, hired_suppliers=hired_suppliers, name=current_user.fullname)
+
+@views_creator.route('/client_delete_supplier/<int:supplier_id>', methods=['POST', 'GET'])
+@login_required
+def client_delete_supplier(supplier_id):
+    if current_user.role != "Client":
+        return redirect(url_for('views.role'))
+
+    # Fetch the supplier by ID and current user's ID to ensure authorization
+    supplier = Client_Hired_Suppliers6.query.filter_by(id=supplier_id, client_id=current_user.id).first()
+
+    if not supplier:
+        flash("Supplier not found or unauthorized action.", "error")
+        return redirect(url_for('views_creator.client_suppliers_hired'))
+
+    # Delete the supplier from the database
+    db.session.delete(supplier)
+    db.session.commit()
+
+    flash("Supplier successfully deleted.", "success")
+    return redirect(url_for('views_creator.client_suppliers_hired'))
 
 @views_creator.route('/toggle_hired_status/<string:supplier_name>', methods=['POST'])
 @login_required
 def toggle_hired_status(supplier_name):
     # Find the supplier in the database using the client's ID
-    supplier = Client_Hired_Suppliers5.query.filter_by(client_id=current_user.id, supplier_name=supplier_name).first()
+    supplier = Client_Hired_Suppliers6.query.filter_by(client_id=current_user.id, supplier_name=supplier_name).first()
     if supplier:
         # Toggle the hired status
         supplier.hired_status = not supplier.hired_status

@@ -316,6 +316,7 @@ def attendee_browse():
             'event_desc': event.event_desc,
             'creator_name': creator_name,
             'room_code': event.room_code,
+            'image_path': event.image_path,
             'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
             'end_date': event.end_date.strftime("%Y-%m-%d %H:%M")
         })

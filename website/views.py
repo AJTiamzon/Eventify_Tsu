@@ -13,7 +13,25 @@ views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('index.html', user = current_user)
+    # Fetch only public events
+    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
+    events_data = []
+    
+    for event in public_events:
+        # Get event creator's name from Users9 table
+        creator = Users9.query.get(event.creator_id)
+        creator_name = f"{creator.fullname}" if creator else "Unknown"
+
+        events_data.append({
+            'event_name': event.event_name,
+            'event_desc': event.event_desc,
+            'creator_name': creator_name,
+            'room_code': event.room_code,
+            'image_path': event.image_path,
+            'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
+            'end_date': event.end_date.strftime("%Y-%m-%d %H:%M")
+        })
+    return render_template('index.html', user = current_user, events_data=events_data)
 
 ######################################################################################################################################################### Role Redirection And Calendar
 
@@ -100,6 +118,7 @@ def event_list():
             'event_desc': event.event_desc,
             'creator_name': creator_name,
             'room_code': event.room_code,
+            'image_path': event.image_path,
             'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
             'end_date': event.end_date.strftime("%Y-%m-%d %H:%M")
         })

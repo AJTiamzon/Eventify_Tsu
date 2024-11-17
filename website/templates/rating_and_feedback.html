@@ -1,6 +1,20 @@
 {% extends "base.html" %} {% block title %}Client Events{% endblock %} {% block
 head %}
 <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet" />
+<style>
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  .card-text {
+    font-size: 0.9rem;
+  }
+</style>
 {% endblock %} {% block content %}
 <nav id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
@@ -86,6 +100,13 @@ head %}
           <span class="align-middle">Rate Suppliers</span>
         </a>
       </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_suppliers_hired">
+          <i class="align-middle" data-feather="check-circle"></i>
+          <span class="align-middle">Suppliers Chosen</span>
+        </a>
+      </li>
       {% endif %}
       <li class="sidebar-item">
         {% if user.role == "Client" %}
@@ -98,16 +119,9 @@ head %}
           <i class="align-middle" data-feather="user"></i>
           <span class="align-middle">View Profile</span>
         </a>
-        {% else %}
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="/create_event_profile_client">
-            <i class="align-middle" data-feather="user"></i>
-            <span class="align-middle">View Profile</span>
-          </a>
-        </li>
         {% endif %}
       </li>
-      
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/join_room">
           <i class="align-middle" data-feather="message-square"></i>
@@ -173,64 +187,120 @@ head %}
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header"></div>
-            <div class="card-body">
+            <div class="card-header">
               <h3 class="mb-3">Sort By:</h3>
-              <div
-                class="btn-group mb-4"
-                role="group"
-                aria-label="Sort by category"
-              >
-                {% set categories = [ ("Cakes", "Cake"), ("Digital Printers",
-                "Digital_Printing"), ("Event Planners", "Event_Planner"),
-                ("Grazing Table", "Grazing_Table"), ("Makeup And Hair Stylists",
-                "Makeup_and_Hair"), ("Photobooths", "Photobooth"),
-                ("Photographers", "Photographer"), ("Catering Service",
-                "Catering"), ("Churches", "Church"), ("Event Stylists",
-                "Event_Stylist"), ("Event Places", "Events_Place"), ("Lights and
-                Sounds", "Lights_and_Sounds") ] %} {% for category_name,
-                category_type in categories %}
+              <div class="dropdown">
                 <button
+                  class="btn btn-outline-primary dropdown-toggle"
                   type="button"
-                  class="btn btn-outline-primary sort-button"
-                  data-category="{{ category_type }}"
+                  id="sortDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
                 >
-                  {{ category_name }}
+                  Select Category
                 </button>
+                <div class="dropdown-menu" aria-labelledby="sortDropdown">
+                  <a class="dropdown-item" onclick="showAllSuppliers()"
+                    >Show All</a
+                  >
+                  <a class="dropdown-item" onclick="sortSuppliers('Cake')"
+                    >Cakes</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Digital_Printing')"
+                    >Digital Printers</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Event_Planner')"
+                    >Event Planners</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Grazing_Table')"
+                    >Grazing Table</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Makeup_and_Hair')"
+                    >Makeup And Hair Stylists</a
+                  >
+                  <a class="dropdown-item" onclick="sortSuppliers('Photobooth')"
+                    >Photobooths</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Photographer')"
+                    >Photographers</a
+                  >
+                  <a class="dropdown-item" onclick="sortSuppliers('Catering')"
+                    >Catering Service</a
+                  >
+                  <a class="dropdown-item" onclick="sortSuppliers('Church')"
+                    >Churches</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Event_Stylist')"
+                    >Event Stylists</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Events_Place')"
+                    >Event Places</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    onclick="sortSuppliers('Lights_and_Sounds')"
+                    >Lights and Sounds</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div id="suppliersContainer" class="row">
+                {% for thing in new_things3 %}
+                <div
+                  class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 supplier"
+                  data-type="{{ thing.type }}"
+                >
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h4 class="card-title">{{ thing.name }}</h4>
+                      <p class="card-text">
+                        <strong>Business Name:</strong> {{ thing.business_name
+                        }}
+                      </p>
+                      <p class="card-text">
+                        <strong>Contact Number:</strong> {{ thing.contact_number
+                        }}
+                      </p>
+                      <p class="card-text">
+                        <strong>Email:</strong> {{ thing.email }}
+                      </p>
+                      <p class="card-text">
+                        <strong>Rating:</strong> {{ thing.rating }}
+                      </p>
+                      <p class="card-text">
+                        <strong>Commission:</strong> {{ thing.price }}
+                      </p>
+                      <form action="/rate_supplier" method="post">
+                        <input
+                          type="hidden"
+                          name="supplier_name"
+                          value="{{ thing.name }}"
+                        />
+                        <button type="submit" class="btn btn-primary btn-sm">
+                          Rate Supplier
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
                 {% endfor %}
               </div>
-
-              {% for category_name, category_type in categories %}
-              <div
-                class="category-div"
-                data-category="{{ category_type }}"
-                style="display: none"
-              >
-                <h1>{{ category_name }}</h1>
-                {% for thing in new_things3 %} {% if thing.type == category_type
-                %}
-                <h4>{{ thing.name }}</h4>
-                <form action="/rate_supplier" method="post">
-                  <input
-                    type="hidden"
-                    name="supplier_name"
-                    value="{{ thing.name }}"
-                  />
-                  <button type="submit" class="btn btn-primary btn-sm">
-                    Rate Supplier
-                  </button>
-                </form>
-                <p><strong>Business Name:</strong> {{ thing.business_name }}</p>
-                <p>
-                  <strong>Contact Number:</strong> {{ thing.contact_number }}
-                </p>
-                <p><strong>Email:</strong> {{ thing.email }}</p>
-                <p><strong>Rating:</strong> {{ thing.rating }}</p>
-                <p><strong>Commission:</strong> {{ thing.price }}</p>
-                <hr />
-                {% endif %} {% endfor %}
-              </div>
-              {% endfor %}
             </div>
           </div>
         </div>
@@ -240,26 +310,54 @@ head %}
 </div>
 {% endblock %} {% block javascript %}
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const categoryDivs = document.querySelectorAll(".category-div");
+  // Store the original suppliers in memory for reliable access
+  const originalSuppliers = Array.from(document.querySelectorAll(".supplier"));
 
-    // Hide all category divs initially
-    categoryDivs.forEach((div) => (div.style.display = "none"));
+  // Show all suppliers
+  function showAllSuppliers() {
+    const container = document.getElementById("suppliersContainer");
+    if (!container) return;
 
-    // Add click event to each sort button
-    document.querySelectorAll(".sort-button").forEach((button) => {
-      button.addEventListener("click", function () {
-        const selectedCategory = button.getAttribute("data-category");
+    // Clear the existing container
+    container.innerHTML = "";
 
-        // Show the matching category div and hide others
-        categoryDivs.forEach((div) => {
-          div.style.display =
-            div.getAttribute("data-category") === selectedCategory
-              ? "block"
-              : "none";
-        });
-      });
+    // Append all original suppliers back to the container
+    originalSuppliers.forEach((supplier) => {
+      const supplierClone = supplier.cloneNode(true); // Clone the supplier node
+      container.appendChild(supplierClone);
+      supplierClone.style.display = "block"; // Ensure visibility
     });
-  });
+  }
+
+  // Sort suppliers by type
+  function sortSuppliers(type) {
+    const container = document.getElementById("suppliersContainer");
+    if (!container) return;
+
+    // Clear the existing container
+    container.innerHTML = "";
+
+    // Filter and append the matching suppliers
+    const sortedSuppliers = originalSuppliers.filter(
+      (supplier) => supplier.getAttribute("data-type") === type
+    );
+
+    sortedSuppliers.forEach((supplier) => {
+      const supplierClone = supplier.cloneNode(true); // Clone the supplier node
+      container.appendChild(supplierClone);
+      supplierClone.style.display = "block"; // Ensure visibility
+    });
+
+    // If no suppliers match, display a message
+    if (sortedSuppliers.length === 0) {
+      const noResultsDiv = document.createElement("div");
+      noResultsDiv.className = "col-12 text-center";
+      noResultsDiv.textContent = "No suppliers found for this type.";
+      container.appendChild(noResultsDiv);
+    }
+  }
+
+  // Initialize the page with all suppliers visible
+  document.addEventListener("DOMContentLoaded", showAllSuppliers);
 </script>
 {% endblock %}

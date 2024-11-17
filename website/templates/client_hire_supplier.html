@@ -220,7 +220,7 @@ head %}
                 >
                   <div class="card h-100">
                     <div class="card-body">
-                      <h5 class="card-title">{{ thing.name }}</h5>
+                      <h3 style="font-weight: bold">{{ thing.name }}</h3>
                       <p class="card-text">
                         <strong>Business Name:</strong> {{ thing.business_name
                         }}<br />
@@ -229,8 +229,13 @@ head %}
                         <strong>Price:</strong> {{ thing.price }}<br />
                         <strong>Rating:</strong> {{ thing.rating }}
                       </p>
-                      <div class="d-flex flex-wrap gap-2">
-                        <form action="/hire_supplier" method="post">
+                      <div class="d-flex flex-column gap-3">
+                        <!-- Hire Supplier Form -->
+                        <form
+                          action="/hire_supplier"
+                          method="post"
+                          class="d-flex flex-column gap-2"
+                        >
                           <input
                             type="hidden"
                             name="supplier_name"
@@ -266,19 +271,35 @@ head %}
                             name="supplier_rating"
                             value="{{ thing.rating }}"
                           />
-                          <button type="submit" class="btn btn-primary btn-sm">
-                            Hire
-                          </button>
-                        </form>
-                        <form action="/rate_supplier" method="post">
-                          <input
-                            type="hidden"
-                            name="supplier_name"
-                            value="{{ thing.name }}"
-                          />
-                          <button type="submit" class="btn btn-link btn-sm">
-                            View Ratings
-                          </button>
+                          <!-- Larger Text Area for Reason -->
+                          <textarea
+                            name="hire_reason"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Reason for choosing to hire"
+                            style="resize: none"
+                            required
+                          ></textarea>
+                          <!-- Buttons -->
+                          <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                              Hire
+                            </button>
+                            <form
+                              action="/rate_supplier"
+                              method="post"
+                              class="ms-2"
+                            >
+                              <input
+                                type="hidden"
+                                name="supplier_name"
+                                value="{{ thing.name }}"
+                              />
+                              <button type="submit" class="btn btn-info">
+                                View Ratings
+                              </button>
+                            </form>
+                          </div>
                         </form>
                       </div>
                     </div>

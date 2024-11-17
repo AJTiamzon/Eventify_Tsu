@@ -522,10 +522,13 @@
                   </div>
                 </div>
                 {% endif %}
+                <div class="d-flex justify-content-center">
+                  <button type="button" class="btn btn-danger" onClick="deleteEvent({{ event.id }})">
+                    Delete Event
+                  </button>
+                </div>
+                <br>
 
-                <button type="button" class="close" onClick="deleteEvent({{ event.id }})">
-                  Delete
-                </button>
                   <li class="list-group-item">
                     <h3>Add More Suppliers To Event</h3>
                     <button onclick="toggleEventDetails({{ event.id }})">View Suppliers</button>

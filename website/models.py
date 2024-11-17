@@ -108,9 +108,10 @@ class Client_Attend_Events2(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey('users9.id'))
     date_rsvped = db.Column(db.DateTime(timezone=True), default=func.now())  # Timestamp when RSVP'd
 
-class Client_Hired_Suppliers5(db.Model):
+class Client_Hired_Suppliers6(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer)  # Reference to Users9
+    hire_reason = db.Column(db.String(150))
     supplier_name = db.Column(db.String(150))
     supplier_business_name = db.Column(db.String(150))
     supplier_contact_number = db.Column(db.String(150))

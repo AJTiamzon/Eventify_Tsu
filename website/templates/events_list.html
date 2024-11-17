@@ -37,7 +37,7 @@
         margin: 0;
         display: flex;
         flex-direction: column;
-        background-image:url("https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?cs=srgb&dl=pexels-emma-bauso-1183828-2253870.jpg&fm=jpg");
+        background-image: url("https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?cs=srgb&dl=pexels-emma-bauso-1183828-2253870.jpg&fm=jpg");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -123,26 +123,37 @@
               >
                 {{ event.event_name }}
               </h3>
-              <h4>
+              <div class="d-flex justify-content-center">
+                <img
+                  src="{{ url_for('static', filename='uploads/' + event.image_path) }}"
+                  alt="Event Image"
+                  class="img-fluid mb-2"
+                  style="max-width: 300px; max-height: 200px; object-fit: cover"
+                />
+              </div>
+
+              <h5>
                 Created By:
                 <span style="color: rgb(0, 89, 255)"
                   >{{ event.creator_name }}</span
                 >
-              </h4>
-              <form
-                action="/view_creator_info"
-                method="POST"
-                class="view-creator-info-form mb-3"
-              >
-                <input
-                  type="hidden"
-                  name="creator_name"
-                  value="{{ event.creator_name }}"
-                />
-                <button type="submit" class="btn btn-primary">
-                  View Creator Information
-                </button>
-              </form>
+              </h5>
+              <div class="d-flex justify-content-center">
+                <form
+                  action="/view_creator_info"
+                  method="POST"
+                  class="view-creator-info-form mb-3"
+                >
+                  <input
+                    type="hidden"
+                    name="creator_name"
+                    value="{{ event.creator_name }}"
+                  />
+                  <button type="submit" class="btn btn-primary">
+                    View Creator Information
+                  </button>
+                </form>
+              </div>
               <p class="card-text">
                 <strong>Event Description:</strong> {{ event.event_desc }}
               </p>
@@ -152,24 +163,27 @@
               <p class="card-text">
                 <strong>End Date:</strong> {{ event.end_date }}
               </p>
-
-              <form
-                id="rsvp-form-{{ event.event_name }}"
-                action="/rsvp_spot"
-                method="POST"
-              >
-                <input
-                  type="hidden"
-                  name="event_name"
-                  value="{{ event.event_name }}"
-                />
-                <input
-                  type="hidden"
-                  name="creator_name"
-                  value="{{ event.creator_name }}"
-                />
-                <button type="submit" class="btn btn-success">RSVP Spot</button>
-              </form>
+              <div class="d-flex justify-content-center">
+                <form
+                  id="rsvp-form-{{ event.event_name }}"
+                  action="/rsvp_spot"
+                  method="POST"
+                >
+                  <input
+                    type="hidden"
+                    name="event_name"
+                    value="{{ event.event_name }}"
+                  />
+                  <input
+                    type="hidden"
+                    name="creator_name"
+                    value="{{ event.creator_name }}"
+                  />
+                  <button type="submit" class="btn btn-success">
+                    RSVP Spot
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -193,7 +207,9 @@
       <div class="container">
         <h6>Connect</h6>
         <p>Join our community today.</p>
-        <button onclick="window.location.href='/sign-up'">Sign Up</button>
+        <button onclick="window.location.href='/sign-up'" class="btn-primary">
+          Sign Up
+        </button>
       </div>
     </footer>
 

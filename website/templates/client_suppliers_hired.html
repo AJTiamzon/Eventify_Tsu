@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block head %}
+{% extends "base.html" %} {% block title %}Client Suppliers Chosen{% endblock %}
+{% block head %}
 <style>
   .link_container {
     display: flex;
@@ -162,7 +163,9 @@
                 <div class="col-md-4 mb-4">
                   <div class="card event-card">
                     <div class="card-body">
-                      <h4>{{ supplier.supplier_name }}</h4>
+                      <h3 style="font-weight: bold">
+                        {{ supplier.supplier_name }}
+                      </h3>
                       <form action="/rate_supplier" method="post">
                         <input
                           type="hidden"
@@ -170,9 +173,15 @@
                           value="{{ supplier.supplier_name }}"
                         />
                         <button type="submit" class="rate_the_supplier">
-                          view supplier ratings
+                          View Supplier Ratings
                         </button>
                       </form>
+                      <h4>
+                        Reason For Hiring:
+                        <span class="text-info font-weight-bold"
+                          >{{ supplier.hire_reason }}</span
+                        >
+                      </h4>
                       <h6>Supplier Type: {{ supplier.supplier_type }}</h6>
                       <h6>
                         Business Name: {{ supplier.supplier_business_name }}
@@ -197,11 +206,21 @@
                         }}
                       </button>
                       <hr />
+
+                      <!-- Delete button -->
+                      <form
+                        action="{{ url_for('views_creator.client_delete_supplier', supplier_id=supplier.id) }}"
+                        method="post"
+                      >
+                        <button type="submit" class="btn btn-danger btn-sm">
+                          Delete Supplier
+                        </button>
+                      </form>
                     </div>
                   </div>
                 </div>
                 {% endfor %} {% else %}
-                <p>No Event Tickets Found.</p>
+                <p>No Suppliers Chosen Yet.</p>
                 {% endif %}
               </div>
             </div>
