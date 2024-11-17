@@ -8,7 +8,7 @@ import json, random, csv, os
 from flask_socketio import join_room, leave_room, send, SocketIO, emit
 from datetime import datetime
 from string import ascii_uppercase
-from .__init__ import mail
+from .__init__ import mail, send_email_async
 from werkzeug.utils import secure_filename
 
 views_creator = Blueprint('views_creator', __name__)
@@ -899,16 +899,11 @@ def create_record(event_id):
 
     db.session.add(new_event_record)
     
-    # Send email notification to all selected attendees
+    # Send email notification to all selected attendees asynchronously
     if attendee_details:
         recipient_emails = [attendee['email'] for attendee in attendee_details]
-        msg = Message(
-            f"Invitation to {event_name}",
-            sender='noreply@eventify.com',
-            recipients=recipient_emails
-        )
-        msg.body = f"Hello! You have been invited to attend the event '{event_name}' by {current_user.first_name} {current_user.last_name}.\n\nDescription: {event_desc}\nStart Date: {start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {end_date.strftime('%Y-%m-%d %H:%M')}. For more information, accept the invite on the website and view your ticket."
-        mail.send(msg)
+        msg_body = f"Hello! You have been invited to attend the event '{event_name}' by {current_user.first_name} {current_user.last_name}.\n\nDescription: {event_desc}\nStart Date: {start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {end_date.strftime('%Y-%m-%d %H:%M')}. For more information, accept the invite on the website and view your ticket."
+        send_email_async(recipient_emails, f"Invitation to {event_name}", msg_body)
 
     # Store this event in each selected attendee's Attendee_events8 "invites" field
     for attendee_id in selected_attendees:

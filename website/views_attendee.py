@@ -8,7 +8,8 @@ import json, csv
 from flask_socketio import join_room, leave_room, send, emit
 from datetime import datetime
 from .views_creator import rooms
-from .__init__ import mail
+from .__init__ import mail, send_email_async
+# Replace the email sending block with async email sending function
 
 views_attendee = Blueprint('views_attendee', __name__)
 
@@ -238,13 +239,9 @@ def accept_invite():
         )
         db.session.add(new_attendee_event)
 
-    msg = Message(
-        f"RSVP Spot to {event.event_name}",
-        sender='noreply@eventify.com',
-        recipients=[current_user.email]
-        )
-    msg.body = f"Hello! You have accepted the invite and have succesfully RSVPed a spot to attend the event '{event.event_name}' by {creator_name}.\n\nDescription: {event.event_desc}\nStart Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {event.end_date.strftime('%Y-%m-%d %H:%M')}. For more information, go to the wesbite and view your ticket."
-    mail.send(msg)
+    # Send email asynchronously to the attendee
+    send_email_async([current_user.email], f"Invite Accepted for {event_name}",
+                     f"Dear {current_user.first_name},\n\nYou have successfully accepted the invite for the event '{event_name}' hosted by {creator_name}.")
 
     # Add the user's details to the event's RSVP attendees in Event_records11
     rsvp_attendees.append({

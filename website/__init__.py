@@ -1,3 +1,10 @@
+from gevent import monkey
+from gevent.pool import Pool
+# Patching to make the Mail sending function non-blocking
+monkey.patch_all()
+# Initialize a pool of workers for gevent
+email_pool = Pool(10)  # You can adjust the pool size based on your needs
+
 from flask import Flask, redirect, url_for
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
@@ -58,6 +65,22 @@ def create_app():
         return Users9.query.get(int(id))
 
     return app
+
+def send_async_email(app, msg):
+    """ Function to send emails asynchronously in the background """
+    with app.app_context():
+        mail.send(msg)
+
+def send_email_async(recipient_emails, subject, body):
+    """ Function to send email in the background """
+    msg = Message(
+        subject,
+        sender='noreply@eventify.com',
+        recipients=recipient_emails
+    )
+    msg.body = body
+    # Sending email asynchronously with gevent
+    email_pool.spawn(send_async_email, current_app, msg)
 
 # Function to set up Flask-Admin
 def setup_admin(app):
