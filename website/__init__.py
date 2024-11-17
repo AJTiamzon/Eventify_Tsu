@@ -80,7 +80,8 @@ def send_email_async(recipient_emails, subject, body):
     )
     msg.body = body
     # Sending email asynchronously with gevent
-    email_pool.spawn(send_async_email, current_app, msg)
+    # Ensure the 'app' is passed to the worker correctly
+    email_pool.spawn(send_async_email, current_app._get_current_object(), msg)
 
 # Function to set up Flask-Admin
 def setup_admin(app):
