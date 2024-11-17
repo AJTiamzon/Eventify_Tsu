@@ -73,7 +73,8 @@ def create_app():
 # Function to configure DNS for compatibility
 def configure_dns():
     try:
-        dns.resolver.default_resolver = dns.resolver.Resolver()
+        dns.resolver.default_resolver = dns.resolver.Resolver(configure=True)
+        print("DNS resolver successfully configured.")
     except Exception as e:
         print(f"DNS configuration failed: {e}")
 
