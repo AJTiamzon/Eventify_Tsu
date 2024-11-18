@@ -3,18 +3,9 @@
     <title>FullCalendar</title>
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css"
-    />
-
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
       rel="shortcut icon"
@@ -28,11 +19,20 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
 
     <style>
       .navbar {
@@ -41,179 +41,138 @@
         justify-content: space-between;
         background-color: rgb(0, 12, 44);
       }
-      body{
-        /* background-image: url("https://www.eventsindustryforum.co.uk/images/articles/about_the_eif.jpg");
-        background-position: center;
-        background-size: cover; */
+      body {
         background-color: rgb(0, 12, 44);
       }
-      .container{
-        /* background-image: linear-gradient(rgba(255, 255, 255, 0.4),
-        rgba(255, 255, 255, 0.4)),url("https://img.pikbest.com/png-images/20211011/businessman-planning-events--deadlines-and-agenda_6140122.png!bw700");
-        background-position: center;
-        background-size: cover;
-         */
-         background-color: white;
+      .container {
+        background-color: white;
       }
       .fc-event .fc-title {
         font-size: 16px;
       }
 
-      /* Increase the font size of the day headers */
       .fc-day-header {
         font-size: 16px;
       }
 
-      /* Increase the font size of the calendar time */
       .fc-time {
         font-size: 14px;
       }
 
-      /* Increase the font size for event descriptions in the tooltip */
       .fc-event {
         font-size: 16px;
       }
 
-      /* Increase the font size of the dates in the calendar cells */
       .fc-day-number {
         font-size: 14px;
+      }
+      #calendar {
+        max-width: 100%;
+        margin: 0 auto;
+      }
+      .fc-toolbar {
+        flex-wrap: wrap;
       }
     </style>
   </head>
   <body>
-    <div class="navbar">
-
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="/">Eventify</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
           {% if user.role == "Client" %}
-          <a class="sidebar-brand" href="/client_home">
-            <span class="align-middle">Client Dashboard</span>
-          </a>
-          {% endif %} {% if user.role == "Event Creator" %}
-          <a class="sidebar-brand" href="/create_event_home">
-            <span class="align-middle">Creator Dashboard</span>
-          </a>
-          {% endif %} {% if user.role == "Attendee" %}
-          <a class="sidebar-brand" href="/attendee">
-            <span class="align-middle">Attendee Dashboard</span>
-          </a>
+          <li class="nav-item">
+            <a class="nav-link" href="/client_home">Client Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/client">Plan An Event</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/client_events">View Your Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/client_attend_events"
+              >Attend Public Events</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/client_hire_supplier">Hire Supplier</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/create_event_profile_client"
+              >View Profile</a
+            >
+          </li>
+          {% elif user.role == "Event Creator" %}
+          <li class="nav-item">
+            <a class="nav-link" href="/create_event_home">Creator Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/create-event">Create An Event</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/created_event_edit">View Your Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/create_event_history"
+              >Finalized Events</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/event_attendee_list">Attendee List</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/create_event_profile">View Profile</a>
+          </li>
+          {% elif user.role == "Attendee" %}
+          <li class="nav-item">
+            <a class="nav-link" href="/attendee">Attendee Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/attendee_invites">View Your Invites</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/attendee_browse">Attend Public Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/attendee_events">View Your Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/attendee_history"
+              >Past Events Attended</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/create_event_profile_attendee"
+              >View Profile</a
+            >
+          </li>
           {% endif %}
-
-          {% if user.role == "Client" %}
-          <a class="sidebar-link" href="/client">
-            <i class="align-middle" data-feather="calendar"></i>
-            <span class="align-middle">Plan An Event</span>
-          </a>
-          {% endif %}{% if user.role == "Event Creator" %}
-          <a class="sidebar-link" href="/create-event">
-            <i class="align-middle" data-feather="calendar"></i>
-            <span class="align-middle">Create An Event</span>
-          </a>
-          {% endif %}
-
-          {% if user.role == "Client" %}
-          <a class="sidebar-link" href="/client_events">
-            <i class="align-middle" data-feather="eye"></i>
-            <span class="align-middle">View Your Events</span>
-          </a>
-          {% endif %}{% if user.role == "Event Creator" %}
-          <a class="sidebar-link" href="/created_event_edit">
-            <i class="align-middle" data-feather="calendar"></i>
-            <span class="align-middle">View Your Events</span>
-          </a>
-          {% endif %}
-
-          {% if user.role == "Client" %}
-          <a class="sidebar-link" href="/client_attend_events">
-            <i class="align-middle" data-feather="users"></i>
-            <span class="align-middle">Attend Public Events</span>
-          </a>
-          {% endif %}{% if user.role == "Event Creator" %}
-          <a class="sidebar-link" href="/create_event_history">
-            <i class="align-middle" data-feather="check-circle"></i>
-            <span class="align-middle">Finalized Events</span>
-          </a>
-          {% endif %}
-
-          {% if user.role == "Client" %}
-          <a class="sidebar-link" href="/client_events_to_attend">
-            <i class="align-middle" data-feather="check-circle"></i>
-            <span class="align-middle">RSVPed Events</span>
-          </a>
-          {% endif %}{% if user.role == "Event Creator" %}
-          <a class="sidebar-link" href="/event_attendee_list">
-            <i class="align-middle" data-feather="users"></i>
-            <span class="align-middle">Attendee List</span>
-          </a>
-          {% endif %}
-
-          <a class="sidebar-link" href="/calendar">
-            <i class="align-middle" data-feather="calendar"></i>
-            <span class="align-middle">View Calendar</span>
-          </a>
-
-        {% if user.role == "Client" %}
-          <a class="sidebar-link" href="/client_hire_supplier">
-            <i class="align-middle" data-feather="briefcase"></i>
-            <span class="align-middle">Hire Supplier</span>
-          </a>
-        {% endif %}
-
-          <a class="sidebar-link" href="/rating_and_feedback">
-            <i class="align-middle" data-feather="star"></i>
-            <span class="align-middle">Rate Suppliers</span>
-          </a>
-
-          {% if user.role == "Client" %}
-          <a class="sidebar-link" href="/create_event_profile_client">
-            <i class="align-middle" data-feather="user"></i>
-            <span class="align-middle">View Profile</span>
-          </a>
-          {% endif %}{% if user.role == "Event Creator" %}
-          <a class="sidebar-link" href="/create_event_profile">
-            <i class="align-middle" data-feather="user"></i>
-            <span class="align-middle">View Profile</span>
-          </a>
-          {% endif %}
-
-          {% if user.role == "Attendee" %}
-        <a class="sidebar-link" href="/attendee_invites">
-          <i class="align-middle" data-feather="eye"></i>
-          <span class="align-middle">View Your Invites</span>
-        </a>
-        <a class="sidebar-link" href="/attendee_browse">
-          <i class="align-middle" data-feather="users"></i>
-          <span class="align-middle">Attend Public Events</span>
-        </a>
-        <a class="sidebar-link" href="/attendee_events">
-          <i class="align-middle" data-feather="check-circle"></i>
-          <span class="align-middle">View Your Events</span>
-        </a>
-        <a class="sidebar-link" href="/attendee_history">
-          <i class="align-middle" data-feather="star"></i>
-          <span class="align-middle">Past Events Attended</span>
-        </a>
-        <a class="sidebar-link" href="/create_event_profile_attendee">
-          <i class="align-middle" data-feather="user"></i>
-          <span class="align-middle">View Profile</span>
-        </a>
-      {% endif %}{% if user.role == "Attendee" %}
-        <a class="sidebar-link" href="/join_room_attendee">
-          <i class="align-middle" data-feather="message-square"></i>
-          <span class="align-middle">Chat Room</span>
-        </a>
-      {% else %}
-        <a class="sidebar-link" href="/join_room">
-          <i class="align-middle" data-feather="message-square"></i>
-          <span class="align-middle">Chat Room</span>
-        </a>
-      {% endif %}
-
-          <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
-            <i class="align-middle" data-feather="video"></i>
-            <span class="align-middle">Video Chat Room</span>
-          </a>
-
-      </ul>
-    </div>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendar">View Calendar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/video_chat_dashboard" target="_blank"
+              >Video Chat Room</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/rating_and_feedback">Rate Suppliers</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <div class="container">
       <div id="calendar"></div>
@@ -226,10 +185,15 @@
   $(document).ready(function () {
     $("#calendar").fullCalendar({
       events: "/fetch-events", // Fetch events from this route
+      aspectRatio: 1.8, // Adjust aspect ratio for responsiveness
+      header: {
+        left: "prev,next today", // Controls for navigation
+        center: "title", // Calendar title
+        right: "month,agendaWeek,agendaDay", // Views for calendar
+      },
 
       // Customize event rendering
       eventRender: function (event, element) {
-        // Add title and event description as tooltip
         element.attr(
           "title",
           "Description: " +
@@ -237,8 +201,6 @@
             "\nPrivacy: " +
             event.event_privacy
         );
-
-        // Optionally, add event details to the event title
         element
           .find(".fc-title")
           .append(
@@ -246,8 +208,8 @@
           );
       },
 
-      // Event click to display more information in a modal or popup
-      eventClick: function (event, jsEvent, view) {
+      // Event click to display more information
+      eventClick: function (event) {
         alert(
           "Event: " +
             event.title +
@@ -255,6 +217,15 @@
             event.description +
             "\nPrivacy: " +
             event.event_privacy
+        );
+      },
+
+      // Responsive behavior
+      windowResize: function (view) {
+        $("#calendar").fullCalendar(
+          "option",
+          "aspectRatio",
+          $(window).width() < 768 ? 1 : 1.8
         );
       },
     });

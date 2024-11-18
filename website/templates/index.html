@@ -8,6 +8,10 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+    />
     <style>
       /* Custom CSS */
 
@@ -180,7 +184,7 @@
                 class="d-block w-100"
                 alt="Event Image"
               />
-              <div class="carousel-caption d-none d-md-block">
+              <div class="carousel-caption">
                 <h5>{{ event.event_name }}</h5>
                 <p>{{ event.event_desc }}</p>
                 <small>Created by: {{ event.creator_name }}</small>
@@ -263,7 +267,7 @@
                 class="d-block w-100"
                 alt="Service 1"
               />
-              <div class="carousel-caption d-none d-md-block">
+              <div class="carousel-caption">
                 <h5>Algorithm Aided Event Creation</h5>
                 <p>
                   Use Genetic Algorithm To Generate The Best Suppliers To Hire
@@ -277,7 +281,7 @@
                 class="d-block w-100"
                 alt="Service 2"
               />
-              <div class="carousel-caption d-none d-md-block">
+              <div class="carousel-caption">
                 <h5>Event RSVP</h5>
                 <p>Reserve Your Spot Now In The Featured Events.</p>
               </div>
@@ -288,7 +292,7 @@
                 class="d-block w-100"
                 alt="Service 3"
               />
-              <div class="carousel-caption d-none d-md-block">
+              <div class="carousel-caption">
                 <h5>Hire Suppliers</h5>
                 <p>
                   Use The Website's Databse To Hire Suppliers Of Your Choosing.

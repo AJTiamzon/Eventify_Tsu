@@ -17,7 +17,7 @@ class Users9(db.Model, UserMixin):
     events = db.relationship('Events17')
     attend = db.relationship('Attendee_events8')
     client_events = db.relationship('Client_events7')
-    event_records = db.relationship('Event_records11', backref='creator')  # New relationship
+    event_records = db.relationship('Event_records11', lazy='joined')  # New relationship
     # New credibility columns
     credibility1 = db.Column(db.String(300), nullable=True)
     credibility2 = db.Column(db.String(300), nullable=True)

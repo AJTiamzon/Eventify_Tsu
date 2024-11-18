@@ -51,23 +51,12 @@ def role():
 @views.route('/calendar')
 @login_required
 def calendar():
-    return render_template('calendar.html', user = current_user)
+    return render_template('calendar.html', user = current_user, name=current_user.fullname, role=current_user.role)
 
 @views.route('/fetch-events')
 @login_required
 def fetch_events():
     events = []
-
-    # Fetch finalized events created by the current user from Event_records7
-    event_records = current_user.events  # Assuming a relationship exists in User model
-    for event_record in event_records:
-        events.append({
-            'title': event_record.event_name,
-            'start': event_record.start_date.isoformat(),
-            'end': event_record.end_date.isoformat(),
-            'description': event_record.event_desc,
-            'event_privacy': event_record.event_privacy,
-        })
 
     # Fetch RSVP events for the user from Attendee_events8
     attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
@@ -91,6 +80,21 @@ def fetch_events():
             'end': client_rsvp.end_date.isoformat(),
             'description': client_rsvp.event_desc,
             'event_privacy': 'Public',  # Assuming these events are public
+        })
+
+    # Fetch finalized events created by the current user from Event_records11
+    event_records = Event_records11.query.filter_by(creator_id=current_user.id).all()
+    for event_record in event_records:
+        # Ensure dates are formatted correctly as ISO 8601 strings
+        start_date = event_record.start_date.strftime('%Y-%m-%dT%H:%M:%S') if isinstance(event_record.start_date, datetime) else event_record.start_date
+        end_date = event_record.end_date.strftime('%Y-%m-%dT%H:%M:%S') if isinstance(event_record.end_date, datetime) else event_record.end_date
+
+        events.append({
+            'title': event_record.event_name,
+            'start': start_date,
+            'end': end_date,
+            'description': event_record.event_desc,
+            'event_privacy': event_record.event_privacy or 'Public',  # Ensure there's always a valid privacy
         })
 
     return jsonify(events)

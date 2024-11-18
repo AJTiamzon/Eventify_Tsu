@@ -2,11 +2,76 @@
 <nav id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
     <a class="sidebar-brand" href="/attendee">
-      <span class="align-middle">Attendee Dashboard</span>
+      <span class="align-middle" style="color: white">Attendee Dashboard</span>
     </a>
 
     <ul class="sidebar-nav">
-      <li class="sidebar-header">Home</li>
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Creator Home</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_invites">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/invite.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Invites</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_browse">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/publicev.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Attend Public Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/event-list.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Events</span
+          >
+        </a>
+      </li>
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/calendar">
           <i class="align-middle"
@@ -15,51 +80,45 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle">View Calendar</span>
+          <span class="align-middle" style="color: white">View Calendar</span>
         </a>
       </li>
+
       <li class="sidebar-item">
-        <a class="sidebar-link" href="/attendee_invites">
-          <i class="align-middle" data-feather="eye"></i>
+        <a class="sidebar-link" href="/attendee_history">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/past.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
           <span class="align-middle" style="color: white"
-            >View Your Invites</span
+            >Past Events Attended</span
           >
         </a>
       </li>
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/attendee_browse">
-          <i class="align-middle" data-feather="users"></i>
-          <span class="align-middle">Attend Public Events</span>
-        </a>
-      </li>
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/attendee_events">
-          <i class="align-middle" data-feather="check-circle"></i>
-          <span class="align-middle">View Your Events</span>
-        </a>
-      </li>
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/attendee_history">
-          <i class="align-middle" data-feather="star"></i>
-          <span class="align-middle">Past Events Attended</span>
-        </a>
-      </li>
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/create_event_profile_attendee">
-          <i class="align-middle" data-feather="user"></i>
-          <span class="align-middle">View Profile</span>
-        </a>
-      </li>
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/join_room_attendee">
-          <i class="align-middle" data-feather="message-square"></i>
-          <span class="align-middle">Chat Room</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
         </a>
       </li>
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
-          <i class="align-middle" data-feather="video"></i>
-          <span class="align-middle">Video Chat Room</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
         </a>
       </li>
     </ul>
