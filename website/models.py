@@ -97,7 +97,7 @@ class Client_events7(db.Model):
     start_date = db.Column(db.DateTime)  # Add start time/date
     end_date = db.Column(db.DateTime)  # Add end time/date
 
-class Client_Attend_Events2(db.Model):
+class Client_Attend_Events3(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String)
     event_desc = db.Column(db.String)
@@ -107,6 +107,7 @@ class Client_Attend_Events2(db.Model):
     creator_name = db.Column(db.String)
     client_id = db.Column(db.Integer, db.ForeignKey('users9.id'))
     date_rsvped = db.Column(db.DateTime(timezone=True), default=func.now())  # Timestamp when RSVP'd
+    image_path = db.Column(db.String)
 
 class Client_Hired_Suppliers6(db.Model):
     id = db.Column(db.Integer, primary_key=True)

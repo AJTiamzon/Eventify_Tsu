@@ -1,5 +1,15 @@
 {% extends "base.html" %} {% block title %}Profile {% endblock %} {% block head
-%} {% endblock %} {% block content %}
+%}
+<style>
+  img {
+    transition: transform 0.3s ease; /* Smooth scaling */
+  }
+
+  img:hover {
+    transform: scale(1.1); /* Makes the image 10% larger */
+  }
+</style>
+{% endblock %} {% block content %}
 <nav id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
     <a class="sidebar-brand" href="/create_event_home">
@@ -180,12 +190,13 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h1 class="h3 mb-3">
-                Welcome To Event Creation <span class="info"> {{ name }} </span>
+              <h1 class="h3 mb-3" style="text-align: center">
+                Welcome To Event Creation
+                <span class="text-info font-weight-bold"> {{ name }} </span>
               </h1>
             </div>
             <div class="card-body">
-              <h6 class="mb-4">
+              <h3 class="mb-4">
                 Notes: Welcome to event creation, {{ name }}. Click the
                 <span class="text-info font-weight-bold">Create Event</span>
                 button to start creating your events. To view your events, click
@@ -205,7 +216,153 @@
                 You may also view your profile and make changes to it as you
                 wish, but you may only edit it every
                 <span class="text-info font-weight-bold">30 days</span>.
-              </h6>
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">Create Event</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/create-event">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/add-event.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">View Your Events</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/created_event_edit">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/view.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">Finalized Events</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/create_event_history">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/calendar_final.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">Attendee List</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/event_attendee_list">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/audience.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">Rate Suppliers</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/rating_and_feedback">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/rate.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">View Calendar</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/calendar">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
             </div>
           </div>
         </div>

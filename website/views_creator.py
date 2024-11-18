@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session, current_app
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
-from .models import Events17, Users9, Attendee_events8, Client_events7, Event_records11, Client_Attend_Events2, Client_Hired_Suppliers6, SupplierRating3
+from .models import Events17, Users9, Attendee_events8, Client_events7, Event_records11, Client_Attend_Events3, Client_Hired_Suppliers6, SupplierRating3
 from . import db, socketio
 from .gen_algo_final import *
 import json, random, csv, os
@@ -52,7 +52,7 @@ def join_room_view():
 
     # Fetch events created by the current user
     created_events = Event_records11.query.filter_by(creator_id=current_user.id).all()
-    client_attend = Client_Attend_Events2.query.filter_by(client_id=current_user.id).all()
+    client_attend = Client_Attend_Events3.query.filter_by(client_id=current_user.id).all()
 
     if request.method == "POST":
         code = request.form.get("code")
@@ -1350,6 +1350,7 @@ def client_attend_events():
             'event_name': event.event_name,
             'event_desc': event.event_desc,
             'creator_name': creator_name,
+            'image_path': event.image_path,
             'room_code': event.room_code,
             'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
             'end_date': event.end_date.strftime("%Y-%m-%d %H:%M")
@@ -1374,7 +1375,7 @@ def client_rsvped_events():
         return redirect(url_for('views_creator.client_attend_events'))
     
     # Check if the user already RSVPed for the event
-    already_rsvped = Client_Attend_Events2.query.filter_by(client_id=current_user.id, event_name=event_name).first()
+    already_rsvped = Client_Attend_Events3.query.filter_by(client_id=current_user.id, event_name=event_name).first()
     if already_rsvped:
         flash('You have already RSVPed for this event.', category='error')
         return redirect(url_for('views_creator.client_attend_events'))
@@ -1388,12 +1389,21 @@ def client_rsvped_events():
     # Add the current user to the rsvp_attendees
     rsvp_attendees.append(current_user.email)
     event.rsvp_attendees = ','.join(rsvp_attendees)
+
+    image_file = request.files.get('event_image')
+    if image_file and allowed_file(image_file.filename):
+        filename = secure_filename(image_file.filename)
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        image_file.save(filepath)
+        image_path = filename  # Save only the filename, not the full path
+        event.image_path = image_path
     
-    # Save the event details to Client_Attend_Events2 table
-    new_rsvp = Client_Attend_Events2(
+    # Save the event details to Client_Attend_Events3 table
+    new_rsvp = Client_Attend_Events3(
         event_name=event.event_name,
         event_desc=event.event_desc,
         room_code=event.room_code,
+        image_path=event.image_path,
         start_date=event.start_date,
         end_date=event.end_date,
         creator_name=creator_name,
@@ -1420,7 +1430,7 @@ def client_events_to_attend():
         return redirect(url_for('views.role'))
     
     # Fetch all events the current client has RSVPed to
-    rsvped_events = Client_Attend_Events2.query.filter_by(client_id=current_user.id).all()
+    rsvped_events = Client_Attend_Events3.query.filter_by(client_id=current_user.id).all()
     
     events_data = []
     for event in rsvped_events:
@@ -1429,6 +1439,7 @@ def client_events_to_attend():
             'event_desc': event.event_desc,
             'creator_name': event.creator_name,
             'room_code': event.room_code,
+            'image_path': event.image_path,
             'start_date': event.start_date.strftime("%Y-%m-%d %H:%M"),
             'end_date': event.end_date.strftime("%Y-%m-%d %H:%M"),
             'date_rsvped': event.date_rsvped.strftime("%Y-%m-%d %H:%M")

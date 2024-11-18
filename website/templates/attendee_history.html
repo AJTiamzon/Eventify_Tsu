@@ -14,7 +14,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Creator Home</span>
+          <span class="align-middle" style="color: white">Attendee Home</span>
         </a>
       </li>
 
@@ -166,72 +166,91 @@
 
   <main class="content">
     <div class="container-fluid p-0">
-      <h1 class="h3 mb-3">
-        Hello <span class="info">{{ name }}</span>, Welcome To Event Browsing.
-      </h1>
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header"></div>
+            <div class="card-header">
+              <h2 class="my-4" style="text-align: center">
+                <span class="text-info font-weight-bold"
+                  >Past Attended Events:</span
+                >
+              </h2>
+            </div>
             <div class="card-body">
               <div class="past_attended_events">
-                <h2 class="my-4">Past Attended Events:</h2>
-                <ul class="list-group">
+                <div class="row">
                   {% for event in attendee_history %}
-                  <li class="list-group-item">
-                    <h3 class="mb-1">{{ event.creator_name }}</h3>
-                    <form
-                      action="/view_creator_info"
-                      method="POST"
-                      class="view-creator-info-form mb-3"
-                    >
-                      <input
-                        type="hidden"
-                        name="creator_name"
-                        value="{{ event.creator_name }}"
-                      />
-                      <button type="submit" class="btn btn-primary btn-sm">
-                        View Creator Information
-                      </button>
-                    </form>
-                    <h3 class="mb-1">{{ event.event_name }}</h3>
-                    <p class="mb-1">
-                      <strong>Description:</strong> {{ event.event_desc }}
-                    </p>
-                    <p class="mb-1">
-                      <strong>Privacy:</strong> {{ event.event_privacy }}
-                    </p>
-                    <p class="mb-1">
-                      <strong>Start:</strong> {{ event.start_date }}
-                    </p>
-                    <p class="mb-1">
-                      <strong>End:</strong> {{ event.end_date }}
-                    </p>
+                  <div class="col-md-4 mb-4">
+                    <div class="card">
+                      <div class="card-body">
+                        <h3 class="text-center mb-1">
+                          Created by:
+                          <span class="text-info font-weight-bold"
+                            >{{ event.creator_name }}</span
+                          >
+                        </h3>
 
-                    <!-- Form to rate the event creator -->
-                    {% if event.end_date <= now %}
-                    <form
-                      method="POST"
-                      action="/attendee_rate_creator"
-                      class="mb-3"
-                    >
-                      <input
-                        type="hidden"
-                        name="creator_name"
-                        value="{{ event.creator_name }}"
-                      />
-                      <button type="submit" class="btn btn-warning btn-sm">
-                        Rate Event Creator
-                      </button>
-                    </form>
-                    {% else %}
-                    <button class="btn btn-secondary btn-sm" disabled>
-                      Rate Event Creator (Event is still ongoing)
-                    </button>
-                    {% endif %}
-                  </li>
+                        <!-- View Creator Information Button -->
+                        <form
+                          action="/view_creator_info"
+                          method="POST"
+                          class="view-creator-info-form mb-3 text-center"
+                        >
+                          <input
+                            type="hidden"
+                            name="creator_name"
+                            value="{{ event.creator_name }}"
+                          />
+                          <button type="submit" class="btn btn-primary btn-sm">
+                            View Creator Information
+                          </button>
+                        </form>
+
+                        <h3 class="text-center mb-1">
+                          Event Name: {{ event.event_name }}
+                        </h3>
+
+                        <p class="mb-1">
+                          <strong>Description:</strong> {{ event.event_desc }}
+                        </p>
+                        <p class="mb-1">
+                          <strong>Privacy:</strong> {{ event.event_privacy }}
+                        </p>
+                        <p class="mb-1">
+                          <strong>Start:</strong> {{ event.start_date }}
+                        </p>
+                        <p class="mb-1">
+                          <strong>End:</strong> {{ event.end_date }}
+                        </p>
+
+                        <!-- Form to rate the event creator -->
+                        {% if event.end_date <= now %}
+                        <form
+                          method="POST"
+                          action="/attendee_rate_creator"
+                          class="mb-3 text-center"
+                        >
+                          <input
+                            type="hidden"
+                            name="creator_name"
+                            value="{{ event.creator_name }}"
+                          />
+                          <button type="submit" class="btn btn-warning btn-sm">
+                            Rate Event Creator
+                          </button>
+                        </form>
+                        {% else %}
+                        <div class="text-center">
+                          <button class="btn btn-secondary btn-sm" disabled>
+                            Rate Event Creator (Event is still ongoing)
+                          </button>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
                   {% endfor %}
-                </ul>
+                </div>
               </div>
             </div>
           </div>

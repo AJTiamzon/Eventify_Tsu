@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Events17, Users9, Attendee_events8, Client_Attend_Events2,Event_records11
+from .models import Events17, Users9, Attendee_events8, Client_Attend_Events3,Event_records11
 from . import db
 from .gen_algo_final import *
 import json
@@ -71,8 +71,8 @@ def fetch_events():
                 'event_privacy': rsvp_event['event_privacy'],
             })
     
-    # Fetch RSVP events for the user from Client_Attend_Events2
-    client_rsvps = Client_Attend_Events2.query.filter_by(client_id=current_user.id).all()
+    # Fetch RSVP events for the user from Client_Attend_Events3
+    client_rsvps = Client_Attend_Events3.query.filter_by(client_id=current_user.id).all()
     for client_rsvp in client_rsvps:
         events.append({
             'title': client_rsvp.event_name,

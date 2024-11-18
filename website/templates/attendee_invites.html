@@ -15,7 +15,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Creator Home</span>
+          <span class="align-middle" style="color: white">Attendee Home</span>
         </a>
       </li>
 
@@ -168,105 +168,119 @@
 
   <main class="content">
     <div class="container-fluid p-0">
-      <h1 class="h3 mb-3">
-        Hello <span class="info">{{ name }}</span>, Welcome, Let's Find Some
-        Events For You.
-      </h1>
-
       <div class="row">
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3>Invited Events:</h3>
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">Invited Events:</span>
+              </h3>
             </div>
             <div class="card-body">
-              {% if invited_events %} {% for event in invited_events %}
-              <div
-                id="invite-container-{{ event['event_name'] }}"
-                class="mb-3 border p-3 rounded"
-              >
-                <h4>Event Name: {{ event['event_name'] }}</h4>
-                <h5>Created by: {{ event['creator_name'] }}</h5>
-                <form
-                  action="/view_creator_info"
-                  method="POST"
-                  class="view-creator-info-form"
-                >
-                  <input
-                    type="hidden"
-                    name="creator_name"
-                    value="{{ event['creator_name'] }}"
-                  />
-                  <button type="submit" class="btn btn-primary">
-                    View Creator Information
-                  </button>
-                </form>
-                <p>
-                  <strong>Event Description:</strong> {{ event['event_desc'] }}
-                </p>
-                <p>
-                  <strong>Event Privacy:</strong> {{ event['event_privacy'] }}
-                </p>
-                <p><strong>Start Date:</strong> {{ event['start_date'] }}</p>
-                <p><strong>End Date:</strong> {{ event['end_date'] }}</p>
+              <div class="row">
+                {% if invited_events %} {% for event in invited_events %}
+                <div class="col-md-4 mb-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <h4>Event Name: {{ event['event_name'] }}</h4>
+                      <h5>
+                        Created by:
+                        <span class="text-info font-weight-bold"
+                          >{{ event['creator_name'] }}</span
+                        >
+                      </h5>
+                    </div>
+                    <div class="card-body">
+                      <form
+                        action="/view_creator_info"
+                        method="POST"
+                        class="view-creator-info-form text-center mb-3"
+                      >
+                        <input
+                          type="hidden"
+                          name="creator_name"
+                          value="{{ event['creator_name'] }}"
+                        />
+                        <button type="submit" class="btn btn-primary btn-sm">
+                          View Creator Information
+                        </button>
+                      </form>
+                      <p>
+                        <strong>Event Description:</strong> {{
+                        event['event_desc'] }}
+                      </p>
+                      <p>
+                        <strong>Event Privacy:</strong> {{
+                        event['event_privacy'] }}
+                      </p>
+                      <p>
+                        <strong>Start Date:</strong> {{ event['start_date'] }}
+                      </p>
+                      <p><strong>End Date:</strong> {{ event['end_date'] }}</p>
 
-                <!-- Reject Invite Form -->
-                <form
-                  id="reject-form-{{ event['event_name'] }}"
-                  action="/reject_invite"
-                  method="POST"
-                >
-                  <input
-                    type="hidden"
-                    name="event_name"
-                    value="{{ event['event_name'] }}"
-                  />
-                  <button type="submit" class="btn btn-danger">
-                    Reject Invite
-                  </button>
-                  <label for="reject_reason">Rejection Reason</label>
-                  <input
-                    type="text"
-                    name="reject_reason"
-                    id="reject_reason"
-                    class="reject_reason"
-                    required
-                  />
-                </form>
+                      <!-- Reject Invite Form -->
+                      <form
+                        id="reject-form-{{ event['event_name'] }}"
+                        action="/reject_invite"
+                        method="POST"
+                        class="text-center mb-3"
+                      >
+                        <input
+                          type="hidden"
+                          name="event_name"
+                          value="{{ event['event_name'] }}"
+                        />
+                        <button type="submit" class="btn btn-danger btn-sm">
+                          Reject Invite
+                        </button>
+                        <div class="form-group mt-2">
+                          <label for="reject_reason">Rejection Reason:</label>
+                          <input
+                            type="text"
+                            name="reject_reason"
+                            id="reject_reason"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                      </form>
 
-                <!-- Accept Invite Form -->
-                <form
-                  id="accept-form-{{ event['event_name'] }}"
-                  action="/accept_invite"
-                  method="POST"
-                >
-                  <input
-                    type="hidden"
-                    name="event_name"
-                    value="{{ event['event_name'] }}"
-                  />
-                  <input
-                    type="hidden"
-                    name="creator_name"
-                    value="{{ event['creator_name'] }}"
-                  />
-                  <button type="submit" class="btn btn-success">
-                    Accept Invite
-                  </button>
-                </form>
+                      <!-- Accept Invite Form -->
+                      <form
+                        id="accept-form-{{ event['event_name'] }}"
+                        action="/accept_invite"
+                        method="POST"
+                        class="text-center"
+                      >
+                        <input
+                          type="hidden"
+                          name="event_name"
+                          value="{{ event['event_name'] }}"
+                        />
+                        <input
+                          type="hidden"
+                          name="creator_name"
+                          value="{{ event['creator_name'] }}"
+                        />
+                        <button type="submit" class="btn btn-success btn-sm">
+                          Accept Invite
+                        </button>
+                      </form>
 
-                <!-- Success message, initially hidden -->
-                <p
-                  id="success-message-{{ event['event_name'] }}"
-                  class="success-message hidden"
-                >
-                  Invite Accepted
-                </p>
+                      <!-- Success message, initially hidden
+                      <p
+                        id="success-message-{{ event['event_name'] }}"
+                        class="success-message hidden"
+                      >
+                        Invite Accepted
+                      </p> -->
+                    </div>
+                  </div>
+                </div>
+                {% endfor %} {% else %}
+                <p>No invites found.</p>
+                {% endif %}
               </div>
-              <hr />
-              {% endfor %} {% else %}
-              <p>No invites found.</p>
-              {% endif %}
             </div>
           </div>
         </div>

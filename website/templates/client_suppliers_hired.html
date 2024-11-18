@@ -127,7 +127,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Hire Supplier</span>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
         </a>
       </li>
 
@@ -244,16 +244,21 @@
                       <h3 style="font-weight: bold">
                         {{ supplier.supplier_name }}
                       </h3>
+
                       <form action="/rate_supplier" method="post">
                         <input
                           type="hidden"
                           name="supplier_name"
                           value="{{ supplier.supplier_name }}"
                         />
-                        <button type="submit" class="rate_the_supplier">
+                        <button
+                          type="submit"
+                          class="btn btn-primary rate_the_supplier"
+                        >
                           View Supplier Ratings
                         </button>
                       </form>
+
                       <h4>
                         Reason For Hiring:
                         <span class="text-info font-weight-bold"
@@ -268,32 +273,36 @@
                         Contact Number: {{ supplier.supplier_contact_number }}
                       </h6>
                       <h6>Email: {{ supplier.supplier_email }}</h6>
-                      <h6>Commission: {{ supplier.supplier_price }}</h6>
+                      <h6>Commission: ₱{{ supplier.supplier_price }}</h6>
                       <h6>Rating: {{ supplier.supplier_rating }}</h6>
                       <h6>
                         Date Request Sent: {{
                         supplier.date_hired.strftime('%Y-%m-%d') }}
                       </h6>
                       <h6>Status:</h6>
-                      <button
-                        class="status-button {{ 'not-hired' if not supplier.hired_status else 'hired' }}"
-                        data-supplier-name="{{ supplier.supplier_name }}"
-                        onclick="toggleHiredStatus(this)"
-                      >
-                        {{ 'Not Hired' if not supplier.hired_status else 'Hired'
-                        }}
-                      </button>
+                      <div class="d-flex justify-content-center">
+                        <button
+                          class="status-button {{ 'not-hired' if not supplier.hired_status else 'hired' }}"
+                          data-supplier-name="{{ supplier.supplier_name }}"
+                          onclick="toggleHiredStatus(this)"
+                        >
+                          {{ 'Not Hired' if not supplier.hired_status else
+                          'Hired' }}
+                        </button>
+                      </div>
                       <hr />
 
                       <!-- Delete button -->
-                      <form
-                        action="{{ url_for('views_creator.client_delete_supplier', supplier_id=supplier.id) }}"
-                        method="post"
-                      >
-                        <button type="submit" class="btn btn-danger btn-sm">
-                          Delete Supplier
-                        </button>
-                      </form>
+                      <div class="d-flex justify-content-center">
+                        <form
+                          action="{{ url_for('views_creator.client_delete_supplier', supplier_id=supplier.id) }}"
+                          method="post"
+                        >
+                          <button type="submit" class="btn btn-danger btn-sm">
+                            Delete Supplier
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -14,7 +14,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Creator Home</span>
+          <span class="align-middle" style="color: white">Attendee Home</span>
         </a>
       </li>
 
@@ -166,15 +166,11 @@
 
   <main class="content">
     <div class="container-fluid p-0">
-      <h1 class="h3 mb-3">
-        Hello <span class="info">{{ name }}</span>, Welcome To Event Browsing.
-      </h1>
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header"></div>
+            <div class="card-header"><h2 class="my-4" style="text-align: center;"><span class="text-info font-weight-bold">Event Tickets</span></h2></div>
             <div class="card-body">
-              <h2 class="my-4">Event Tickets</h2>
               <div class="row">
                 {% if attending_events %} {% for event in attending_events %}
                 <div class="col-md-4 mb-4">
@@ -205,6 +201,7 @@
                         and ends at:<span style="color: red;"><strong>End Date: {{ event['end_date'] }}</strong></span>.
                         This serves as proof of my reserved spot and shall function as my ticket if needed.
                       </h6>
+                      <div class="d-flex justify-content-center">
                       <form
                         action="/view_creator_info"
                         method="POST"
@@ -219,6 +216,7 @@
                           View Creator Information
                         </button>
                       </form>
+                    </div>
                       {% else %}
                       <div class="card event-card">
                         <div class="card-body">
@@ -232,6 +230,20 @@
                           >
                             {{ event['event_name'] }}
                           </h3>
+                          {% if event['image_path'] %}
+                          <div class="d-flex justify-content-center">
+                            <img
+                              src="{{ url_for('static', filename='uploads/' + event['image_path']) }}"
+                              alt="Event Image"
+                              class="img-fluid mb-2"
+                              style="
+                                max-width: 300px;
+                                max-height: 200px;
+                                object-fit: cover;
+                              "
+                            />
+                          </div>
+                          {% endif %}
                           <h4>
                             Created By:
                             <span style="color: rgb(0, 89, 255)"
@@ -246,6 +258,7 @@
                             and ends at:<span style="color: red;"><strong>End Date: {{ event['end_date'] }}</strong></span>.
                             This serves as proof of my reserved spot and shall function as my ticket if needed.
                           </h6>
+                          <div class="d-flex justify-content-center">
                           <form
                             action="/view_creator_info"
                             method="POST"
@@ -260,6 +273,7 @@
                               View Creator Information
                             </button>
                           </form>
+                        </div>
                           {% endif %}
                     </div>
                   </div>

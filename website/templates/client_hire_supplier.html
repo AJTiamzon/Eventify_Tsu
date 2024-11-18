@@ -105,7 +105,7 @@ head %}
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Hire Supplier</span>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
         </a>
       </li>
 
@@ -314,7 +314,7 @@ head %}
                         }}<br />
                         <strong>Contact:</strong> {{ thing.contact_number }}<br />
                         <strong>Email:</strong> {{ thing.email }}<br />
-                        <strong>Price:</strong> {{ thing.price }}<br />
+                        <strong>Price:</strong> ₱{{ thing.price }}<br />
                         <strong>Rating:</strong> {{ thing.rating }}
                       </p>
                       <div class="d-flex flex-column gap-3">
@@ -369,26 +369,28 @@ head %}
                             required
                           ></textarea>
                           <!-- Buttons -->
-                          <div class="d-flex justify-content-between">
+                          <div class="d-flex justify-content-center">
                             <button type="submit" class="btn btn-primary">
-                              Hire
+                              Choose Supplier
                             </button>
-                            <form
-                              action="/rate_supplier"
-                              method="post"
-                              class="ms-2"
-                            >
-                              <input
-                                type="hidden"
-                                name="supplier_name"
-                                value="{{ thing.name }}"
-                              />
-                              <button type="submit" class="btn btn-info">
-                                View Ratings
-                              </button>
-                            </form>
                           </div>
                         </form>
+                        <div class="d-flex justify-content-center">
+                          <form
+                            action="/rate_supplier"
+                            method="post"
+                            class="ms-2"
+                          >
+                            <input
+                              type="hidden"
+                              name="supplier_name"
+                              value="{{ thing.name }}"
+                            />
+                            <button type="submit" class="btn btn-info">
+                              View Ratings
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>

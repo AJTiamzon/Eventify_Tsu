@@ -110,7 +110,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Hire Supplier</span>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
         </a>
       </li>
 
@@ -220,6 +220,20 @@
                       >
                         {{ event['event_name'] }}
                       </h3>
+                      {% if event['image_path'] %}
+                      <div class="d-flex justify-content-center">
+                        <img
+                          src="{{ url_for('static', filename='uploads/' + event['image_path']) }}"
+                          alt="Event Image"
+                          class="img-fluid mb-2"
+                          style="
+                            max-width: 300px;
+                            max-height: 200px;
+                            object-fit: cover;
+                          "
+                        />
+                      </div>
+                      {% endif %}
                       <h4>
                         Created By:
                         <span style="color: rgb(0, 89, 255)"
@@ -235,10 +249,22 @@
                           This serves as proof of my reserved spot and shall function as my ticket if needed.
                         </h6>
 
-                        <form action="/view_creator" method="POST" class="view-creator-info-form mt-2">
-                          <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
-                          <button type="submit" class="btn btn-primary">View Creator Information</button>
-                        </form>
+                        <div class="d-flex justify-content-center">
+                          <form
+                            action="/view_creator"
+                            method="POST"
+                            class="view-creator-info-form mb-3"
+                          >
+                            <input
+                              type="hidden"
+                              name="creator_name"
+                              value="{{ event.creator_name }}"
+                            />
+                            <button type="submit" class="btn btn-primary">
+                              View Creator Information
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>

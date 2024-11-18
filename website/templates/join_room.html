@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}Client Dashboard{% endblock %} {%
+{% extends "base.html" %} {% block title %}Join Chat Room{% endblock %} {%
 block head %}
 <link href="css/app.css" rel="stylesheet" />
 {% endblock %} {% block content %}
@@ -354,7 +354,7 @@ block head %}
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Hire Supplier</span>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
         </a>
       </li>
 
@@ -450,73 +450,90 @@ block head %}
   </nav>
 
   <main class="content">
-    <div class="container-fluid p-0">
-      <h1 class="h3 mb-3">Hello! {{ name }}</h1>
+    <div class="container py-5">
+      <h1 class="h3 text-center mb-4">Hello, {{ name }}!</h1>
 
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">Profile</h5>
+      <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-header text-center">
+          <h5 class="card-title mb-0">Join a Chat Room</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" id="joinRoomForm">
+            <div class="mb-4">
+              <label for="roomCode" class="form-label">Enter Room Code</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="roomCode"
+                  name="code"
+                  class="form-control"
+                  placeholder="Room Code"
+                  value="{{ code }}"
+                  required
+                />
+                <button type="submit" name="join" class="btn btn-primary">
+                  Join Room
+                </button>
+              </div>
             </div>
-            <div class="card-body">
-              <form method="post" class="buttons">
-                <h3>Enter The Chat Room</h3>
-                <div class="join">
-                  <input
-                    type="text"
-                    placeholder="Room Code"
-                    name="code"
-                    value="{{code}}"
-                    required
-                  />
-                  <button type="submit" name="join">Join a Room</button>
-                </div>
 
-                {% if role == "Attendee" %}
-                <div class="room_codes_attendee">
-                  <h4>Your RSVP'd Event Rooms</h4>
-                  <ul>
-                    {% for event in rsvp_events %}
-                    <li>
-                      Room Code: {{ event.room_code }} - Event Name: {{
-                      event.event_name }}
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                {% endif %} {% if role == "Event Creator" %}
-                <div class="room_codes_creator">
-                  <h4>Your Created Event Rooms</h4>
-                  <ul>
-                    {% for event in created_events %}
-                    <li>
-                      Room Code: {{ event.room_code }} - Event Name: {{
-                      event.event_name }}
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                {% endif %} {% if role == "Client" %}
-                <div class="room_codes_creator">
-                  <h4>Your RSVP'd Event Rooms</h4>
-                  <ul>
-                    {% for event in client_attend %}
-                    <li>
-                      Room Code: {{ event.room_code }} - Event Name: {{
-                      event.event_name }}
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-                {% endif %} {% if error %}
-                <ul>
-                  <li>{{error}}</li>
-                </ul>
-                {% endif %}
-              </form>
+            {% if role == "Attendee" %}
+            <div class="mb-4">
+              <h4>Your RSVP'd Event Rooms</h4>
+              <div class="d-flex flex-wrap gap-2">
+                {% for event in rsvp_events %}
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  onclick="fillRoomCode('{{ event.room_code }}')"
+                >
+                  {{ event.room_code }} - {{ event.event_name }}
+                </button>
+                {% endfor %}
+              </div>
             </div>
-          </div>
+            {% endif %}
+
+            {% if role == "Event Creator" %}
+            <div class="mb-4">
+              <h4>Your Created Event Rooms</h4>
+              <div class="d-flex flex-wrap gap-2">
+                {% for event in created_events %}
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  onclick="fillRoomCode('{{ event.room_code }}')"
+                >
+                  {{ event.room_code }} - {{ event.event_name }}
+                </button>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if role == "Client" %}
+            <div class="mb-4">
+              <h4>Your RSVP'd Event Rooms</h4>
+              <div class="d-flex flex-wrap gap-2">
+                {% for event in client_attend %}
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm"
+                  onclick="fillRoomCode('{{ event.room_code }}')"
+                >
+                  {{ event.room_code }} - {{ event.event_name }}
+                </button>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="alert alert-danger">
+              {{ error }}
+            </div>
+            {% endif %}
+          </form>
         </div>
       </div>
     </div>
@@ -529,5 +546,11 @@ block head %}
 ></script>
 <script type="text/javascript">
   var socketio = io();
+</script>
+<script>
+  // Function to autofill the room code input
+  function fillRoomCode(code) {
+    document.getElementById('roomCode').value = code;
+  }
 </script>
 {% endblock %}

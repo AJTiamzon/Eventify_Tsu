@@ -186,35 +186,32 @@
       <h1 class="h3 mb-3">Invited Attendees:</h1>
 
       <div class="row">
-        <div class="col-12">
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
           <div class="card">
             <div class="card-header">
-              <h5>
-                Note: This is where you are able to view the attendees you have
-                <span class="info"> invited </span>, attendees who have
-                <span class="info">RSVPed</span> and attendees who have
-                <span class="info">rejected</span> the invite.
-              </h5>
+              <h3 class="text-primary">{{ event.event_name }}</h3>
+              <p class="mb-0">
+                <strong>Event Date:</strong> {{ event.event_date }}
+              </p>
             </div>
-            <div class="card-body">
-              {% for event in events %}
-              <div class="invited_attendees mb-4">
-                <h3 class="text-primary">{{ event.event_name }}</h3>
 
-                <!-- Button to toggle visibility -->
+            <div class="card-body">
+              <div class="invited_attendees mb-4">
                 <button
-                  class="btn btn-secondary toggle-btn"
-                  data-target="attendees-{{ event.id }}"
+                  class="btn btn-secondary toggle-btn w-100 mb-2"
+                  data-toggle="collapse"
+                  data-target="#attendees-{{ event.id }}"
                 >
                   View Invited Attendees
                 </button>
 
-                <!-- Div starts hidden, unique ID per event -->
                 <div id="attendees-{{ event.id }}" class="collapse">
                   <ul class="list-unstyled mt-2">
                     {% for attendee in event.invited_attendees %}
                     <li>
-                      Name: {{ attendee.name }} | Email: {{ attendee.email }}
+                      <strong>Name:</strong> {{ attendee.name }} |
+                      <strong>Email:</strong> {{ attendee.email }}
                     </li>
                     {% endfor %}
                   </ul>
@@ -222,16 +219,16 @@
               </div>
 
               <div class="invitation_rejected_container mb-4">
-                <!-- Button to toggle rejected invitations visibility -->
                 <button
-                  class="btn btn-secondary toggle-btn"
-                  data-target="rejected-{{ event.id }}"
+                  class="btn btn-danger toggle-btn w-100 mb-2"
+                  data-toggle="collapse"
+                  data-target="#rejected-{{ event.id }}"
                 >
                   View Rejected Invitations
                 </button>
 
                 <div id="rejected-{{ event.id }}" class="collapse">
-                  <h4 class="rejected mt-2">Rejected Invitations:</h4>
+                  <h4 class="mt-2">Rejected Invitations:</h4>
                   {% if event.rejected_invites %} {% for rejected in
                   event.rejected_invites %}
                   <div class="border p-2 mb-2">
@@ -250,32 +247,32 @@
               </div>
 
               <div class="rsvp_attendees_container mb-4">
-                <!-- Button to toggle RSVP attendees visibility -->
                 <button
-                  class="btn btn-secondary toggle-btn"
-                  data-target="rsvp-{{ event.id }}"
+                  class="btn btn-success toggle-btn w-100 mb-2"
+                  data-toggle="collapse"
+                  data-target="#rsvp-{{ event.id }}"
                 >
                   View RSVPed Attendees
                 </button>
 
                 <div id="rsvp-{{ event.id }}" class="collapse">
-                  <h4 class="rsvp mt-2">RSVPed Attendees:</h4>
+                  <h4 class="mt-2">RSVPed Attendees:</h4>
                   {% if event.rsvp_attendees %} {% for attendee in
                   event.rsvp_attendees %}
                   <p>
-                    Name: {{ attendee.attendee_name }} {{
+                    <strong>Name:</strong> {{ attendee.attendee_name }} {{
                     attendee.attendee_lname }}
                   </p>
-                  <p>Email: {{ attendee.attendee_email }}</p>
+                  <p><strong>Email:</strong> {{ attendee.attendee_email }}</p>
                   {% endfor %} {% else %}
                   <p>No RSVPs yet.</p>
                   {% endif %}
                 </div>
               </div>
-              {% endfor %}
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </main>

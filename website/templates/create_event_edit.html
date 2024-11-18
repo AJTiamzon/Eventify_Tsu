@@ -10,6 +10,20 @@
     align-items: center;
     justify-content: space-between;
   }
+
+  #event_image{
+  max-width: 500px; 
+  max-height: 250px; 
+  object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+  #event_image {
+    max-width: 100%;
+    max-height: 100%; /* Adjust the max-height to fit your design */
+    object-fit: cover;
+  }
+}
 </style>
 {% endblock %}
 {% block title %}Editing Created Events{% endblock %}
@@ -194,7 +208,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h1 align="center">Your Events</h1>
+              <h1 align="center"> <span class="text-info font-weight-bold">Your Events</span></h1>
               <h3>Note: You may add and delete suppliers for your event all you wish, but the moment you click <span
                   class="info">Finalize</span>,
                 the current state of the event will be saved in the Finalized Events,
@@ -212,7 +226,7 @@
                     src="{{ url_for('static', filename='uploads/' + event.image_path) }}"
                     alt="Event Image"
                     class="img-fluid mb-2"
-                    style="max-width: 500px; max-height: 250px; object-fit: cover;"
+                    id="event_image"
                   />
                 </div>
                 {% endif %}
@@ -582,11 +596,6 @@
                   </div>
                 </div>
                 {% endif %}
-                <div class="d-flex justify-content-center">
-                  <button type="button" class="btn btn-danger" onClick="deleteEvent({{ event.id }})">
-                    Delete Event
-                  </button>
-                </div>
                 <br>
 
                   <li class="list-group-item">
@@ -838,6 +847,13 @@
                       </div>
                     </div>
                   </li>
+                  <br>
+                  <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-danger" onClick="deleteEvent({{ event.id }})">
+                      Delete Event
+                    </button>
+                  </div>
+                  <br>
                   <br>
               </div>
               {% endfor %}

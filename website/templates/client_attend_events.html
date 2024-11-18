@@ -110,7 +110,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Hire Supplier</span>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
         </a>
       </li>
 
@@ -214,36 +214,81 @@
                     <div class="card event-card"> <!-- Bootstrap card for styling -->
                       <div class="card-body">
                         <h3
-                        style="
-                          color: white;
-                          background-color: orange;
-                          text-align: center;
-                        "
-                        style="background-color: blue"
-                      >
-                        {{ event.event_name }}
-                      </h3>
-                      <h4>
-                        Created By:
-                        <span style="color: rgb(0, 89, 255)"
-                          >{{ event.creator_name }}</span
+                          style="
+                            color: white;
+                            background-color: orange;
+                            text-align: center;
+                          "
+                          style="background-color: blue"
                         >
-                      </h4>
-
-                        <form action="/view_creator" method="POST" class="view-creator-info-form">
-                          <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
-                          <button type="submit" class="btn btn-primary mb-2">View Creator Information</button>
-                        </form>
-
-                        <p class="card-text">Event Description: {{ event.event_desc }}</p>
-                        <p class="card-text">Start Date: {{ event.start_date }}</p>
-                        <p class="card-text">End Date: {{ event.end_date }}</p>
-
-                        <form id="rsvp-form-{{ event.event_name }}" action="/client_rsvped_events" method="POST">
-                          <input type="hidden" name="event_name" value="{{ event.event_name }}" />
-                          <input type="hidden" name="creator_name" value="{{ event.creator_name }}" />
-                          <button type="submit" class="btn btn-success">RSVP Spot</button>
-                        </form>
+                          {{ event.event_name }}
+                        </h3>
+                        <div class="d-flex justify-content-center">
+                          <img
+                            src="{{ url_for('static', filename='uploads/' + event.image_path) }}"
+                            alt="Event Image"
+                            class="img-fluid mb-2"
+                            style="
+                              max-width: 300px;
+                              max-height: 200px;
+                              object-fit: cover;
+                            "
+                          />
+                        </div>
+                        <h4>
+                          Created By:
+                          <span style="color: rgb(0, 89, 255)"
+                            >{{ event.creator_name }}</span
+                          >
+                        </h4>
+                        <div class="d-flex justify-content-center">
+                          <form
+                            action="/view_creator"
+                            method="POST"
+                            class="view-creator-info-form mb-3"
+                          >
+                            <input
+                              type="hidden"
+                              name="creator_name"
+                              value="{{ event.creator_name }}"
+                            />
+                            <button type="submit" class="btn btn-primary">
+                              View Creator Information
+                            </button>
+                          </form>
+                        </div>
+                        <p class="card-text">
+                          <strong>Event Description:</strong> {{ event.event_desc
+                          }}
+                        </p>
+                        <p class="card-text">
+                          <strong>Start Date:</strong> {{ event.start_date }}
+                        </p>
+                        <p class="card-text">
+                          <strong>End Date:</strong> {{ event.end_date }}
+                        </p>
+  
+                        <div class="d-flex justify-content-center">
+                          <form
+                            id="rsvp-form-{{ event.event_name }}"
+                            action="/client_rsvped_events"
+                            method="POST"
+                          >
+                            <input
+                              type="hidden"
+                              name="event_name"
+                              value="{{ event.event_name }}"
+                            />
+                            <input
+                              type="hidden"
+                              name="creator_name"
+                              value="{{ event.creator_name }}"
+                            />
+                            <button type="submit" class="btn btn-success">
+                              RSVP Spot
+                            </button>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>

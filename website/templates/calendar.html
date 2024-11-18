@@ -27,10 +27,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css"
       rel="stylesheet"
     />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
 
@@ -50,19 +50,15 @@
       .fc-event .fc-title {
         font-size: 16px;
       }
-
       .fc-day-header {
         font-size: 16px;
       }
-
       .fc-time {
         font-size: 14px;
       }
-
       .fc-event {
         font-size: 16px;
       }
-
       .fc-day-number {
         font-size: 14px;
       }
@@ -73,8 +69,33 @@
       .fc-toolbar {
         flex-wrap: wrap;
       }
+
+      /* Responsive adjustments for mobile view */
+      @media (max-width: 767px) {
+        .fc-toolbar {
+          text-align: center;
+        }
+
+        #calendar {
+          padding: 0 10px; /* Add some padding on smaller screens */
+        }
+
+        /* Adjust aspect ratio for mobile */
+        .fc-view-container {
+          overflow: visible;
+        }
+        .fc-day-number,
+        .fc-day-header {
+          font-size: 12px;
+        }
+
+        .fc-event {
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
+
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <a class="navbar-brand" href="/">Eventify</a>
@@ -173,10 +194,13 @@
         </ul>
       </div>
     </nav>
+
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
     <div class="container">
       <div id="calendar"></div>
     </div>
+
     <br />
   </body>
 </html>

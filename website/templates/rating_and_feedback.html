@@ -18,124 +18,409 @@ head %}
 {% endblock %} {% block content %}
 <nav id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
-    {% if user.role == "Client" %}
-    <a class="sidebar-brand" href="/client_home">
-      <span class="align-middle">Client Dashboard</span>
-    </a>
-    {% endif %} {% if user.role == "Event Creator" %}
+    {% if user.role == "Event Creator" %}
     <a class="sidebar-brand" href="/create_event_home">
       <span class="align-middle">Creator Dashboard</span>
     </a>
-    {% endif %} {% if user.role == "Attendee" %}
-    <a class="sidebar-brand" href="/attendee">
-      <span class="align-middle">Attendee Dashboard</span>
-    </a>
-    {% endif %}
+
     <ul class="sidebar-nav">
-      <li class="sidebar-header">Home</li>
-      <li class="sidebar-item">
-        {% if user.role == "Client" %}
-        <a class="sidebar-link" href="/client">
-          <i class="align-middle" data-feather="calendar"></i>
-          <span class="align-middle">Plan An Event</span>
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/create_event_home">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Creator Home</span>
         </a>
-        {% endif %}{% if user.role == "Event Creator" %}
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
         <a class="sidebar-link" href="/create-event">
-          <i class="align-middle" data-feather="calendar"></i>
-          <span class="align-middle">Create An Event</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/add-event.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Create Event</span>
         </a>
-        {% endif %}
       </li>
+
       <li class="sidebar-item">
-        {% if user.role == "Client" %}
-        <a class="sidebar-link" href="/client_events">
-          <i class="align-middle" data-feather="eye"></i>
-          <span class="align-middle">View Your Events</span>
-        </a>
-        {% endif %}{% if user.role == "Event Creator" %}
         <a class="sidebar-link" href="/created_event_edit">
-          <i class="align-middle" data-feather="calendar"></i>
-          <span class="align-middle">View Your Events</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/view.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Events</span
+          >
         </a>
-        {% endif %}
       </li>
+
       <li class="sidebar-item">
-        {% if user.role == "Client" %}
-        <a class="sidebar-link" href="/client_attend_events">
-          <i class="align-middle" data-feather="users"></i>
-          <span class="align-middle">Attend Public Events</span>
-        </a>
-        {% endif %}{% if user.role == "Event Creator" %}
         <a class="sidebar-link" href="/create_event_history">
-          <i class="align-middle" data-feather="check-circle"></i>
-          <span class="align-middle">Finalized Events</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar_final.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Finalized Events</span
+          >
         </a>
-        {% endif %}
       </li>
+
       <li class="sidebar-item">
-        {% if user.role == "Client" %}
-        <a class="sidebar-link" href="/client_events_to_attend">
-          <i class="align-middle" data-feather="check-circle"></i>
-          <span class="align-middle">RSVPed Events</span>
-        </a>
-        {% endif %}{% if user.role == "Event Creator" %}
         <a class="sidebar-link" href="/event_attendee_list">
-          <i class="align-middle" data-feather="users"></i>
-          <span class="align-middle">Attendee List</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/audience.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Attendee List</span>
         </a>
-        {% endif %}
       </li>
+
       <li class="sidebar-item">
-        {% if user.role == "Client" %}
-        <a class="sidebar-link" href="/client_hire_supplier">
-          <i class="align-middle" data-feather="briefcase"></i>
-          <span class="align-middle">Hire Supplier</span>
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Calendar</span>
         </a>
-        {% endif %}
       </li>
-      {% if user.role == "Attendee" %} {% else %}
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/rating_and_feedback">
-          <i class="align-middle" data-feather="star"></i>
-          <span class="align-middle">Rate Suppliers</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/rate.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+    {% endif %} {% if user.role == "Attendee" %}
+    <a class="sidebar-brand" href="/attendee">
+      <span class="align-middle" style="color: white">Attendee Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Creator Home</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_invites">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/invite.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Invites</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_browse">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/publicev.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Attend Public Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/event-list.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_history">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/past.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Past Events Attended</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room_attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+    {% endif %} {% if user.role == "Client" %}
+    <a class="sidebar-brand" href="/client_home">
+      <span class="align-middle">Client Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/client_home">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Client Home</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_client">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/add-event.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Plan An Event</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/view.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Your Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_attend_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/publicev.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Attend Public Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events_to_attend">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/event-list.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">RSVPed Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_hire_supplier">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/supplier.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
         </a>
       </li>
 
       <li class="sidebar-item">
         <a class="sidebar-link" href="/client_suppliers_hired">
-          <i class="align-middle" data-feather="check-circle"></i>
-          <span class="align-middle">Suppliers Chosen</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/supplier_chosen.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Suppliers Chosen</span>
         </a>
       </li>
-      {% endif %}
+
       <li class="sidebar-item">
-        {% if user.role == "Client" %}
-        <a class="sidebar-link" href="/create_event_profile_client">
-          <i class="align-middle" data-feather="user"></i>
-          <span class="align-middle">View Profile</span>
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/rate.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Rate Suppliers</span>
         </a>
-        {% endif %}{% if user.role == "Event Creator" %}
-        <a class="sidebar-link" href="/create_event_profile">
-          <i class="align-middle" data-feather="user"></i>
-          <span class="align-middle">View Profile</span>
-        </a>
-        {% endif %}
       </li>
 
       <li class="sidebar-item">
         <a class="sidebar-link" href="/join_room">
-          <i class="align-middle" data-feather="message-square"></i>
-          <span class="align-middle">Chat Room</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
         </a>
       </li>
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
-          <i class="align-middle" data-feather="video"></i>
-          <span class="align-middle">Video Chat Room</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
         </a>
       </li>
     </ul>
-  </div>
+    {% endif %}
 </nav>
 
 <div class="main">
@@ -268,7 +553,7 @@ head %}
                 >
                   <div class="card h-100">
                     <div class="card-body">
-                      <h4 class="card-title">{{ thing.name }}</h4>
+                      <h3 class="card-title"><span class="text-info font-weight-bold">{{ thing.name }}</span></h3>
                       <p class="card-text">
                         <strong>Business Name:</strong> {{ thing.business_name
                         }}
@@ -284,18 +569,20 @@ head %}
                         <strong>Rating:</strong> {{ thing.rating }}
                       </p>
                       <p class="card-text">
-                        <strong>Commission:</strong> {{ thing.price }}
+                        <strong>Commission:</strong> ₱{{ thing.price }}
                       </p>
-                      <form action="/rate_supplier" method="post">
-                        <input
-                          type="hidden"
-                          name="supplier_name"
-                          value="{{ thing.name }}"
-                        />
-                        <button type="submit" class="btn btn-primary btn-sm">
-                          Rate Supplier
-                        </button>
-                      </form>
+                      <div class="d-flex justify-content-center">
+                        <form action="/rate_supplier" method="post">
+                          <input
+                            type="hidden"
+                            name="supplier_name"
+                            value="{{ thing.name }}"
+                          />
+                          <button type="submit" class="btn btn-primary btn-sm">
+                            Rate Supplier
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>

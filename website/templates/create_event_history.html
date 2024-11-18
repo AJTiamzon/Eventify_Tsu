@@ -183,151 +183,139 @@ block head %}
       </h1>
 
       <div class="row">
-        <div class="col-12">
+        {% for event in event_history %}
+        <div class="col-md-4 mb-4">
           <div class="card">
             <div class="card-header">
-              <h5>
-                Note: This is where you are able to
-                <span class="info"
-                  >view the information for contacting the suppliers</span
-                >
-                you have selected. When you have sealed the deal or have made an
-                agreement with that supplier, you can click the button
-                <span class="info">Not Hired</span> to show that you have hired
-                that supplier. If complications arise you may click it again.
-                <span class="info"
-                  >This serves as a reminder for you, on which suppliers you
-                  have been able to hire and those you have not yet</span
-                >
-                .
-              </h5>
+              <h5 class="card-title text-primary">{{ event.event_name }}</h5>
             </div>
             <div class="card-body">
-              <div class="container mt-4">
-                <div class="past_created_events">
-                  <ul class="list-unstyled">
-                    {% for event in event_history %}
-                    <li class="mb-4">
-                      <h3 class="text-primary">{{ event.event_name }}</h3>
-                      <p>
-                        <strong>Event Description:</strong> {{ event.event_desc
-                        }} || <strong>Type:</strong> {{ event.event_type }} ||
-                        <strong>Privacy:</strong> {{ event.event_privacy }} ||
-                        <strong>Total Cost:</strong> {{ event.total_cost }}
-                      </p>
-                      <p>
-                        <strong>Start:</strong> {{ event.start_date }} ||
-                        <strong>End:</strong> {{ event.end_date }}
-                      </p>
-                      <p><strong>Room Code:</strong> {{ event.room_code }}</p>
-                      {% if event.image_path %}
-                      <div class="d-flex justify-content-center">
-                        <img
-                          src="{{ url_for('static', filename='uploads/' + event.image_path) }}"
-                          alt="Event Image"
-                          class="img-fluid mb-2"
-                          style="
-                            max-width: 500px;
-                            max-height: 250px;
-                            object-fit: cover;
-                          "
-                        />
-                      </div>
-                      {% endif %}
+              <p>
+                <strong>Event Description:</strong> {{ event.event_desc }} ||
+                <strong>Type:</strong> {{ event.event_type }} ||
+                <strong>Privacy:</strong> {{ event.event_privacy }} ||
+                <strong>Total Cost:</strong> {{ event.total_cost }}
+              </p>
+              <p>
+                <strong>Start:</strong> {{ event.start_date }} ||
+                <strong>End:</strong> {{ event.end_date }}
+              </p>
+              <p><strong>Room Code:</strong> {{ event.room_code }}</p>
 
-                      <!-- View Suppliers To Hire button -->
-                      <button
-                        class="btn btn-secondary toggle-suppliers-btn"
-                        data-event-id="{{ event.id }}"
-                      >
-                        View Suppliers To Hire
-                      </button>
-
-                      <!-- Suppliers to Hire div (initially hidden) -->
-                      <div
-                        id="suppliers_{{ event.id }}"
-                        class="suppliers_to_hire"
-                        style="display: none"
-                      >
-                        <ul class="list-unstyled">
-                          {% for supplier in event.supplier_names %}
-                          <li class="border p-2 mb-2">
-                            <strong>Name:</strong> {{ supplier.name }}<br />
-                            <strong>Business Name:</strong> {{
-                            supplier.business_name }}<br />
-                            <strong>Contact Number:</strong> {{
-                            supplier.contact_number }}<br />
-                            <strong>Email:</strong> {{ supplier.email }}<br />
-                            <strong>Rating:</strong> {{ supplier.rating }}<br />
-                            <strong>Price:</strong> {{ supplier.price }}<br />
-                            <form
-                              action="/rate_supplier"
-                              method="post"
-                              class="d-inline"
-                            >
-                              <input
-                                type="hidden"
-                                name="supplier_name"
-                                value="{{ supplier.name }}"
-                              />
-                              <button type="submit" class="btn btn-info btn-sm">
-                                View Supplier Ratings
-                              </button>
-                            </form>
-
-                            <!-- Hire button for each supplier -->
-                            <button
-                              class="btn hire-btn"
-                              style="background-color: {% if supplier.hired %}green{% else %}red{% endif %}; color: white;"
-                              data-event-id="{{ event.id }}"
-                              data-supplier-name="{{ supplier.name }}"
-                            >
-                              {% if supplier.hired %}Hired{% else %}Not Hired{%
-                              endif %}
-                            </button>
-                          </li>
-                          {% endfor %}
-                        </ul>
-                      </div>
-
-                      <form
-                        action="{{ url_for('views_creator.send_email_to_attendees', event_name=event.event_name) }}"
-                        method="POST"
-                      >
-                        <label for="send_email"
-                          >Send An Email Update To Attendees</label
-                        >
-                        <textarea
-                          name="send_email"
-                          id="send_email"
-                          rows="6"
-                          cols="50"
-                          style="resize: none"
-                        ></textarea>
-                        <br />
-                        <button type="submit" class="btn btn-primary">
-                          Send To All Attendees
-                        </button>
-                      </form>
-
-                      <!-- Delete button with a form -->
-                      <form
-                        action="{{ url_for('views_creator.delete_event_record', event_id=event.id) }}"
-                        method="POST"
-                        class="mt-2"
-                      >
-                        <button type="submit" class="btn btn-danger">
-                          Delete Event
-                        </button>
-                      </form>
-                    </li>
-                    {% endfor %}
-                  </ul>
-                </div>
+              {% if event.image_path %}
+              <div class="d-flex justify-content-center mb-3">
+                <img
+                  src="{{ url_for('static', filename='uploads/' + event.image_path) }}"
+                  alt="Event Image"
+                  class="img-fluid"
+                  style="
+                    max-width: 100%;
+                    height: auto;
+                    object-fit: cover;
+                    max-height: 250px;
+                  "
+                />
               </div>
+              {% endif %}
+
+              <!-- View Suppliers To Hire button -->
+              <div class="d-flex justify-content-center mb-3">
+                <button
+                  class="btn btn-secondary toggle-suppliers-btn"
+                  data-event-id="{{ event.id }}"
+                >
+                  View Suppliers To Hire
+                </button>
+              </div>
+
+              <!-- Suppliers to Hire div (initially hidden) -->
+              <div
+                id="suppliers_{{ event.id }}"
+                class="suppliers_to_hire"
+                style="display: none"
+              >
+                <ul class="list-unstyled">
+                  {% for supplier in event.supplier_names %}
+                  <li class="border p-2 mb-2">
+                    <strong>Name:</strong> {{ supplier.name }}<br />
+                    <strong>Business Name:</strong> {{ supplier.business_name
+                    }}<br />
+                    <strong>Contact Number:</strong> {{ supplier.contact_number
+                    }}<br />
+                    <strong>Email:</strong> {{ supplier.email }}<br />
+                    <strong>Rating:</strong> {{ supplier.rating }}<br />
+                    <strong>Price:</strong> ₱{{ supplier.price }}<br />
+                    <form
+                      action="/rate_supplier"
+                      method="post"
+                      class="d-inline"
+                    >
+                      <input
+                        type="hidden"
+                        name="supplier_name"
+                        value="{{ supplier.name }}"
+                      />
+                      <button type="submit" class="btn btn-info btn-sm">
+                        View Supplier Ratings
+                      </button>
+                    </form>
+
+                    <!-- Hire button for each supplier -->
+                    <div class="d-flex justify-content-center mt-2">
+                      <button
+                        class="btn hire-btn"
+                        style="background-color: {% if supplier.hired %}green{% else %}red{% endif %}; color: white;"
+                        data-event-id="{{ event.id }}"
+                        data-supplier-name="{{ supplier.name }}"
+                      >
+                        {% if supplier.hired %}Hired{% else %}Not Hired{% endif
+                        %}
+                      </button>
+                    </div>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <!-- Send email form -->
+              <form
+                action="{{ url_for('views_creator.send_email_to_attendees', event_name=event.event_name) }}"
+                method="POST"
+              >
+                <label for="send_email"
+                  >Send An Email Update To Attendees</label
+                >
+                <textarea
+                  name="send_email"
+                  id="send_email"
+                  rows="6"
+                  cols="50"
+                  style="resize: none"
+                ></textarea>
+                <br />
+                <div class="d-flex justify-content-center mt-3">
+                  <button type="submit" class="btn btn-primary">
+                    Send To All Attendees
+                  </button>
+                </div>
+              </form>
+
+              <!-- Delete button with a form -->
+              <form
+                action="{{ url_for('views_creator.delete_event_record', event_id=event.id) }}"
+                method="POST"
+                class="mt-2"
+              >
+                <div class="d-flex justify-content-center">
+                  <button type="submit" class="btn btn-danger">
+                    Delete Event
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </main>

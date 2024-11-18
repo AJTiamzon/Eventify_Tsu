@@ -1,6 +1,15 @@
-{% extends "base.html" %} {% block title %}Profile {% endblock %} {% block head
-%}
+{% extends "base.html" %} {% block title %}Attendee Home {% endblock %} {% block
+head %}
 <link href="css/app.css" rel="stylesheet" />
+<style>
+  img {
+    transition: transform 0.3s ease; /* Smooth scaling */
+  }
+
+  img:hover {
+    transform: scale(1.1); /* Makes the image 10% larger */
+  }
+</style>
 {% endblock %} {% block content %}
 <nav id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
@@ -17,7 +26,7 @@
               alt=""
               style="max-width: 15%; max-height: 15%; object-fit: cover"
           /></i>
-          <span class="align-middle" style="color: white">Creator Home</span>
+          <span class="align-middle" style="color: white">Attendee Home</span>
         </a>
       </li>
 
@@ -170,21 +179,157 @@
 
   <main class="content">
     <div class="container-fluid p-0">
-      <h1 class="h3 mb-3">
-        Hello <span class="info">{{ name }}</span>, Welcome, Lets Find Some
-        Events For You.
-      </h1>
-
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header"></div>
+            <div class="card-header">
+              <h1 class="h3 mb-3" style="text-align: center">
+                Hello <span class="info">{{ name }}</span>, Welcome, Lets Find
+                Some Events For You.
+              </h1>
+            </div>
             <div class="card-body">
-              <h6 align="center">
-                Note: As an attendee you are able to be invited to events,
-                attend public events and rate event creators after the event you
-                attended.
-              </h6>
+              <h3 align="center">
+                Welcome Eventify
+                <span class="text-info font-weight-bold">{{ name }}</span>! Your
+                role as an
+                <span class="text-info font-weight-bold">attendee</span> means
+                that you are able to be
+                <span class="text-info font-weight-bold">Invited To Events</span
+                >,
+                <span class="text-info font-weight-bold">RSVP A Spot</span>
+                in public events and
+                <span class="text-info font-weight-bold"
+                  >Rate Event Creators</span
+                >
+                after the event you attended.
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">View Invites</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/attendee_invites">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/invite.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold"
+                  >Attend Public Events</span
+                >
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/attendee_browse">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/publicev.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">View Your Events</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/attendee_events">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/event-list.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold">View Calendar</span>
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/calendar">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            <div class="card-body">
+              <h3 style="text-align: center">
+                <span class="text-info font-weight-bold"
+                  >Past Events Attended</span
+                >
+              </h3>
+              <div class="d-flex justify-content-center">
+                <a href="/attendee_history">
+                  <img
+                    src="{{ url_for('static', filename='img/icons/past.png') }}"
+                    alt="Event Image"
+                    class="img-fluid mb-2"
+                    style="
+                      max-width: 250px;
+                      max-height: 150px;
+                      object-fit: cover;
+                    "
+                  />
+                </a>
+              </div>
             </div>
           </div>
         </div>

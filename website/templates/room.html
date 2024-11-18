@@ -1,125 +1,503 @@
 {% extends "base.html" %} {% block title %}Chat Room{% endblock %} {% block
 head%}
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+
 <style>
   .message-box {
-    border-color: black;
+    border-color: #ddd;
     border-width: 2px;
     border-style: solid;
     border-radius: 10px;
-    background-color: whitesmoke;
-    height: 100%;
+    background-color: #f8f9fa;
+    height: 80vh; /* Adjust height for better responsiveness */
     display: flex;
     flex-direction: column;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
+    width: 80%; /* Center the message box */
+    margin: 0 auto; /* Center horizontally */
+    align-items: center; /* Center content inside */
+    justify-content: space-between;
   }
+
   .messages {
-    overflow-y: scroll;
+    overflow-y: auto;
     flex: 1;
     width: 100%;
+    padding: 1.25rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
   }
+
+  .message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: #e9ecef;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .message strong {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .message .meta {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-align: right;
+  }
+
   .inputs {
     padding: 10px;
     display: flex;
+    align-items: center;
+    border-top: 1px solid #dee2e6;
+    background-color: #f1f3f5;
   }
-  h2 {
-    text-align: center;
-  }
+
   #message {
     flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    margin-right: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   }
-  .text {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding-left: 10px;
-    padding-right: 10px;
+
+  #send-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    cursor: pointer;
   }
+
+  #send-btn:hover {
+    background-color: #0056b3;
+  }
+
+  h2,
+  h3 {
+    color: #343a40;
+    text-align: center; /* Center align headers */
+  }
+
   .muted {
     font-size: 10px;
     color: darkgray;
-  }
-  .main_container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
   }
 </style>
 {% endblock %} {% block content %}
 <nav id="sidebar" class="sidebar js-sidebar">
   <div class="sidebar-content js-simplebar">
+    {% if user.role == "Event Creator" %}
     <a class="sidebar-brand" href="/create_event_home">
       <span class="align-middle">Creator Dashboard</span>
     </a>
 
     <ul class="sidebar-nav">
-      <li class="sidebar-header">Home</li>
-
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/create-event">
-          <i class="align-middle" data-feather="eye"></i>
-          <span class="align-middle">Create Event</span>
-        </a>
-      </li>
-
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/created_event_edit">
-          <i class="align-middle" data-feather="users"></i>
-          <span class="align-middle">View Your Events</span>
-        </a>
-      </li>
-
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/create_event_history">
-          <i class="align-middle" data-feather="check-circle"></i>
-          <span class="align-middle">Finalized Events</span>
-        </a>
-      </li>
-
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/event_attendee_list">
-          <i class="align-middle" data-feather="star"></i>
-          <span class="align-middle">Attendee List</span>
-        </a>
-      </li>
-
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/calendar">
-          <i class="align-middle" data-feather="calendar"></i>
-          <span class="align-middle">View Calendar</span>
-        </a>
-      </li>
-
-      <li class="sidebar-item">
-        <a class="sidebar-link" href="/rating_and_feedback">
-          <i class="align-middle" data-feather="star"></i>
-          <span class="align-middle">Rate Suppliers</span>
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/create_event_home">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Creator Home</span>
         </a>
       </li>
 
       <li class="sidebar-item">
         <a class="sidebar-link" href="/create_event_profile">
-          <i class="align-middle" data-feather="star"></i>
-          <span class="align-middle">View Profile</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
         </a>
       </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create-event">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/add-event.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Create Event</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/created_event_edit">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/view.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_history">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar_final.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Finalized Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/event_attendee_list">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/audience.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Attendee List</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/rate.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Rate Suppliers</span>
+        </a>
+      </li>
+
       <li class="sidebar-item">
         <a class="sidebar-link" href="/join_room">
-          <i class="align-middle" data-feather="message-square"></i>
-          <span class="align-middle">Chat Room</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
         </a>
       </li>
 
       <li class="sidebar-item">
         <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
-          <i class="align-middle" data-feather="video"></i>
-          <span class="align-middle">Video Chat Room</span>
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
         </a>
       </li>
     </ul>
-  </div>
+    {% endif %} {% if user.role == "Attendee" %}
+    <a class="sidebar-brand" href="/attendee">
+      <span class="align-middle" style="color: white">Attendee Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Creator Home</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_invites">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/invite.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Invites</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_browse">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/publicev.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Attend Public Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/event-list.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >View Your Events</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/attendee_history">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/past.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white"
+            >Past Events Attended</span
+          >
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room_attendee">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+    {% endif %} {% if user.role == "Client" %}
+    <a class="sidebar-brand" href="/client_home">
+      <span class="align-middle">Client Dashboard</span>
+    </a>
+
+    <ul class="sidebar-nav">
+      <li class="sidebar-header">
+        <a class="sidebar-link" href="/client_home">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/icon-48x48.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Client Home</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/create_event_profile_client">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/user.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Profile</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/add-event.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Plan An Event</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/view.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Your Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_attend_events">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/publicev.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Attend Public Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_events_to_attend">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/event-list.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">RSVPed Events</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/calendar">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/calendar.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">View Calendar</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_hire_supplier">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/supplier.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Choose Supplier</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/client_suppliers_hired">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/supplier_chosen.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Suppliers Chosen</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/rating_and_feedback">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/rate.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Rate Suppliers</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/join_room">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/chat.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Chat Room</span>
+        </a>
+      </li>
+
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/video_chat_dashboard" target="_blank">
+          <i class="align-middle"
+            ><img
+              src="{{ url_for('static', filename='img/icons/videoconference.png') }}"
+              alt=""
+              style="max-width: 15%; max-height: 15%; object-fit: cover"
+          /></i>
+          <span class="align-middle" style="color: white">Video Chat Room</span>
+        </a>
+      </li>
+    </ul>
+    {% endif %}
 </nav>
 
 <div class="main">
@@ -151,7 +529,7 @@ head%}
             <span class="text-dark">{{ name }}</span>
           </a>
           <div class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" href="#"
+            <a class="dropdown-item" href="/create_event_profile_attendee"
               ><i class="align-middle me-1" data-feather="user"></i> Profile</a
             >
             <div class="dropdown-divider"></div>
@@ -167,11 +545,10 @@ head%}
       <div class="row">
         <div class="col-12">
           <div class="card">
-            <div class="card-header"></div>
             <div class="card-body">
               <div class="message-box">
                 <h2>Chat Room: {{ code }}</h2>
-                <h3>Event: {{ event_name }} - Creator:{{ creator_name }}</h3>
+                <h3>Event: {{ event_name }} - Creator: {{ creator_name }}</h3>
                 <!-- Display the event name here -->
                 <div class="messages" id="messages"></div>
                 <div class="inputs">
@@ -211,14 +588,14 @@ head%}
 
   const createMessage = (name, msg) => {
     const content = `
-    <div class="text">
-        <span>
+      <div class="message">
+        <div class="text">
+          <span>
             <strong>${name}</strong>: ${msg}
-        </span>
-        <span class="muted">
-            ${new Date().toLocaleString()}
-        </span>
-    </div>
+          </span>
+        </div>
+        <div class="meta">${new Date().toLocaleString()}</div>
+      </div>
     `;
     messages.innerHTML += content;
     messages.scrollTop = messages.scrollHeight; // Scroll to the bottom
@@ -232,11 +609,12 @@ head%}
     const message = document.getElementById("message");
     if (message.value === "") return;
     socketio.emit("message", { data: message.value });
-    message.value = "";
+    message.value = ""; // Clear the input field
   };
 
+  // Preload messages from the server
   {% for msg in messages %}
-  createMessage("{{ msg.name }}", "{{ msg.message }}");
+    createMessage("{{ msg.name }}", "{{ msg.message }}");
   {% endfor %}
 </script>
 {% endblock %}{% block javascript %}{% endblock %}
