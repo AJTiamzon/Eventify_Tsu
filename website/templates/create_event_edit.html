@@ -616,22 +616,21 @@
                         >
                           Select a Supplier Type
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="sortDropdown">
-                          <a class="dropdown-item"  onclick="showAllSuppliers()">Show All</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('cake')">Cakes</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('digital_printing')">Digital Printers</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('event_planner')">Event Planners</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('grazing_table')">Grazing Table</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('makeup_and_hair')">Makeup And Hair Stylists</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('photobooth')">Photobooths</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('photographer')">Photographers</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('catering')">Catering Service</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('church')">Churches</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('event_stylist')">Event Stylists</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('event_place')">Event Places</a>
-                          <a class="dropdown-item"  onclick="sortSuppliers('lights_and_sounds')">Lights and Sounds</a>
+                        <div class="dropdown-menu" aria-labelledby="sortDropdown" data-event-id="{{ event.id }}">
+                          <a class="dropdown-item" data-type="all">Show All</a>
+                          <a class="dropdown-item" data-type="cake">Cakes</a>
+                          <a class="dropdown-item" data-type="digital_printing">Digital Printers</a>
+                          <a class="dropdown-item" data-type="event_planner">Event Planners</a>
+                          <a class="dropdown-item" data-type="grazing_table">Grazing Table</a>
+                          <a class="dropdown-item" data-type="makeup_and_hair">Makeup And Hair Stylists</a>
+                          <a class="dropdown-item" data-type="photobooth">Photobooths</a>
+                          <a class="dropdown-item" data-type="photographer">Photographers</a>
+                          <a class="dropdown-item" data-type="catering">Catering Service</a>
+                          <a class="dropdown-item" data-type="church">Churches</a>
+                          <a class="dropdown-item" data-type="event_stylist">Event Stylists</a>
+                          <a class="dropdown-item" data-type="event_place">Event Places</a>
+                          <a class="dropdown-item" data-type="lights_and_sounds">Lights and Sounds</a>
                         </div>
-                      </div>
 
                       <!-- Suppliers Container -->
                       <div id="suppliersContainer_{{ event.id }}" class="row">
@@ -943,58 +942,46 @@
       }
     }
 
-    // Store the original suppliers in memory for reliable access
-    const originalSuppliers = Array.from(document.querySelectorAll(".supplier"));
+    document.addEventListener("DOMContentLoaded", function () {
+  // Add event listener to dropdown menus
+  document.querySelectorAll(".dropdown-menu").forEach((menu) => {
+    menu.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("dropdown-item")) return;
 
-    // Show all suppliers
-    function showAllSuppliers() {
-      const container = document.querySelector("[id^='suppliersContainer']");
+      const type = e.target.getAttribute("data-type");
+      const eventId = menu.getAttribute("data-event-id");
+      const container = document.getElementById(`suppliersContainer_${eventId}`);
+
       if (!container) return;
 
-      // Clear the existing container
-      container.innerHTML = "";
-
-      // Append all original suppliers back to the container
-      originalSuppliers.forEach((supplier) => {
-        const supplierClone = supplier.cloneNode(true); // Clone the supplier node
-        container.appendChild(supplierClone);
-        supplierClone.style.display = "block"; // Ensure visibility
+      // Show or hide suppliers based on type
+      Array.from(container.children).forEach((supplier) => {
+        if (type === "all" || supplier.getAttribute("data-type") === type) {
+          supplier.style.display = "block";
+        } else {
+          supplier.style.display = "none";
+        }
       });
-    }
 
-    // Sort suppliers by type
-    function sortSuppliers(type) {
-      const container = document.querySelector("[id^='suppliersContainer']");
-      if (!container) return;
-
-      // Clear the existing container
-      container.innerHTML = "";
-
-      // Filter and append the matching suppliers
-      const sortedSuppliers = originalSuppliers.filter(
-        (supplier) => supplier.getAttribute("data-type") === type
+      // If no suppliers are visible, show a "No suppliers found" message
+      const visibleSuppliers = Array.from(container.children).filter(
+        (supplier) => supplier.style.display === "block"
       );
 
-      sortedSuppliers.forEach((supplier) => {
-        const supplierClone = supplier.cloneNode(true); // Clone the supplier node
-        container.appendChild(supplierClone);
-        supplierClone.style.display = "block"; // Ensure visibility
-      });
-
-      // If no suppliers match, display a message
-      if (sortedSuppliers.length === 0) {
+      if (visibleSuppliers.length === 0) {
         const noResultsDiv = document.createElement("div");
         noResultsDiv.className = "col-12 text-center";
         noResultsDiv.textContent = "No suppliers found for this type.";
         container.appendChild(noResultsDiv);
+      } else {
+        // Remove the "No suppliers found" message if it exists
+        const noResultsDiv = container.querySelector(".col-12.text-center");
+        if (noResultsDiv) {
+          noResultsDiv.remove();
+        }
       }
-    }
-
-    // Initialize the page with all suppliers hidden until toggled
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("[id^='event_details_holder']").forEach((holder) => {
-        holder.style.display = "none";
-      });
     });
+  });
+});
   </script>
   {% endblock %}
