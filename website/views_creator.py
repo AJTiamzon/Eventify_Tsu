@@ -628,41 +628,34 @@ def event_attendee_list():
     if current_user.role != "Event Creator":
         return redirect(url_for('views.role'))
     
-    user_events = current_user.events
+    # Fetch events created by the current user
+    user_events = current_user.event_records
     events_data = []
 
     for event in user_events:
+        # Parse invited_attendees and rsvp_attendees directly from Event_records11
         try:
-            # Load and parse event data
-            event_data = json.loads(event.data1) if event.data1 else {}
-        except (TypeError, json.JSONDecodeError):
-            event_data = {}  # Handle invalid or missing JSON
-            print(f"Failed to parse event data1 for event ID {event.id}")
-
-        try:
-            # Ensure invited_attendees is parsed as JSON, assuming it's stored as a string in the database
-            attendee_data = json.loads(event.invited_attendees) if isinstance(event.invited_attendees, str) else event.invited_attendees or []
+            attendee_data = json.loads(event.invited_attendees) if event.invited_attendees else []
         except (TypeError, json.JSONDecodeError):
             attendee_data = []
             print(f"Failed to parse invited_attendees for event ID {event.id}")
-        
+
         try:
-            # Parse the rsvp_attendees field if it's stored as JSON
             rsvp_attendees = json.loads(event.rsvp_attendees) if event.rsvp_attendees else []
         except (TypeError, json.JSONDecodeError):
             rsvp_attendees = []
             print(f"Failed to parse rsvp_attendees for event ID {event.id}")
 
-        # Load rejected invites for this event
+        # Load rejected invites for this event from Attendee_events8
         rejected_invites = []
         for attendee in attendee_data:
             try:
-                # Make sure that each attendee is treated as a dictionary
+                # Ensure attendee data has an 'id' to query rejected invites
                 if isinstance(attendee, dict) and 'id' in attendee:
                     attendee_event = Attendee_events8.query.filter_by(user_id=attendee['id']).first()
                     if attendee_event and attendee_event.rejected_invites:
                         rejected_invites_json = json.loads(attendee_event.rejected_invites)
-                        # Filter for this specific event's rejected invites
+                        # Filter for the specific event's rejected invites
                         rejected_for_event = [reject for reject in rejected_invites_json if reject['event_name'] == event.event_name]
                         rejected_invites.extend(rejected_for_event)
                 else:
@@ -670,21 +663,21 @@ def event_attendee_list():
             except Exception as e:
                 print(f"Error processing attendee data: {e}")
 
-        # Append event data to list
+        # Append event data to the list
         events_data.append({
             'event_name': event.event_name,
             'event_desc': event.event_desc,
-            'data1': event_data,
             'id': event.id,
-            'rsvp_attendees': rsvp_attendees,  # Decoded RSVP attendees
+            'rsvp_attendees': rsvp_attendees,
             'invited_attendees': attendee_data,
-            'rejected_invites': rejected_invites,  # Add rejected invite details
+            'rejected_invites': rejected_invites,
             'max_attendee_num': event.max_attendee_num,
             'start_date': event.start_date,
             'end_date': event.end_date
         })
 
     return render_template('event_attendee_list.html', user=current_user, name=current_user.fullname, events=events_data)
+
 
 ###########################################################################################################################################################################
 
