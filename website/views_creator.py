@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session, current_app
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
-from .models import Events17, Users9, Attendee_events8, Client_events7, Event_records11, Client_Attend_Events3, Client_Hired_Suppliers6, SupplierRating3
+from .models import Events17, Users9, Attendee_events9, Client_events7, Event_records12, Client_Attend_Events3, Client_Hired_Suppliers6, SupplierRating3
 from . import db, socketio
 from .gen_algo_final import *
 import json, random, csv, os
@@ -51,7 +51,7 @@ def join_room_view():
     session.clear()
 
     # Fetch events created by the current user
-    created_events = Event_records11.query.filter_by(creator_id=current_user.id).all()
+    created_events = Event_records12.query.filter_by(creator_id=current_user.id).all()
     client_attend = Client_Attend_Events3.query.filter_by(client_id=current_user.id).all()
 
     if request.method == "POST":
@@ -60,8 +60,8 @@ def join_room_view():
             return render_template("join_room.html", error="Please enter a room code.", user=current_user, role=current_user.role, created_events=created_events, client_attend=client_attend, name=current_user.fullname)
 
         if code not in rooms:
-            # Attempt to retrieve the room from Event_records11 if not in memory
-            event = Event_records11.query.filter_by(room_code=code).first()
+            # Attempt to retrieve the room from Event_records12 if not in memory
+            event = Event_records12.query.filter_by(room_code=code).first()
             if event:
                 rooms[code] = {"messages": [], "members": 0}  # Initialize in memory
             else:
@@ -633,7 +633,7 @@ def event_attendee_list():
     events_data = []
 
     for event in user_events:
-        # Parse invited_attendees and rsvp_attendees directly from Event_records11
+        # Parse invited_attendees and rsvp_attendees directly from Event_records12
         try:
             attendee_data = json.loads(event.invited_attendees) if event.invited_attendees else []
         except (TypeError, json.JSONDecodeError):
@@ -646,13 +646,13 @@ def event_attendee_list():
             rsvp_attendees = []
             print(f"Failed to parse rsvp_attendees for event ID {event.id}")
 
-        # Load rejected invites for this event from Attendee_events8
+        # Load rejected invites for this event from Attendee_events9
         rejected_invites = []
         for attendee in attendee_data:
             try:
                 # Ensure attendee data has an 'id' to query rejected invites
                 if isinstance(attendee, dict) and 'id' in attendee:
-                    attendee_event = Attendee_events8.query.filter_by(user_id=attendee['id']).first()
+                    attendee_event = Attendee_events9.query.filter_by(user_id=attendee['id']).first()
                     if attendee_event and attendee_event.rejected_invites:
                         rejected_invites_json = json.loads(attendee_event.rejected_invites)
                         # Filter for the specific event's rejected invites
@@ -688,7 +688,7 @@ def create_event_history():
         return redirect(url_for('views.role'))
     
     # Fetch all event records created by the current user
-    event_history = Event_records11.query.filter_by(creator_id=current_user.id).all()
+    event_history = Event_records12.query.filter_by(creator_id=current_user.id).all()
 
     for event in event_history:
         if event.data1:
@@ -723,7 +723,7 @@ def create_event_history():
 @login_required
 def send_email_to_attendees(event_name):
     # Fetch the event record
-    event = Event_records11.query.filter_by(event_name=event_name).first_or_404()
+    event = Event_records12.query.filter_by(event_name=event_name).first_or_404()
     
     # Ensure that only the creator can send emails to their attendees
     if event.creator_id != current_user.id:
@@ -735,7 +735,7 @@ def send_email_to_attendees(event_name):
     
     # Find attendees who have RSVP'd to this event
     attendee_emails = []
-    attendee_events = Attendee_events8.query.all()  # Fetch all attendee records
+    attendee_events = Attendee_events9.query.all()  # Fetch all attendee records
     
     for attendee_event in attendee_events:
         if attendee_event.rsvp_events:
@@ -789,7 +789,7 @@ def delete_event_record(event_id):
         return redirect(url_for('views.role'))
     
     # Find the event by ID
-    event_to_delete = Event_records11.query.filter_by(id=event_id, creator_id=current_user.id).first()
+    event_to_delete = Event_records12.query.filter_by(id=event_id, creator_id=current_user.id).first()
 
     if event_to_delete:
         # Delete the event from the database
@@ -805,7 +805,7 @@ def delete_event_record(event_id):
 @views_creator.route('/toggle_hire_status/<int:event_id>/<string:supplier_name>', methods=['POST'])
 @login_required
 def toggle_hire_status(event_id, supplier_name):
-    event = Event_records11.query.get(event_id)
+    event = Event_records12.query.get(event_id)
 
     if event:
         # Initialize supplier_hired_status if it doesn't exist
@@ -842,7 +842,7 @@ def create_record(event_id):
         flash('Event not found', category='error')
         return redirect(url_for('views_creator.created_event_edit'))
 
-    existing_record = Event_records11.query.filter_by(creator_id=current_user.id, event_name=event.event_name).first()
+    existing_record = Event_records12.query.filter_by(creator_id=current_user.id, event_name=event.event_name).first()
     if existing_record:
         flash('This event has already been finalized and saved to history.', category='warning')
         return redirect(url_for('views_creator.created_event_edit'))
@@ -874,7 +874,7 @@ def create_record(event_id):
     data1 = event.data1
     total_price = request.form.get('total_price', type=float)
 
-    new_event_record = Event_records11(
+    new_event_record = Event_records12(
         event_name=event_name,
         event_desc=event_desc,
         event_type=event_type,
@@ -898,16 +898,16 @@ def create_record(event_id):
         msg_body = f"Hello! You have been invited to attend the event '{event_name}' by {current_user.first_name} {current_user.last_name}.\n\nDescription: {event_desc}\nStart Date: {start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {end_date.strftime('%Y-%m-%d %H:%M')}. For more information, accept the invite on the website and view your ticket."
         send_email_async(recipient_emails, f"Invitation to {event_name}", msg_body)
 
-    # Store this event in each selected attendee's Attendee_events8 "invites" field
+    # Store this event in each selected attendee's Attendee_events9 "invites" field
     for attendee_id in selected_attendees:
         attendee = Users9.query.get(attendee_id)
         if attendee:
-            attendee_event = Attendee_events8.query.filter_by(user_id=attendee.id).first()
+            attendee_event = Attendee_events9.query.filter_by(user_id=attendee.id).first()
             if not attendee_event:
-                attendee_event = Attendee_events8(user_id=attendee.id, invites='[]')
+                attendee_event = Attendee_events9(user_id=attendee.id, invites='[]')
                 db.session.add(attendee_event)
             
-            invites = json.loads(attendee_event.invites)
+            invites = json.loads(attendee_event.invites or '[]')  # Safely handle NoneType
             invites.append({
                 'event_name': event_name,
                 'event_desc': event_desc,
@@ -1331,7 +1331,7 @@ def client_attend_events():
         return redirect(url_for('views.role'))
     
     # Fetch only public events
-    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records12.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
@@ -1360,7 +1360,7 @@ def client_rsvped_events():
     creator_name = request.form.get('creator_name')
     
     # Fetch the event from the database
-    event = Event_records11.query.filter_by(event_name=event_name).first()
+    event = Event_records12.query.filter_by(event_name=event_name).first()
     
     # Check if the event exists
     if not event:

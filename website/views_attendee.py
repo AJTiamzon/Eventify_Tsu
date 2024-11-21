@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, session
 from flask_login import login_required, current_user
 from flask_mail import Mail, Message
-from .models import Events17, Users9, Attendee_events8, Attendee_records5, Attendee_Rating_Creator2, Event_records11
+from .models import Events17, Users9, Attendee_events9, Attendee_records5, Attendee_Rating_Creator2, Event_records12
 from . import db, socketio
 from .gen_algo_final import *
 import json, csv
@@ -50,7 +50,7 @@ def join_room_view():
     session.clear()
 
     # Retrieve RSVP events for the current user if they are an attendee
-    attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+    attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
     rsvp_events = []
     if attendee_event and attendee_event.rsvp_events:
         try:
@@ -64,7 +64,7 @@ def join_room_view():
             return render_template("join_room.html", error="Please enter a room code.", user=current_user, role=current_user.role, name=current_user.fullname, rsvp_events=rsvp_events)
 
         if code not in rooms:
-            event = Event_records11.query.filter_by(room_code=code).first()
+            event = Event_records12.query.filter_by(room_code=code).first()
             if event:
                 rooms[code] = {"messages": [], "members": 0}  # Initialize in memory
             else:
@@ -139,8 +139,8 @@ def attendee_invites():
     if current_user.role != "Attendee":
         return redirect(url_for('views.role'))
 
-    # Get the invites stored in the Attendee_events8 table
-    attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+    # Get the invites stored in the Attendee_events9 table
+    attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
     
     invited_events = []
     if attendee_event and attendee_event.invites:
@@ -156,8 +156,8 @@ def accept_invite():
     event_name = request.form.get('event_name')
     creator_name = request.form.get('creator_name')  # Get creator name from the form
     
-    # Find the event in the Event_records11 table
-    event = Event_records11.query.filter_by(event_name=event_name).first()
+    # Find the event in the Event_records12 table
+    event = Event_records12.query.filter_by(event_name=event_name).first()
     
     if not event:
         # If event is not found, redirect with an error message
@@ -180,7 +180,7 @@ def accept_invite():
         return redirect(url_for('views_attendee.attendee_invites'))
 
     # Proceed with accepting the invite if the event is not full
-    attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+    attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
     if attendee_event:
         try:
             rsvp_events = json.loads(attendee_event.rsvp_events) if attendee_event.rsvp_events else []
@@ -224,7 +224,7 @@ def accept_invite():
 
     else:
         # Create a new entry for the attendee if it doesn't exist
-        new_attendee_event = Attendee_events8(
+        new_attendee_event = Attendee_events9(
             user_id=current_user.id,
             rsvp_events=json.dumps([{
                 'event_name': event.event_name,
@@ -243,7 +243,7 @@ def accept_invite():
     send_email_async([current_user.email], f"Invite Accepted for {event_name}",
                      f"Dear {current_user.first_name},\n\nYou have successfully accepted the invite for the event '{event_name}' hosted by {creator_name}.")
 
-    # Add the user's details to the event's RSVP attendees in Event_records11
+    # Add the user's details to the event's RSVP attendees in Event_records12
     rsvp_attendees.append({
         'attendee_name': current_user.first_name,
         'attendee_lname': current_user.last_name,
@@ -270,7 +270,7 @@ def reject_invite():
     reject_reason = request.form.get('reject_reason')
 
     # Find the Attendee's event invites
-    attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+    attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
 
     if attendee_event and attendee_event.invites:
         # Parse the JSON stored in the invites field
@@ -303,7 +303,7 @@ def attendee_browse():
     if current_user.role != "Attendee":
         return redirect(url_for('views.role'))
     # Fetch only public events
-    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records12.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
@@ -330,8 +330,8 @@ def rsvp_spot():
     event_name = request.form.get('event_name')
     creator_name = request.form.get('creator_name')
 
-    # Find the event in the Event_records11 table
-    event = Event_records11.query.filter_by(event_name=event_name).first()
+    # Find the event in the Event_records12 table
+    event = Event_records12.query.filter_by(event_name=event_name).first()
 
     if event:
         # Check if the current number of RSVP attendees has reached the max attendee number
@@ -340,8 +340,8 @@ def rsvp_spot():
             flash("Event is Full", "error")
             return redirect(url_for('views_attendee.attendee_browse'))
 
-        # Check if the event is already saved for the current user in Attendee_events8
-        attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+        # Check if the event is already saved for the current user in Attendee_events9
+        attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
 
         if attendee_event:
             # Check if this event is already in the user's RSVP list
@@ -364,7 +364,7 @@ def rsvp_spot():
             attendee_event.rsvp_events = json.dumps(rsvp_events)
         else:
             # Create a new entry for the attendee if it doesn't exist
-            new_attendee_event = Attendee_events8(
+            new_attendee_event = Attendee_events9(
                 user_id=current_user.id,
                 rsvp_events=json.dumps([{
                     'event_name': event.event_name,
@@ -398,7 +398,7 @@ def rsvp_spot():
         msg.body = f"Hello! You have RSVPed a spot to attend the event '{event.event_name}' by {creator_name}.\n\nDescription: {event.event_desc}\nStart Date: {event.start_date.strftime('%Y-%m-%d %H:%M')}\nEnd Date: {event.end_date.strftime('%Y-%m-%d %H:%M')}. For more information, go to the wesbite and view your ticket."
         mail.send(msg)
 
-        # Add the user's details to the event's RSVP attendees in Event_records11
+        # Add the user's details to the event's RSVP attendees in Event_records12
         rsvp_attendees.append({
             'attendee_name': current_user.first_name,
             'attendee_lname': current_user.last_name,
@@ -416,7 +416,7 @@ def rsvp_spot():
 def attendee_events():
     if current_user.role != "Attendee":
         return redirect(url_for('views.role'))
-    attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+    attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
     
     attending_events = []
     if attendee_event and attendee_event.rsvp_events:

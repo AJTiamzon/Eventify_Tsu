@@ -15,9 +15,9 @@ class Users9(db.Model, UserMixin):
     last_profile_update = db.Column(db.DateTime, nullable=True)
     admin_strikes = db.Column(db.Integer)
     events = db.relationship('Events17')
-    attend = db.relationship('Attendee_events8')
+    attend = db.relationship('Attendee_events9')
     client_events = db.relationship('Client_events7')
-    event_records = db.relationship('Event_records11', lazy='joined')  # New relationship
+    event_records = db.relationship('Event_records12', lazy='joined')  # New relationship
     # New credibility columns
     credibility1 = db.Column(db.String(300), nullable=True)
     credibility2 = db.Column(db.String(300), nullable=True)
@@ -44,16 +44,15 @@ class Events17(db.Model):
     image_path = db.Column(db.String)
 
 
-class Attendee_events8(db.Model):
+class Attendee_events9(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    invites = db.Column(db.Text)  # Store data as JSON string
+    invites = db.Column(db.Text, default='[]')  # Initialize as an empty JSON array
     rsvp_events = db.Column(db.Text)
-    attending_events = db.Column(db.Text)
     rejected_invites = db.Column(db.Text)  # New column to store rejected invites and reasons
     user_id = db.Column(db.Integer, db.ForeignKey('users9.id'))
 
 
-class Event_records11(db.Model):
+class Event_records12(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String)
     event_desc = db.Column(db.String)
@@ -63,8 +62,8 @@ class Event_records11(db.Model):
     room_code = db.Column(db.String)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     creator_id = db.Column(db.Integer, db.ForeignKey('users9.id'))  # Link to the user who created it
-    invited_attendees = db.Column(db.Text)
-    rsvp_attendees = db.Column(db.String)
+    rsvp_attendees = db.Column(db.String, index=True, default='')
+    invited_attendees = db.Column(db.String, index=True, default='')
     max_attendee_num = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)

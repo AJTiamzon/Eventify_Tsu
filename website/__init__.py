@@ -95,12 +95,12 @@ def setup_admin(app):
     admin = Admin(app, name='Event Management', template_mode='bootstrap3', index_view=CustomAdminIndexView())
     
     # Add your models to Flask-Admin
-    from .models import Users9, Events17, Attendee_events8, Event_records11, Client_Attend_Events3, Client_Hired_Suppliers6, SupplierRating3
+    from .models import Users9, Events17, Attendee_events9, Event_records12, Client_Attend_Events3, Client_Hired_Suppliers6, SupplierRating3
 
     admin.add_view(UserAdminView(Users9, db.session))
     admin.add_view(RestrictedModelView(Events17, db.session))
-    admin.add_view(RestrictedModelView(Attendee_events8, db.session))
-    admin.add_view(RestrictedModelView(Event_records11, db.session))
+    admin.add_view(RestrictedModelView(Attendee_events9, db.session))
+    admin.add_view(RestrictedModelView(Event_records12, db.session))
     admin.add_view(RestrictedModelView(Client_Attend_Events3, db.session))
     admin.add_view(RestrictedModelView(Client_Hired_Suppliers6, db.session))
     admin.add_view(RestrictedModelView(SupplierRating3, db.session))

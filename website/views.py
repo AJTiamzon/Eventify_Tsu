@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Events17, Users9, Attendee_events8, Client_Attend_Events3,Event_records11
+from .models import Events17, Users9, Attendee_events9, Client_Attend_Events3,Event_records12
 from . import db
 from .gen_algo_final import *
 import json
@@ -14,7 +14,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 def home():
     # Fetch only public events
-    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records12.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
@@ -58,8 +58,8 @@ def calendar():
 def fetch_events():
     events = []
 
-    # Fetch RSVP events for the user from Attendee_events8
-    attendee_event = Attendee_events8.query.filter_by(user_id=current_user.id).first()
+    # Fetch RSVP events for the user from Attendee_events9
+    attendee_event = Attendee_events9.query.filter_by(user_id=current_user.id).first()
     if attendee_event and attendee_event.rsvp_events:
         rsvp_events = json.loads(attendee_event.rsvp_events)
         for rsvp_event in rsvp_events:
@@ -82,8 +82,8 @@ def fetch_events():
             'event_privacy': 'Public',  # Assuming these events are public
         })
 
-    # Fetch finalized events created by the current user from Event_records11
-    event_records = Event_records11.query.filter_by(creator_id=current_user.id).all()
+    # Fetch finalized events created by the current user from Event_records12
+    event_records = Event_records12.query.filter_by(creator_id=current_user.id).all()
     for event_record in event_records:
         # Ensure dates are formatted correctly as ISO 8601 strings
         start_date = event_record.start_date.strftime('%Y-%m-%dT%H:%M:%S') if isinstance(event_record.start_date, datetime) else event_record.start_date
@@ -104,7 +104,7 @@ def fetch_events():
 @views.route('/event_list', methods=['GET'])
 def event_list():
     # Fetch only public events
-    public_events = Event_records11.query.filter_by(event_privacy="Public").all()
+    public_events = Event_records12.query.filter_by(event_privacy="Public").all()
     events_data = []
     
     for event in public_events:
