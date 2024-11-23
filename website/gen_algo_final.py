@@ -1,4 +1,5 @@
 import csv, time, os
+from datetime import datetime
 from collections import namedtuple
 from functools import partial
 from random import choices, randint, randrange, random
@@ -7,7 +8,12 @@ from typing import List, Callable, Tuple
 Thing = namedtuple('Thing', ['name', 'rating', 'price'])
 Thing3 = namedtuple('Thing3', ['name', 'business_name', 'contact_number', 'email', 'rating', 'price','type'])
 
+# Add Thing2 namedtuple
+Thing2 = namedtuple('Thing2', ['name', 'rating', 'price', 'weekend_available'])
+
 base_path = os.path.dirname(__file__)
+# Add paths for the second supplier CSV
+supplier_list2 = os.path.join(base_path, 'csvs', 'supplier_list2.csv')
 csv_file_path3 = os.path.join(base_path, 'csvs', 'supplier_list3.csv')
 cake = os.path.join(base_path, 'csvs', 'Cake.csv')
 digital_printing = os.path.join(base_path, 'csvs', 'Digital_Printing.csv')
@@ -22,7 +28,7 @@ church = os.path.join(base_path, 'csvs_deluxe', 'Church.csv')
 event_stylist = os.path.join(base_path, 'csvs_deluxe', 'Event_Stylist.csv')
 events_place = os.path.join(base_path, 'csvs_deluxe', 'Events_Place.csv')
 lights_and_sounds = os.path.join(base_path, 'csvs_deluxe', 'Lights_and_Sounds.csv')
-
+user_date_input = time.strftime('%Y-%m-%d')
 def read_csv3(file_path, arr):
     with open(file_path, mode='r', newline='') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -38,7 +44,31 @@ def read_csv3(file_path, arr):
             )
             arr.append(thing3)
 
+# Function to read supplier_list2.csv and filter based on weekend availability
+def read_csv_with_weekend_check(file_path, filtered_arr, skipped_arr, user_date):
+    user_date_obj = datetime.strptime(user_date, '%Y-%m-%d')
+    is_weekend = user_date_obj.weekday() >= 5  # Saturday (5) or Sunday (6)
+
+    with open(file_path, mode='r', newline='') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            weekend_avail = row['weekend_available'].strip().lower() == 'yes'
+            thing2 = Thing2(
+                name=row['name'],
+                rating=float(row['rating']),
+                price=float(row['price']),
+                weekend_available=row['weekend_available']
+            )
+            
+            # Include in filtered or skipped based on availability and current date
+            if (is_weekend and weekend_avail) or (not is_weekend and not weekend_avail):
+                filtered_arr.append(thing2)
+            else:
+                skipped_arr.append(thing2)
+
 things_list3 = []
+filtered_suppliers = []
+skipped_suppliers = []
 
 cake_arr = []
 digital_printing_arr = []
@@ -75,6 +105,7 @@ read_csv(church, church_arr)
 read_csv(event_stylist, event_stylist_arr)
 read_csv(events_place, events_place_arr)
 read_csv(lights_and_sounds, lights_and_sounds_arr)
+read_csv_with_weekend_check(supplier_list2, filtered_suppliers, skipped_suppliers, user_date_input)
 
 new_things3 = things_list3
 cake1 = cake_arr
@@ -242,5 +273,10 @@ def genome_to_things(genome: Genome, price_limit: int) -> List[Tuple[str, float]
 # total_price = 0
 # for name in best_solution:
 #     print(f"{name}")
+
+# # Debugging output to print skipped suppliers
+# print("Skipped Suppliers:")
+# for supplier in skipped_suppliers:
+#     print(f"{supplier.name} (Set Date Available: {supplier.weekend_available})")
 
 
