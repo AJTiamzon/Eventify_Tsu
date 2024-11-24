@@ -395,6 +395,7 @@ content %}
         </div>
 
         <button onclick="toggleSuggestedSuppliers({{ event.id }})" class="btn btn-primary mb-3"> Recommendations To Add To Your Event </button>
+        <button onclick="toggleAlgoSuppliers({{ event.id }})" class="btn btn-primary mb-3"> Suppliers Chosen By Algorithm </button>
 
         <!-- Suppliers Section -->
         <div class="row">
@@ -542,226 +543,386 @@ content %}
           </div>
           {% endif %}
           <!-- Add the extra recommendations here -->
+          <div id="AlgoSuppliers{{ event.id }}" style="display: none">
+
           <h3 class="text-dark" style="text-align: center; font-weight: bold;">Algorithm Selected Event Suppliers</h3>
+          <div class="row">
 
-          <!-- Cake Suppliers -->
-          {% if event.cake_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Cakes</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.cake_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            <!-- Cake Suppliers -->
+            {% if event.cake_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Cakes</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.cake_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {% endif %}
+            {% endif %}
 
-          <!-- Digital Printers Suppliers -->
-          {% if event.digital_printing_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Digital Printers</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.digital_printing_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            <!-- Digital Printers Suppliers -->
+            {% if event.digital_printing_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Digital Printers</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.digital_printing_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {% endif %}
+            {% endif %}
 
-          {% if event.event_planner_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Event Planner</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.event_planner_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            {% if event.event_planner_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Event Planner</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.event_planner_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {% endif %}
+            {% endif %}
 
-          {% if event.grazing_table_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Grazing Table</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.grazing_table_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            {% if event.grazing_table_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Grazing Table</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.grazing_table_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {% endif %}
+            {% endif %}
 
-          {% if event.makeup_and_hair_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Makeup And Hair</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.makeup_and_hair_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            {% if event.makeup_and_hair_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Makeup And Hair</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.makeup_and_hair_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {% endif %}
+            {% endif %}
 
-          {% if event.photobooth_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Photobooths</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.photobooth_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            {% if event.photobooth_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Photobooths</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.photobooth_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          {% endif %}
+            {% endif %}
 
-          {% if event.photographer_thing %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title text-info">Photographers</h5>
-                <ul class="list-unstyled">
-                  {% for supplier in event.photographer_thing %}
-                  <li class="d-flex justify-content-between align-items-center mb-2">
-                    <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
-                    <div>
-                      <button
-                        class="btn btn-danger me-2"
-                        onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
-                      >
-                        Delete
-                      </button>
-                      <form action="/rate_supplier" method="post" class="d-inline">
-                        <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
-                        <button type="submit" class="btn btn-info">
-                          View Ratings
+            {% if event.photographer_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Photographers</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.photographer_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
                         </button>
-                      </form>
-                    </div>
-                  </li>
-                  {% endfor %}
-                </ul>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
+            {% endif %}
+
+            {% if event.catering_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Catering Services</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.catering_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
+                        </button>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if event.church_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Churches</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.church_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
+                        </button>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if event.event_stylist_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Event Stylists</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.event_stylist_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
+                        </button>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if event.events_place_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Event Places</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.events_place_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
+                        </button>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if event.lights_and_sounds_thing %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title text-info">Lights And Sounds</h5>
+                  <ul class="list-unstyled">
+                    {% for supplier in event.lights_and_sounds_thing %}
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{{ supplier.name }} - Rating: {{ supplier.rating }} | Price: ₱{{ supplier.price }}</span>
+                      <div>
+                        <button
+                          class="btn btn-danger me-2"
+                          onClick="deleteSupplier('{{ event.id }}', '{{ supplier.name }}')"
+                        >
+                          Delete
+                        </button>
+                        <form action="/rate_supplier" method="post" class="d-inline">
+                          <input type="hidden" name="supplier_name" value="{{ supplier.name }}" />
+                          <button type="submit" class="btn btn-info">
+                            View Ratings
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            </div>
           </div>
-          {% endif %}
 
           <!-- Add more supplier types here if needed -->
         </div>
@@ -1082,6 +1243,20 @@ content %}
       SuggestedSuppliers.style.display = "block"; // Make visible
     } else {
       SuggestedSuppliers.style.display = "none"; // Make invisible
+    }
+  }
+
+  function toggleAlgoSuppliers(eventId) {
+    const AlgoSuppliers = document.getElementById(
+      `AlgoSuppliers${eventId}`
+    );
+    if (
+      AlgoSuppliers.style.display === "none" ||
+      !AlgoSuppliers.style.display
+    ) {
+      AlgoSuppliers.style.display = "block"; // Make visible
+    } else {
+      AlgoSuppliers.style.display = "none"; // Make invisible
     }
   }
 
