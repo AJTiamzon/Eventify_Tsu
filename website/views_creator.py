@@ -231,6 +231,11 @@ def event():
         except ValueError:
             flash('Please provide valid start and end dates.', category='error')
             return redirect(request.url)
+        
+        # Ensure the start date is not in the past
+        if start_date < datetime.now():
+            flash('Start date cannot be before today.', category='error')
+            return redirect(request.url)
 
         # Ensure the end date is after the start date
         if end_date < start_date:
